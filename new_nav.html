@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
             @media (min-width: 991px) {
                 .top-row { gap: 10px; padding-left: 0; overflow: visible; margin-bottom: 0; }
                 .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; gap: 6px; }
-                .top-row::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
+                .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
                 .category-pill.active::after, #comm-container.active::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 4px; background-color: var(--primary); z-index: 2; }
                 .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
                 .text-link { font-size: 11px; }
@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .top-row { padding-left: 10px; }
                 .category-pill.active, #comm-container.active { background: var(--primary) !important; color: white !important; }
                 .desktop-down-arrow { display: none !important; }
+                .bottom-row-inner { padding-top: 0; }
             }
 
             .pill-hover-dropdown { position: absolute; top: 44px; background: var(--dropdown-glass) !important; backdrop-filter: blur(20px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; min-width: 220px; z-index: 9999999; box-shadow: 0 15px 35px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: opacity 0.2s; transform: translateX(-50%) translateY(8px); overflow: hidden; }
