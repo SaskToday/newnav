@@ -82,9 +82,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 .top-row { gap: 10px; padding-left: 0; overflow: visible; margin-bottom: 0; }
                 .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; gap: 6px; }
                 .top-row::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
-                .category-pill.active::after, #comm-container.active::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 4px; background-color: var(--primary); z-index: 2; }
-                .bottom-row-inner { padding-top: 20px; }
-                .text-link { font-size: 12px; }
+                .category-pill.active::after, #comm-container.active::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 4px; background-color: var(--primary); z-index: 2; }
+                .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
+                .text-link { font-size: 11px; }
             }
 
             @media (max-width: 990px) {
@@ -100,8 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; margin-top: 10px; }
             .bottom-row.active { display: flex; opacity: 1; }
-            .bottom-row-inner { display: flex; align-items: center; gap: 20px; padding: 10px 0; width: 100%; }
-            .text-link { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 400; border-bottom: 2px solid transparent; padding-bottom: 2px; }
+            .bottom-row-inner { display: flex; align-items: center; gap: 20px; padding: 10px 0; padding-left: 10px; width: 100%; }
+            .text-link { color: var(--text-inactive); text-decoration: none; font-size: 11px; font-weight: 400; border-bottom: 2px solid transparent; padding-bottom: 2px; }
             .text-link.active { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
             
             .external-icon { width: 14px !important; height: 14px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
