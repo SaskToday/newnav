@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New Nav</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        margin: 0;
+        color: #111;
+      }
+      header {
+        border-bottom: 1px solid #e9ecef;
+        background: #fff;
+      }
+      .page-shell {
+        max-width: 990px;
+        margin: 0 auto;
+        padding: 16px 10px;
+      }
+      main {
+        padding: 20px 0 60px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="page-shell">
+        <strong>New Nav Demo</strong>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <p>This page demonstrates the new navigation script.</p>
+      <p>Resize the window to see desktop and mobile behavior.</p>
+    </main>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
+
+    const routes = {
+        communities: {
+            regina: "https://staging-www2.villagemedia.ca/regina-today",
+            saskatoon: "https://staging-www2.villagemedia.ca/saskatoon-today",
+            estevan: "https://staging-www2.villagemedia.ca/southeast/estevanmercury",
+            yorkton: "https://staging-www2.villagemedia.ca/central/yorktonthisweek",
+            kamsack: "https://staging-www2.villagemedia.ca/central/kamsacktimes",
+            all: "https://staging-www2.villagemedia.ca/" 
+        },
+        categories: {
+            sports: "https://staging-www2.villagemedia.ca/sports",
+            agriculture: "https://staging-www2.villagemedia.ca/agriculture",
+            obituaries: "https://staging-www2.villagemedia.ca/obituaries",
+            politics: "https://staging-www2.villagemedia.ca/politics",
+            weather: "https://staging-www2.villagemedia.ca/weather",
+            crime: "https://staging-www2.villagemedia.ca/crime-cops-court"
+        },
+        categoryLinks: {
+            sports: [
+                { text: "Go to SportsCage", url: "https://www.sportscage.com", external: true },
+                { text: "All Sports", url: "https://staging-www2.villagemedia.ca/sports" },
+                { text: "North Sports", url: "https://staging-www2.villagemedia.ca/north/local-sports" },
+                { text: "Central Sports", url: "https://staging-www2.villagemedia.ca/central/local-sports" },
+                { text: "Southwest Sports", url: "https://staging-www2.villagemedia.ca/southwest/local-sports" }
+            ],
+            agriculture: [
+                { text: "Go to SaskAgToday", url: "https://www.saskagtoday.com", external: true },
+                { text: "All Agriculture", url: "https://staging-www2.villagemedia.ca/agriculture" },
+                { text: "North Agriculture", url: "https://staging-www2.villagemedia.ca/north/agriculture" },
+                { text: "Central Agriculture", url: "https://staging-www2.villagemedia.ca/central/agriculture" }
+            ],
+            obituaries: [
+                { text: "All Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries" },
+                { text: "Regina Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" },
+                { text: "Saskatoon Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" },
+                { text: "Yorkton Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/yorkton-obituaries" },
+                { text: "Assiniboia Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" },
+                { text: "Estevan Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" }
+            ],
+            politics: [{ text: "All Politics", url: "https://staging-www2.villagemedia.ca/politics" }],
+            weather: [{ text: "All Weather", url: "https://staging-www2.villagemedia.ca/weather" }],
+            crime: [{ text: "All Crime & Safety", url: "https://staging-www2.villagemedia.ca/crime-cops-court" }]
+        },
+        communityLinks: {
+            communities: [
+                { text: "All Communities", url: "https://staging-www2.villagemedia.ca/" },
+                { text: "Regina", url: "https://staging-www2.villagemedia.ca/regina-today" },
+                { text: "Saskatoon", url: "https://staging-www2.villagemedia.ca/saskatoon-today" },
+                { text: "Estevan", url: "https://staging-www2.villagemedia.ca/southeast/estevanmercury" },
+                { text: "Yorkton", url: "https://staging-www2.villagemedia.ca/central/yorktonthisweek" },
+                { text: "Kamsack", url: "https://staging-www2.villagemedia.ca/central/kamsacktimes" }
+            ]
+        }
+    };
+
+    const extIcon = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 13V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H11M21 3L11 13M21 3H15M21 3V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const downArrow = `<svg class="desktop-down-arrow" style="width:20px; height:20px; margin-left:2px; flex-shrink:0;" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg>`;
+
+    const navHTML = `
+    <div id="village-nav-container">
+        <style>
+            :root { --primary: #007bff; --nav-bg: #ffffff; --pill-bg: #f1f3f5; --text-inactive: #000000; --dropdown-glass: rgba(255, 255, 255, 0.75); --separator-color: #e9ecef; }
+            #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; }
+            .nav-content-wrapper { width: 990px; margin: 0 auto; position: relative; padding: 0 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
+            @media (max-width: 990px) { .nav-content-wrapper { width: 100%; } }
+
+            .top-row { display: flex !important; gap: 8px; align-items: center; width: 100%; position: relative; z-index: 11; margin-bottom: 8px; }
+            .hide-scrollbar { overflow-x: auto; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+            .hide-scrollbar::-webkit-scrollbar { display: none; }
+            
+            .category-pill, #comm-container { 
+                background: var(--pill-bg); border-radius: 20px; border: 2px solid transparent; 
+                font-weight: 600; font-size: 13px; padding: 6px 14px; cursor: pointer; transition: all 0.2s ease; 
+                display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; color: var(--text-inactive); position: relative;
+            }
+
+            @media (min-width: 991px) {
+                .top-row { gap: 10px; padding-left: 0; overflow: visible; margin-bottom: 0; }
+                .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; }
+                .top-row::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
+                .category-pill.active::after, #comm-container.active::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 4px; background-color: var(--primary); z-index: 2; }
+            }
+
+            @media (max-width: 990px) {
+                .top-row { padding-left: 10px; }
+                .category-pill.active, #comm-container.active { background: var(--primary) !important; color: white !important; }
+                .desktop-down-arrow { display: none !important; }
+            }
+
+            .pill-hover-dropdown { position: absolute; top: 44px; background: var(--dropdown-glass) !important; backdrop-filter: blur(20px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; min-width: 220px; z-index: 9999999; box-shadow: 0 15px 35px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: opacity 0.2s; transform: translateX(-50%) translateY(8px); overflow: hidden; }
+            .pill-hover-dropdown.visible { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+            .pill-hover-dropdown a { display: block; padding: 12px 18px; color: #000; text-decoration: none; font-size: 13.5px; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.05); }
+            .pill-hover-dropdown a:hover { background: var(--primary); color: white; }
+            
+            .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; }
+            .bottom-row.active { display: flex; opacity: 1; }
+            .bottom-row-inner { display: flex; align-items: center; gap: 20px; padding: 10px 0; width: 100%; }
+            .text-link { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 2px solid transparent; padding-bottom: 2px; }
+            .text-link.active { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
+            
+            .external-icon { width: 14px !important; height: 14px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
+            .dropdown-arrow-icon { width: 18px; height: 18px; fill: currentColor; display: none; }
+            @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
+            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 1000001; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; }
+        </style>
+        <div class="nav-content-wrapper">
+            <div id="village-nav-dropdown-mobile" style="display: none;">
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="all">All Communities</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="regina">Regina</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="saskatoon">Saskatoon</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="estevan">Estevan</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="yorkton">Yorkton</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;" data-community="kamsack">Kamsack</div>
+            </div>
+
+            <div class="top-row hide-scrollbar" id="main-top-row">
+                <div id="comm-container" data-category="communities">
+                    📍 <span id="community-label">Communities</span>
+                    <svg class="dropdown-arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                </div>
+                <button class="category-pill" data-category="sports">🏈 Sports</button>
+                <button class="category-pill" data-category="agriculture">🌾 Agriculture</button>
+                <button class="category-pill" data-category="obituaries">❤️ Obituaries</button>
+                <button class="category-pill" data-category="politics">🏛️ Politics</button>
+                <button class="category-pill" data-category="weather">☀️ Weather</button>
+                <button class="category-pill" data-category="crime">🔎 Crime & Safety</button>
+                <button class="category-pill" id="mega-menu-trigger">☰ More</button>
+            </div>
+            
+            <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/regina-today" class="text-link">All Regina</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-news" class="text-link">Regina News</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="https://staging-www2.villagemedia.ca/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
+            <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/saskatoon-today" class="text-link">All Saskatoon</a><a href="https://staging-www2.villagemedia.ca/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="https://staging-www2.villagemedia.ca/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="https://staging-www2.villagemedia.ca/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="https://staging-www2.villagemedia.ca/classifieds/saskatoon-classifieds" class="text-link">Saskatoon Classifieds</a></div></div>
+            <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="https://staging-www2.villagemedia.ca/sports" class="text-link">All Sports</a><a href="https://staging-www2.villagemedia.ca/north/local-sports" class="text-link">North Sports</a><a href="https://staging-www2.villagemedia.ca/central/local-sports" class="text-link">Central Sports</a><a href="https://staging-www2.villagemedia.ca/southwest/local-sports" class="text-link">Southwest Sports</a></div></div>
+            <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="https://staging-www2.villagemedia.ca/agriculture" class="text-link">All Agriculture</a><a href="https://staging-www2.villagemedia.ca/north/agriculture" class="text-link">North Agriculture</a><a href="https://staging-www2.villagemedia.ca/central/agriculture" class="text-link">Central Agriculture</a></div></div>
+            <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/obituaries" class="text-link">All Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
+            <div class="bottom-row" id="category-politics"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/politics" class="text-link">All Politics</a></div></div>
+            <div class="bottom-row" id="category-weather"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/weather" class="text-link">All Weather</a></div></div>
+            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/crime-cops-court" class="text-link">All Crime & Safety</a></div></div>
+        </div>
+    </div>`;
+
+    const targetHeader = document.querySelector('header');
+    if (targetHeader) {
+        targetHeader.insertAdjacentHTML('beforeend', navHTML);
+        initNavLogic();
+        initHoverDropdowns();
+        handleScrollLogic();
+    }
+
+    function handleScrollLogic() {
+        const topRow = document.getElementById('main-top-row');
+        if (window.innerWidth <= 990) { 
+            topRow.scrollLeft = 0; 
+        } else { 
+            scrollActiveIntoView(topRow, '.category-pill.active, #comm-container.active'); 
+        }
+
+        const activeBottomInner = document.querySelector('.bottom-row.active .bottom-row-inner');
+        const savedScroll = sessionStorage.getItem('nav_bottom_scroll');
+        const lastCat = sessionStorage.getItem('nav_last_category');
+        const url = window.location.href.split('?')[0].replace(/\/$/, "");
+        
+        let currentCat = 'home';
+        for (let cat in routes.categories) { if (url.includes(cat)) currentCat = cat; }
+        for (let comm in routes.communities) { if (url.includes(comm)) currentCat = comm; }
+
+        if (activeBottomInner) {
+            if (currentCat === lastCat && savedScroll) { 
+                activeBottomInner.scrollLeft = parseInt(savedScroll); 
+            } else { 
+                scrollActiveIntoView(activeBottomInner, '.text-link.active'); 
+            }
+        }
+        sessionStorage.setItem('nav_last_category', currentCat);
+        const saveScroll = () => {
+            const row = document.querySelector('.bottom-row.active .bottom-row-inner');
+            if (row) sessionStorage.setItem('nav_bottom_scroll', row.scrollLeft);
+        };
+        document.querySelectorAll('.bottom-row-inner').forEach(r => r.addEventListener('scroll', saveScroll));
+    }
+
+    function scrollActiveIntoView(container, selector) {
+        if (!container) return;
+        const activeEl = container.querySelector(selector);
+        if (activeEl) container.scrollLeft = activeEl.offsetLeft - (container.offsetWidth / 2) + (activeEl.offsetWidth / 2);
+    }
+
+    function initNavLogic() {
+        const url = window.location.href.split('?')[0].replace(/\/$/, "");
+        const topRow = document.getElementById('main-top-row'), commContainer = document.getElementById('comm-container');
+        let matched = false;
+
+        // Parent Selection and Prepend for Mobile
+        for (let cat in routes.categories) {
+            if (url.includes(cat)) {
+                const pill = document.querySelector(`[data-category="${cat}"]`);
+                pill?.classList.add('active');
+                if (window.innerWidth <= 990 && pill) topRow.prepend(pill);
+                document.getElementById(`category-${cat}`)?.classList.add('active');
+                matched = true; break;
+            }
+        }
+        if (!matched) {
+            for (let commKey in routes.communities) {
+                if (commKey !== 'all' && url.includes(commKey)) {
+                    commContainer.classList.add('active');
+                    if (window.innerWidth <= 990) topRow.prepend(commContainer);
+                    document.getElementById('community-label').textContent = commKey.charAt(0).toUpperCase() + commKey.slice(1);
+                    document.getElementById(`community-${commKey}`)?.classList.add('active');
+                    break;
+                }
+            }
+        }
+
+        // Parent Click Handlers
+        document.querySelectorAll('.category-pill:not(#mega-menu-trigger)').forEach(pill => {
+            pill.addEventListener('click', () => { window.location.href = routes.categories[pill.dataset.category]; });
+        });
+
+        // Community Mobile Dropdown logic
+        commContainer.addEventListener('click', (e) => {
+            if (window.innerWidth > 990) return;
+            e.stopPropagation();
+            const drop = document.getElementById('village-nav-dropdown-mobile');
+            const rect = commContainer.getBoundingClientRect();
+            const wrapperRect = document.querySelector('.nav-content-wrapper').getBoundingClientRect();
+            drop.style.left = (rect.left - wrapperRect.left) + 'px';
+            drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
+        });
+
+        document.querySelectorAll('.dropdown-option').forEach(opt => {
+            opt.addEventListener('click', () => { window.location.href = routes.communities[opt.dataset.community]; });
+        });
+
+        // Child Active States
+        document.querySelectorAll('.bottom-row.active .text-link').forEach(link => {
+            if (url === link.href.replace(/\/$/, "")) link.classList.add('active');
+        });
+
+        const megaMenuTrigger = document.getElementById('mega-menu-trigger'), siteBurgButton = document.querySelector('.navbt-burg');
+        if (megaMenuTrigger && siteBurgButton) {
+            megaMenuTrigger.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); siteBurgButton.click(); });
+        }
+        document.addEventListener('click', () => { document.getElementById('village-nav-dropdown-mobile').style.display = 'none'; });
+    }
+
+    function initHoverDropdowns() {
+        if (window.innerWidth <= 990) return;
+        const pills = document.querySelectorAll('.category-pill:not(#mega-menu-trigger), #comm-container');
+        const wrapper = document.querySelector('.nav-content-wrapper');
+        let activeDropdown = null, hoverTimeout = null;
+
+        pills.forEach(pill => {
+            const cat = pill.dataset.category;
+            const links = (cat === 'communities') ? routes.communityLinks.communities : routes.categoryLinks[cat];
+            if (!links) return;
+
+            pill.insertAdjacentHTML('beforeend', downArrow);
+            const dropdown = document.createElement('div');
+            dropdown.className = 'pill-hover-dropdown';
+            links.forEach(link => {
+                const a = document.createElement('a'); a.href = link.url;
+                a.innerHTML = link.external ? `${link.text} ${extIcon}` : link.text;
+                if (link.external) a.target = '_blank';
+                dropdown.appendChild(a);
+            });
+            wrapper.appendChild(dropdown);
+
+            const show = () => {
+                clearTimeout(hoverTimeout);
+                if (activeDropdown && activeDropdown !== dropdown) activeDropdown.classList.remove('visible');
+                const pRect = pill.getBoundingClientRect(), wRect = wrapper.getBoundingClientRect();
+                dropdown.style.left = (pRect.left - wRect.left) + (pRect.width / 2) + 'px';
+                dropdown.classList.add('visible');
+                activeDropdown = dropdown;
+            };
+            const hide = () => { hoverTimeout = setTimeout(() => { dropdown.classList.remove('visible'); if (activeDropdown === dropdown) activeDropdown = null; }, 150); };
+
+            pill.addEventListener('mouseenter', show); pill.addEventListener('mouseleave', hide);
+            dropdown.addEventListener('mouseenter', () => clearTimeout(hoverTimeout)); dropdown.addEventListener('mouseleave', hide);
+        });
+    }
+});
+    </script>
+  </body>
+</html>
+
