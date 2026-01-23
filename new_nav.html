@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bottom-row { margin-top: 0 !important; }
             }
 
-            .desktop-mega-menu { position: absolute; top: 100%; left: 0; right: 0; background: var(--nav-bg); max-height: 0; overflow: hidden; transition: max-height 0.3s ease; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .desktop-mega-menu { position: absolute; top: 100%; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; transition: max-height 0.3s ease; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
             .desktop-mega-menu.visible { max-height: 400px; }
             .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px; gap: 40px; }
             .desktop-mega-menu-links { flex: 0 0 60%; display: flex; flex-direction: column; gap: 12px; }
@@ -270,14 +270,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.innerWidth <= 990) return;
         const pills = document.querySelectorAll('.category-pill:not(#mega-menu-trigger), #comm-container');
         const wrapper = document.querySelector('.nav-content-wrapper');
+        const container = document.getElementById('village-nav-container');
         let hoverTimeout = null;
 
-        // Create a single mega menu container
-        let megaMenu = wrapper.querySelector('.desktop-mega-menu');
+        // Create a single mega menu container - append to container for full width
+        let megaMenu = container.querySelector('.desktop-mega-menu');
         if (!megaMenu) {
             megaMenu = document.createElement('div');
             megaMenu.className = 'desktop-mega-menu';
-            wrapper.appendChild(megaMenu);
+            container.appendChild(megaMenu);
         }
 
         pills.forEach(pill => {
@@ -289,6 +290,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const show = () => {
                 clearTimeout(hoverTimeout);
+                
+                // Hide the bottom-row when mega menu is visible
+                document.querySelectorAll('.bottom-row').forEach(row => {
+                    row.style.display = 'none';
+                });
+                
+                // Calculate position to cover bottom-row area
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const topRow = wrapper.querySelector('.top-row');
+                const topRowRect = topRow ? topRow.getBoundingClientRect() : wrapperRect;
+                megaMenu.style.top = (topRowRect.bottom - containerRect.top) + 'px';
                 
                 // Build the mega menu content
                 const inner = document.createElement('div');
@@ -326,6 +339,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const hide = () => { 
                 hoverTimeout = setTimeout(() => { 
                     megaMenu.classList.remove('visible');
+                    // Restore bottom-row visibility when mega menu is hidden
+                    const activeBottomRow = document.querySelector('.bottom-row.active');
+                    if (activeBottomRow) {
+                        activeBottomRow.style.display = 'flex';
+                    }
                 }, 150); 
             };
 
