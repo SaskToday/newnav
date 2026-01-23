@@ -305,6 +305,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const show = () => {
                 clearTimeout(hoverTimeout);
+                // Remove hover-active from all pills before adding to current one
+                document.querySelectorAll('.category-pill, #comm-container').forEach(p => p.classList.remove('hover-active'));
                 if (activeDropdown && activeDropdown !== dropdown) activeDropdown.classList.remove('visible');
                 const pRect = pill.getBoundingClientRect(), wRect = wrapper.getBoundingClientRect();
                 dropdown.style.left = (pRect.left - wRect.left) + (pRect.width / 2) + 'px';
