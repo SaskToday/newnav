@@ -110,9 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-links h3 { font-size: 14px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); }
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.2s; }
             .desktop-mega-menu-links a:hover { color: var(--primary); }
-            .desktop-mega-menu-newsletters { flex: 0 0 40%; }
+            .desktop-mega-menu-newsletters { flex: 0 0 40%; display: flex; flex-direction: column; gap: 12px; }
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 50%; }
             .desktop-mega-menu-newsletters h3 { font-size: 14px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); }
+            .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.2s; }
+            .desktop-mega-menu-newsletters a:hover { color: var(--primary); }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
             @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
             
@@ -320,25 +322,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     let childLinks = [];
                     
                     if (isActive) {
-                        const url = window.location.href.split('?')[0].replace(/\/$/, "");
                         const activeBottomRow = document.querySelector('.bottom-row.active[id^="community-"]');
                         
                         if (activeBottomRow) {
                             const commId = activeBottomRow.id.replace('community-', '');
-                            // Find community name from routes - check URL first, then ID
-                            let commLink = routes.communityLinks.communities.find(c => url.includes(c.url.split('/').pop()));
-                            if (!commLink) {
-                                commLink = routes.communityLinks.communities.find(c => 
-                                    c.url.includes(commId) || c.text.toLowerCase() === commId.toLowerCase()
-                                );
-                            }
+                            // Find community name from routes by matching the ID (e.g., "regina" -> "Regina")
+                            // Skip "All Communities" - we want the actual community
+                            const commLink = routes.communityLinks.communities.find(c => 
+                                c.text.toLowerCase() === commId.toLowerCase() && c.text !== 'All Communities'
+                            );
                             
                             if (commLink) {
                                 activeCommunityName = commLink.text;
                                 // Get child links from the active bottom row
                                 const childLinkElements = activeBottomRow.querySelectorAll('.text-link');
                                 childLinks = Array.from(childLinkElements).map(link => {
-                                    const text = link.textContent.trim();
+                                    // Get text content, removing any SVG icons
+                                    let text = link.textContent.trim();
+                                    // Remove the external icon text if present
+                                    text = text.replace(extIcon, '').trim();
                                     const hasIcon = link.querySelector('.external-icon') !== null;
                                     return {
                                         text: text,
