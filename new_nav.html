@@ -98,6 +98,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             .pill-hover-dropdown { position: absolute; top: 44px; background: var(--dropdown-glass) !important; backdrop-filter: blur(20px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; min-width: 220px; z-index: 9999999; box-shadow: 0 15px 35px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: opacity 0.2s; transform: translateX(-50%) translateY(8px); overflow: hidden; }
             .pill-hover-dropdown.visible { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+            @media (min-width: 991px) {
+                .nav-backdrop-blur { position: fixed; top: 0; left: 0; right: 0; bottom: 0; backdrop-filter: blur(4px); background: rgba(0, 0, 0, 0.02); z-index: 9999998; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+                .nav-backdrop-blur.visible { opacity: 1; }
+            }
             .pill-hover-dropdown a { display: block; padding: 12px 18px; color: #000; text-decoration: none; font-size: 13.5px; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.05); }
             .pill-hover-dropdown a:hover { background: var(--primary); color: white; }
             
@@ -258,6 +262,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const wrapper = document.querySelector('.nav-content-wrapper');
         let activeDropdown = null, hoverTimeout = null;
 
+        // Create backdrop blur overlay
+        const backdrop = document.createElement('div');
+        backdrop.className = 'nav-backdrop-blur';
+        document.body.appendChild(backdrop);
+
+        const showBackdrop = () => { backdrop.classList.add('visible'); };
+        const hideBackdrop = () => { backdrop.classList.remove('visible'); };
+
         pills.forEach(pill => {
             const cat = pill.dataset.category;
             const links = (cat === 'communities') ? routes.communityLinks.communities : routes.categoryLinks[cat];
@@ -281,8 +293,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 dropdown.style.left = (pRect.left - wRect.left) + (pRect.width / 2) + 'px';
                 dropdown.classList.add('visible');
                 activeDropdown = dropdown;
+                showBackdrop();
             };
-            const hide = () => { hoverTimeout = setTimeout(() => { dropdown.classList.remove('visible'); if (activeDropdown === dropdown) activeDropdown = null; }, 150); };
+            const hide = () => { 
+                hoverTimeout = setTimeout(() => { 
+                    dropdown.classList.remove('visible'); 
+                    if (activeDropdown === dropdown) {
+                        activeDropdown = null;
+                        hideBackdrop();
+                    }
+                }, 150); 
+            };
 
             pill.addEventListener('mouseenter', show); pill.addEventListener('mouseleave', hide);
             dropdown.addEventListener('mouseenter', () => clearTimeout(hoverTimeout)); dropdown.addEventListener('mouseleave', hide);
