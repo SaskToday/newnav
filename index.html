@@ -262,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const rect = commContainer.getBoundingClientRect();
             const wrapperRect = document.querySelector('.nav-content-wrapper').getBoundingClientRect();
             drop.style.left = (rect.left - wrapperRect.left) + 'px';
+            drop.style.top = (rect.bottom - wrapperRect.top + 4) + 'px';
             drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
         });
 
