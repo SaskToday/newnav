@@ -79,9 +79,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             @media (min-width: 991px) {
                 .top-row { gap: 10px; padding-left: 0; overflow: visible; margin-bottom: 0; }
-                .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; gap: 6px; }
+                .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; gap: 6px; transition: all 0.3s ease; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
-                .category-pill.active::after, #comm-container.active::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 4px; background-color: var(--primary); z-index: 2; }
+                .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 0; height: 4px; background-color: rgba(0, 123, 255, 0.4); z-index: 2; transition: all 0.3s ease; }
+                .category-pill:hover::after, #comm-container:hover::after { width: 100%; }
+                .category-pill.active::after, #comm-container.active::after { width: 100%; background-color: var(--primary); z-index: 3; }
                 .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
                 .text-link { font-size: 12px; }
                 .desktop-down-arrow { display: none !important; }
