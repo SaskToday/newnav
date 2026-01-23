@@ -105,18 +105,21 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu { position: absolute; top: 100%; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; transition: max-height 0.3s ease; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
             .desktop-mega-menu.visible { max-height: 400px; }
             .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px; gap: 24px; }
+            .desktop-mega-menu-inner.communities-menu { gap: 15px; }
             .desktop-mega-menu-links { flex: 0 0 60%; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-links.communities-split { flex: 0 0 50%; }
-            .desktop-mega-menu-links h3 { font-size: 14px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); width: 100%; }
+            .desktop-mega-menu-links h3 { font-size: 12px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); width: 100%; }
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 30px; }
+            .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 15px; }
+            .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 15px; }
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-links a:hover { color: var(--primary); }
             .desktop-mega-menu-newsletters { flex: 0 0 40%; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 50%; }
-            .desktop-mega-menu-newsletters h3 { font-size: 14px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); width: 100%; }
+            .desktop-mega-menu-newsletters h3 { font-size: 12px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); width: 100%; }
             .desktop-mega-menu-newsletters-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 30px; }
+            .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 15px; }
+            .desktop-mega-menu-newsletters-items.multi-column.communities-columns { column-gap: 15px; }
             .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-newsletters a:hover { color: var(--primary); }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
@@ -312,9 +315,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const topRowRect = topRow ? topRow.getBoundingClientRect() : wrapperRect;
                 megaMenu.style.top = (topRowRect.bottom - containerRect.top) + 'px';
                 
-                // Build the mega menu content
-                const inner = document.createElement('div');
-                inner.className = 'desktop-mega-menu-inner';
+                    // Build the mega menu content
+                    const inner = document.createElement('div');
+                    inner.className = 'desktop-mega-menu-inner' + (isCommunities ? ' communities-menu' : '');
                 
                 if (isCommunities) {
                     // Special handling for Communities
@@ -364,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     communitiesSection.appendChild(communitiesHeading);
                     
                     const communitiesItems = document.createElement('div');
-                    communitiesItems.className = 'desktop-mega-menu-links-items' + (links.length > 5 ? ' multi-column' : '');
+                    communitiesItems.className = 'desktop-mega-menu-links-items' + (links.length > 5 ? ' multi-column communities-columns' : '');
                     
                     links.forEach(link => {
                         const a = document.createElement('a');
@@ -390,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         sectionsSection.appendChild(sectionsHeading);
                         
                         const sectionsItems = document.createElement('div');
-                        sectionsItems.className = 'desktop-mega-menu-newsletters-items' + (childLinks.length > 5 ? ' multi-column' : '');
+                        sectionsItems.className = 'desktop-mega-menu-newsletters-items' + (childLinks.length > 5 ? ' multi-column communities-columns' : '');
                         
                         childLinks.forEach(link => {
                             const a = document.createElement('a');
@@ -412,6 +415,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Left section - links (60%)
                     const linksSection = document.createElement('div');
                     linksSection.className = 'desktop-mega-menu-links';
+                    const sectionsHeading = document.createElement('h3');
+                    sectionsHeading.textContent = 'Sections';
+                    linksSection.appendChild(sectionsHeading);
                     
                     const linksItems = document.createElement('div');
                     linksItems.className = 'desktop-mega-menu-links-items' + (links.length > 5 ? ' multi-column' : '');
