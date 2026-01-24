@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             .desktop-mega-menu { position: absolute; top: 100%; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; transition: max-height 0.3s ease; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
             .desktop-mega-menu.visible { max-height: 400px; }
-            .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px; gap: 80px; }
+            .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px 30px 30px; gap: 80px; }
             .desktop-mega-menu-inner.communities-menu { gap: 80px; }
             .desktop-mega-menu-links { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-links.communities-split { flex: 0 0 auto; }
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 40px; }
             .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 40px; }
-            .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
+            .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-links a:hover { color: var(--primary); }
             .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-newsletters-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 40px; }
             .desktop-mega-menu-newsletters-items.multi-column.communities-columns { column-gap: 40px; }
-            .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
+            .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-newsletters a:hover { color: var(--primary); }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
             @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
