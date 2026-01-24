@@ -288,6 +288,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('village-nav-container');
         let hoverTimeout = null;
         let currentPill = null; // Track which pill is currently showing the mega menu
+        let userHasInteracted = false;
+
+        // Prevent mega menu from showing immediately on load until user moves mouse
+        const enableInteractions = () => {
+            userHasInteracted = true;
+            document.removeEventListener('mousemove', enableInteractions);
+        };
+        document.addEventListener('mousemove', enableInteractions);
 
         // Create a single mega menu container - append to container for full width
         let megaMenu = container.querySelector('.desktop-mega-menu');
@@ -334,6 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
             pill.insertAdjacentHTML('beforeend', downArrow);
 
             const show = () => {
+                if (!userHasInteracted) return;
                 clearTimeout(hoverTimeout);
                 
                 // Set current pill
