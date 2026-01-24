@@ -130,6 +130,7 @@
                     .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 4px; }
                     .category-pill.active::after, #comm-container.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
                     .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { height: 0; }
+                    #village-nav-container.suppress-active-underline .category-pill.active::after, #village-nav-container.suppress-active-underline #comm-container.active::after { height: 0; }
                     .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
                 }
 
@@ -338,17 +339,18 @@
                 currentPill.classList.add('hover-active');
             }
         });
-        megaMenu.addEventListener('mouseleave', () => {
-            hoverTimeout = setTimeout(() => { 
-                megaMenu.classList.remove('visible');
-                if (currentPill) {
-                    // Only remove hover-active if the pill is not active
-                    if (!currentPill.classList.contains('active')) {
-                        currentPill.classList.remove('hover-active');
+            megaMenu.addEventListener('mouseleave', () => {
+                hoverTimeout = setTimeout(() => { 
+                    megaMenu.classList.remove('visible');
+                    if (currentPill) {
+                        // Only remove hover-active if the pill is not active
+                        if (!currentPill.classList.contains('active')) {
+                            currentPill.classList.remove('hover-active');
+                        }
+                        currentPill = null;
+                        container.classList.remove('suppress-active-underline');
                     }
-                    currentPill = null;
-                }
-                // Restore bottom-row visibility when mega menu is hidden
+                    // Restore bottom-row visibility when mega menu is hidden
                 const activeBottomRow = document.querySelector('.bottom-row.active');
                 if (activeBottomRow) {
                     activeBottomRow.style.display = 'flex';
@@ -369,6 +371,13 @@
                     
                     // Set current pill
                     currentPill = pill;
+                    
+                    // If the current pill is NOT active, suppress the active underline on other items
+                    if (!pill.classList.contains('active')) {
+                        container.classList.add('suppress-active-underline');
+                    } else {
+                        container.classList.remove('suppress-active-underline');
+                    }
                     
                     // Clear hover-active from all other pills
                     document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
@@ -535,6 +544,7 @@
                         }
                         if (currentPill === pill) {
                             currentPill = null;
+                            container.classList.remove('suppress-active-underline');
                         }
                         // Restore bottom-row visibility when mega menu is hidden
                         const activeBottomRow = document.querySelector('.bottom-row.active');
