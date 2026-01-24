@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-links a:hover { color: var(--primary); }
             .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
-            .desktop-mega-menu-links a .community-icon { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0; background-color: #ddd; }
+            .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; }
             .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
@@ -431,8 +431,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
-                        const icon = document.createElement('span');
+                        const icon = document.createElement('img');
                         icon.className = 'community-icon';
+                        // Map community names to city image placeholders
+                        const cityMap = {
+                            'All Communities': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=80&h=80&fit=crop',
+                            'Regina': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=80&h=80&fit=crop',
+                            'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=80&h=80&fit=crop',
+                            'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=80&h=80&fit=crop',
+                            'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=80&h=80&fit=crop',
+                            'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=80&h=80&fit=crop'
+                        };
+                        icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=80&h=80&fit=crop';
+                        icon.alt = link.text;
                         a.appendChild(icon);
                         if (link.external) {
                             a.target = '_blank';
