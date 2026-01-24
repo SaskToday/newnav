@@ -118,9 +118,17 @@
 
                 @media (min-width: 991px) {
                     .top-row { gap: 10px; padding-left: 0; overflow: visible; margin-bottom: 0; }
-                    .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; }
+                    .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; position: relative; }
                     .top-row::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
-                    .category-pill.active::after, #comm-container.active::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 4px; background-color: var(--primary); z-index: 2; }
+                    .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 0; transform-origin: bottom; z-index: 2; transition: height 0.3s ease; }
+                    .category-pill[data-category="sports"]::after, #comm-container[data-category="communities"]::after { background-color: rgba(34, 197, 94, 0.5); }
+                    .category-pill[data-category="agriculture"]::after { background-color: rgba(234, 179, 8, 0.5); }
+                    .category-pill[data-category="obituaries"]::after { background-color: rgba(239, 68, 68, 0.5); }
+                    .category-pill[data-category="politics"]::after { background-color: rgba(139, 92, 246, 0.5); }
+                    .category-pill[data-category="weather"]::after { background-color: rgba(59, 130, 246, 0.5); }
+                    .category-pill[data-category="crime"]::after { background-color: rgba(107, 114, 128, 0.5); }
+                    .category-pill:hover::after, #comm-container:hover::after { height: 4px; }
+                    .category-pill.active::after, #comm-container.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
                 }
 
                 @media (max-width: 990px) {
@@ -135,7 +143,7 @@
                 .desktop-mega-menu-inner.communities-menu { gap: 80px; }
                 .desktop-mega-menu-links { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
                 .desktop-mega-menu-links.communities-split { flex: 0 0 auto; }
-                .desktop-mega-menu-links h3 { font-size: 12px; font-weight: 700; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
+                .desktop-mega-menu-links h3 { font-size: 11px; font-weight: 700; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
                 .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
                 .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 40px; }
                 .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 40px; }
@@ -143,7 +151,7 @@
                 .desktop-mega-menu-links a:hover { color: var(--primary); }
                 .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
                 .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
-                .desktop-mega-menu-newsletters h3 { font-size: 12px; font-weight: 700; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
+                .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 700; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
                 .desktop-mega-menu-newsletters-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
                 .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 40px; }
                 .desktop-mega-menu-newsletters-items.multi-column.communities-columns { column-gap: 40px; }
