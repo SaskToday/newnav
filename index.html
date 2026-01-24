@@ -110,9 +110,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 .category-pill[data-category="politics"]::after { background-color: rgba(139, 92, 246, 0.5); }
                 .category-pill[data-category="weather"]::after { background-color: rgba(59, 130, 246, 0.5); }
                 .category-pill[data-category="crime"]::after { background-color: rgba(107, 114, 128, 0.5); }
-                .category-pill:hover::after, #comm-container:hover::after { height: 4px; }
+                .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 4px; }
                 .category-pill.active::after, #comm-container.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
-                .top-row:hover .category-pill.active:not(:hover)::after, .top-row:hover #comm-container.active:not(:hover)::after { height: 0; }
+                .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { height: 0; }
+                .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
                 .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
                 .text-link { font-size: 12px; }
                 .desktop-down-arrow { display: block !important; }
@@ -327,6 +328,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const show = () => {
                 clearTimeout(hoverTimeout);
                 
+                // Clear hover-active from all other pills
+                document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
+                    if (p !== pill) p.classList.remove('hover-active');
+                });
+                
+                // Add hover-active class to show underline
+                pill.classList.add('hover-active');
+                
                 // Hide the bottom-row when mega menu is visible
                 document.querySelectorAll('.bottom-row').forEach(row => {
                     row.style.display = 'none';
@@ -478,6 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const hide = () => { 
                 hoverTimeout = setTimeout(() => { 
                     megaMenu.classList.remove('visible');
+                    pill.classList.remove('hover-active');
                     // Restore bottom-row visibility when mega menu is hidden
                     const activeBottomRow = document.querySelector('.bottom-row.active');
                     if (activeBottomRow) {
@@ -490,6 +500,8 @@ document.addEventListener('DOMContentLoaded', function() {
             pill.addEventListener('mouseleave', hide);
             megaMenu.addEventListener('mouseenter', () => {
                 clearTimeout(hoverTimeout);
+                // Keep hover-active class when entering mega menu
+                pill.classList.add('hover-active');
             }); 
             megaMenu.addEventListener('mouseleave', hide);
         });
