@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             @media (min-width: 991px) {
-                .top-row { gap: 6px; padding-left: 0; overflow: visible; margin-bottom: 0; }
+                .top-row { gap: 0px; padding-left: 0; overflow: visible; margin-bottom: 0; }
                 .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 13px; gap: 6px; transition: all 0.3s ease; cursor: default; }
                 .category-pill span, #comm-container span { cursor: pointer; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
@@ -119,6 +119,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 40px; }
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-links a:hover { color: var(--primary); }
+            .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
+            .desktop-mega-menu-links a .community-icon { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0; background-color: #ddd; }
             .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
@@ -433,11 +435,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
+                        const icon = document.createElement('span');
+                        icon.className = 'community-icon';
+                        a.appendChild(icon);
                         if (link.external) {
                             a.target = '_blank';
-                            a.innerHTML = `${link.text} ${extIcon}`;
+                            const textSpan = document.createElement('span');
+                            textSpan.textContent = link.text;
+                            a.appendChild(textSpan);
+                            const iconSvg = document.createElement('span');
+                            iconSvg.innerHTML = extIcon;
+                            a.appendChild(iconSvg);
                         } else {
-                            a.textContent = link.text;
+                            const textNode = document.createTextNode(link.text);
+                            a.appendChild(textNode);
                         }
                         communitiesItems.appendChild(a);
                     });
