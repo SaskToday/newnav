@@ -125,10 +125,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-newsletters a:hover { color: var(--primary); }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
-            .desktop-mega-menu-brand { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+            .desktop-mega-menu-brand { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; max-width: 200px; }
             .desktop-mega-menu-brand h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-brand-content { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-brand-content .brand-logo { max-width: 50px; height: auto; margin-bottom: 8px; }
+            .desktop-mega-menu-brand-content .brand-logo { width: 50px; height: auto; margin-bottom: 8px; }
             .desktop-mega-menu-brand-content p { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
             .desktop-mega-menu-brand-content p a { color: var(--primary); text-decoration: none; font-weight: 500; }
             .desktop-mega-menu-brand-content p a:hover { text-decoration: underline; }
