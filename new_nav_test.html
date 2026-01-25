@@ -121,18 +121,12 @@
                     .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; position: relative; cursor: default; }
                     .category-pill span, #comm-container span { cursor: pointer; }
                     .top-row::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
-                    .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 0; transform-origin: bottom; z-index: 2; transition: height 0.3s ease; }
-                    .category-pill[data-category="sports"]::after, #comm-container[data-category="communities"]::after { background-color: rgba(34, 197, 94, 0.5); }
-                    .category-pill[data-category="agriculture"]::after { background-color: rgba(234, 179, 8, 0.5); }
-                    .category-pill[data-category="obituaries"]::after { background-color: rgba(239, 68, 68, 0.5); }
-                    .category-pill[data-category="politics"]::after { background-color: rgba(139, 92, 246, 0.5); }
-                    .category-pill[data-category="weather"]::after { background-color: rgba(59, 130, 246, 0.5); }
-                    .category-pill[data-category="crime"]::after { background-color: rgba(107, 114, 128, 0.5); }
-                    .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 3px; }
-                    .category-pill.active::after, #comm-container.active::after { height: 3px; background-color: var(--primary); z-index: 3; }
+                    .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 0; background-color: var(--primary); transform-origin: bottom; z-index: 2; transition: height 0.3s ease; }
+                    .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 2px; }
+                    .category-pill.active::after, #comm-container.active::after { height: 2px; background-color: var(--primary); z-index: 3; }
                     .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { height: 0; }
                     #village-nav-container.suppress-active-underline .category-pill.active::after, #village-nav-container.suppress-active-underline #comm-container.active::after { height: 0; }
-                    .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { height: 3px; background-color: var(--primary); z-index: 3; }
+                    .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { height: 2px; background-color: var(--primary); z-index: 3; }
                 }
 
                 @media (max-width: 990px) {
@@ -409,7 +403,7 @@
                     const containerRect = container.getBoundingClientRect();
                     const topRow = wrapper.querySelector('.top-row');
                     const topRowRect = topRow ? topRow.getBoundingClientRect() : wrapperRect;
-                    megaMenu.style.top = (topRowRect.bottom - containerRect.top) + 'px';
+                    megaMenu.style.top = (topRowRect.bottom - containerRect.top + 2) + 'px';
                     
                     // Build the mega menu content
                     const inner = document.createElement('div');
