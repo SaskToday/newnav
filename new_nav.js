@@ -86,6 +86,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 0; background-color: var(--primary); transform-origin: bottom; z-index: 2; transition: height 0.3s ease; }
                 .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 2px; }
                 .category-pill.active::after, #comm-container.active::after { height: 2px; background-color: var(--primary); z-index: 3; }
+                #village-nav-container:not(:has(.bottom-row.active)) .category-pill.active, #village-nav-container:not(:has(.bottom-row.active)) #comm-container.active,
+                #village-nav-container.no-bottom-row-active .category-pill.active, #village-nav-container.no-bottom-row-active #comm-container.active { padding-bottom: 5px; }
                 .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { height: 0; }
                 #village-nav-container.suppress-active-underline .category-pill.active::after, #village-nav-container.suppress-active-underline #comm-container.active::after { height: 0; }
                 .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { height: 2px; background-color: var(--primary); z-index: 3; }
@@ -127,11 +129,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
             .desktop-mega-menu-brand { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; max-width: 200px; }
             .desktop-mega-menu-brand h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
+            .desktop-mega-menu-brand a { text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 12px; width: 100%; cursor: pointer; }
+            .desktop-mega-menu-brand a:hover { opacity: 0.8; }
             .desktop-mega-menu-brand-content { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-brand-content .brand-logo { width: 50px; height: auto; margin-bottom: 8px; }
+            .desktop-mega-menu-brand-content .brand-logo { width: 100px; height: auto; margin-bottom: 8px; }
             .desktop-mega-menu-brand-content p { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
-            .desktop-mega-menu-brand-content p a { color: var(--primary); text-decoration: none; font-weight: 500; }
-            .desktop-mega-menu-brand-content p a:hover { text-decoration: underline; }
             @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
             
             .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; margin-top: 10px; }
@@ -240,7 +242,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (window.innerWidth <= 990 && pill) topRow.prepend(pill);
                 const bottomRow = document.getElementById(`category-${cat}`);
                 bottomRow?.classList.add('active');
-                if (bottomRow) container.classList.add('mega-menu-open');
+                if (bottomRow) {
+                    container.classList.add('mega-menu-open');
+                } else {
+                    // Add padding when active but no bottom-row
+                    container.classList.add('no-bottom-row-active');
+                }
                 matched = true; break;
             }
         }
@@ -252,7 +259,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('community-label').textContent = commKey.charAt(0).toUpperCase() + commKey.slice(1);
                     const bottomRow = document.getElementById(`community-${commKey}`);
                     bottomRow?.classList.add('active');
-                    if (bottomRow) container.classList.add('mega-menu-open');
+                    if (bottomRow) {
+                        container.classList.add('mega-menu-open');
+                    } else {
+                        // Add padding when active but no bottom-row
+                        container.classList.add('no-bottom-row-active');
+                    }
                     break;
                 }
             }
@@ -530,24 +542,35 @@ document.addEventListener('DOMContentLoaded', function() {
                         const brandSection = document.createElement('div');
                         brandSection.className = 'desktop-mega-menu-brand';
                         
-                        if (cat === 'sports') {
-                            brandSection.innerHTML = `
-                                <h3>SportsCage</h3>
-                                <div class="desktop-mega-menu-brand-content">
-                                    <img src="https://www.vmcdn.ca/files/sportscage/images/logos/HMI-SPORTS-CAGE-RIDERS-green.svg" alt="SportsCage" class="brand-logo">
-                                    <p>Our most comprehensive Sask sports coverage is available on <a href="https://sportscage.com" target="_blank">SportsCage</a>. <a href="https://sportscage.com" target="_blank">Visit SportsCage</a></p>
-                                </div>
-                            `;
-                        } else if (cat === 'agriculture') {
-                            brandSection.innerHTML = `
-                                <h3>SaskAgToday</h3>
-                                <div class="desktop-mega-menu-brand-content">
-                                    <img src="https://www.vmcdn.ca/files/ui/harvard/saskagtoday.svg" alt="SaskAgToday" class="brand-logo">
-                                    <p>Our most comprehensive ag news, crop pricing, weather forecasts and more are available on <a href="https://saskagtoday.com" target="_blank">SaskAgToday</a>. <a href="https://saskagtoday.com" target="_blank">Visit SaskAgToday</a></p>
-                                </div>
-                            `;
-                        }
+                        const brandLink = document.createElement('a');
+                        brandLink.href = cat === 'sports' ? 'https://sportscage.com' : 'https://saskagtoday.com';
+                        brandLink.target = '_blank';
                         
+                        const brandHeading = document.createElement('h3');
+                        brandHeading.textContent = cat === 'sports' ? 'SportsCage' : 'SaskAgToday';
+                        brandLink.appendChild(brandHeading);
+                        
+                        const brandContent = document.createElement('div');
+                        brandContent.className = 'desktop-mega-menu-brand-content';
+                        
+                        const brandImg = document.createElement('img');
+                        brandImg.className = 'brand-logo';
+                        brandImg.alt = cat === 'sports' ? 'SportsCage' : 'SaskAgToday';
+                        brandImg.src = cat === 'sports' 
+                            ? 'https://www.vmcdn.ca/files/sportscage/images/logos/HMI-SPORTS-CAGE-RIDERS-green.svg'
+                            : 'https://www.vmcdn.ca/files/ui/harvard/saskagtoday.svg';
+                        brandContent.appendChild(brandImg);
+                        
+                        const brandText = document.createElement('p');
+                        if (cat === 'sports') {
+                            brandText.textContent = 'Our most comprehensive Sask sports coverage is available on SportsCage. Visit SportsCage';
+                        } else {
+                            brandText.textContent = 'Our most comprehensive ag news, crop pricing, weather forecasts and more are available on SaskAgToday. Visit SaskAgToday';
+                        }
+                        brandContent.appendChild(brandText);
+                        
+                        brandLink.appendChild(brandContent);
+                        brandSection.appendChild(brandLink);
                         inner.appendChild(brandSection);
                     }
                     
