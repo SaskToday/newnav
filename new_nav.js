@@ -367,14 +367,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     row.style.display = 'none';
                 });
                 
-                // Calculate position based on top-row bottom to account for separator and underline
+                // Calculate position using top-row's offset to match natural flow position
                 const wrapper = document.querySelector('.nav-content-wrapper');
                 const topRow = wrapper.querySelector('.top-row');
-                const topRowRect = topRow.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-                // Position mega menu right at the bottom of the underline
-                // Underline extends 3px below top-row bottom (-1px to -3px)
-                megaMenu.style.top = (topRowRect.bottom - containerRect.top + 3) + 'px';
+                // Get top-row position relative to container
+                const topRowOffsetTop = topRow.offsetTop + wrapper.offsetTop;
+                const topRowHeight = topRow.offsetHeight;
+                // Position mega menu at top-row bottom + 3px (for underline extension)
+                megaMenu.style.top = (topRowOffsetTop + topRowHeight + 3) + 'px';
                 
                     // Build the mega menu content
                     const inner = document.createElement('div');
