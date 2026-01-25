@@ -560,12 +560,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (activeBottomRow) {
                         activeBottomRow.style.display = 'flex';
                     }
-                }, 150); 
+                }, 300); // 300ms delay - longer than show delay to prevent flicker when moving between parents
+            }; 
             };
 
             pill.addEventListener('mouseenter', () => {
-                // Clear any existing show timeout
+                // Clear any existing show timeout and hide timeout
                 clearTimeout(showTimeout);
+                clearTimeout(hoverTimeout); // Clear hide timeout from previous parent
                 // Add a delay before showing to prevent accidental activation
                 showTimeout = setTimeout(() => {
                     show();
