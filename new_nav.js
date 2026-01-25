@@ -81,7 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .top-row { gap: 0px; padding-left: 0; overflow: visible; margin-bottom: 0; }
                 .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; gap: 6px; transition: all 0.3s ease; cursor: default; }
                 .category-pill span, #comm-container span { cursor: pointer; }
-                .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
+                .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0; }
+                #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after { opacity: 1; }
                 .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 0; background-color: var(--primary); transform-origin: bottom; z-index: 2; transition: height 0.3s ease; }
                 .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 2px; }
                 .category-pill.active::after, #comm-container.active::after { height: 2px; background-color: var(--primary); z-index: 3; }
@@ -101,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bottom-row { margin-top: 0 !important; }
             }
 
-            .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
             .desktop-mega-menu.visible { max-height: 400px; }
             .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px 30px 30px; gap: 80px; }
             .desktop-mega-menu-inner.communities-menu { gap: 80px; }
@@ -221,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function initNavLogic() {
         const url = window.location.href.split('?')[0].replace(/\/$/, "");
         const topRow = document.getElementById('main-top-row'), commContainer = document.getElementById('comm-container');
+        const container = document.getElementById('village-nav-container');
         let matched = false;
 
         // Parent Selection and Prepend for Mobile
@@ -229,7 +231,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const pill = document.querySelector(`[data-category="${cat}"]`);
                 pill?.classList.add('active');
                 if (window.innerWidth <= 990 && pill) topRow.prepend(pill);
-                document.getElementById(`category-${cat}`)?.classList.add('active');
+                const bottomRow = document.getElementById(`category-${cat}`);
+                bottomRow?.classList.add('active');
+                if (bottomRow) container.classList.add('mega-menu-open');
                 matched = true; break;
             }
         }
@@ -239,7 +243,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     commContainer.classList.add('active');
                     if (window.innerWidth <= 990) topRow.prepend(commContainer);
                     document.getElementById('community-label').textContent = commKey.charAt(0).toUpperCase() + commKey.slice(1);
-                    document.getElementById(`community-${commKey}`)?.classList.add('active');
+                    const bottomRow = document.getElementById(`community-${commKey}`);
+                    bottomRow?.classList.add('active');
+                    if (bottomRow) container.classList.add('mega-menu-open');
                     break;
                 }
             }
@@ -315,6 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
         megaMenu.addEventListener('mouseleave', () => {
             hoverTimeout = setTimeout(() => { 
                 megaMenu.classList.remove('visible');
+                container.classList.remove('mega-menu-open');
                 if (currentPill) {
                     // Only remove hover-active if the pill is not active
                     if (!currentPill.classList.contains('active')) {
@@ -523,12 +530,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 megaMenu.innerHTML = '';
                 megaMenu.appendChild(inner);
                 megaMenu.classList.add('visible');
+                container.classList.add('mega-menu-open');
             };
             
             const hide = () => { 
                 clearTimeout(showTimeout); // Clear any pending show timeout
                 hoverTimeout = setTimeout(() => { 
                     megaMenu.classList.remove('visible');
+                    container.classList.remove('mega-menu-open');
                     // Only remove hover-active if the pill is not active
                     if (!pill.classList.contains('active')) {
                         pill.classList.remove('hover-active');
