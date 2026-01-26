@@ -595,10 +595,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Clear any existing show timeout and hide timeout
                 clearTimeout(showTimeout);
                 clearTimeout(hoverTimeout); // Clear hide timeout from previous parent
-                // Add a delay before showing to prevent accidental activation
+                
+                // If we're moving between parent items (mega menu already visible), use short delay
+                // Otherwise, use longer delay to prevent accidental activation
+                const isMovingBetweenItems = currentPill !== null && megaMenu.classList.contains('visible');
+                const delay = isMovingBetweenItems ? 50 : 250;
+                
                 showTimeout = setTimeout(() => {
                     show();
-                }, 250); // 250ms delay - prevents accidental activation when moving past items
+                }, delay);
             });
             pill.addEventListener('mouseleave', () => {
                 // Clear the show timeout if user moves away before delay completes
