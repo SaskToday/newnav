@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             @media (min-width: 991px) {
                 .top-row { gap: 0px; padding-left: 0; overflow: visible; margin-bottom: 0; }
-                .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; font-weight: 450; gap: 6px; transition: all 0.3s ease; cursor: default; }
+                .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; font-weight: 550; gap: 6px; transition: all 0.3s ease; cursor: default; }
                 .category-pill span, #comm-container span { cursor: pointer; }
                 #village-nav-container:not(:has(.bottom-row.active)) .category-pill.active, 
                 #village-nav-container:not(:has(.bottom-row.active)) #comm-container.active { padding-bottom: 10px; }
