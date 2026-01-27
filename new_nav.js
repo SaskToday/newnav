@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { transform: scaleX(0); }
                 #village-nav-container.suppress-active-underline .category-pill.active::after, #village-nav-container.suppress-active-underline #comm-container.active::after { transform: scaleX(0); }
                 .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { transform: scaleX(1); background-color: var(--primary); z-index: 3; }
-                .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
+                .bottom-row-inner { padding-top: 10px; padding-bottom: 10px; padding-left: 12px; }
                 .text-link { font-size: 12px; }
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
             }
