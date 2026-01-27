@@ -83,12 +83,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 .category-pill span, #comm-container span { cursor: pointer; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0; }
                 #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after { opacity: 1; }
-                .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 0; background-color: var(--primary); transform-origin: bottom; z-index: 2; }
-                .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 2px; }
-                .category-pill.active::after, #comm-container.active::after { height: 2px; background-color: var(--primary); z-index: 3; }
-                .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { height: 0; }
-                #village-nav-container.suppress-active-underline .category-pill.active::after, #village-nav-container.suppress-active-underline #comm-container.active::after { height: 0; }
-                .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { height: 2px; background-color: var(--primary); z-index: 3; }
+                .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: center; z-index: 2; transition: transform 0.3s ease; }
+                .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { transform: scaleX(1); }
+                .category-pill.active::after, #comm-container.active::after { transform: scaleX(1); background-color: var(--primary); z-index: 3; }
+                .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { transform: scaleX(0); }
+                #village-nav-container.suppress-active-underline .category-pill.active::after, #village-nav-container.suppress-active-underline #comm-container.active::after { transform: scaleX(0); }
+                .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { transform: scaleX(1); background-color: var(--primary); z-index: 3; }
                 .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
                 .text-link { font-size: 12px; }
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
