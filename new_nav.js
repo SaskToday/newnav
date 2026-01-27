@@ -81,6 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .top-row { gap: 0px; padding-left: 0; overflow: visible; margin-bottom: 0; }
                 .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; font-weight: 450; gap: 6px; transition: all 0.3s ease; cursor: default; }
                 .category-pill span, #comm-container span { cursor: pointer; }
+                #village-nav-container:not(:has(.bottom-row.active)) .category-pill.active, 
+                #village-nav-container:not(:has(.bottom-row.active)) #comm-container.active { padding-bottom: 10px; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0; }
                 #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after { opacity: 1; }
                 .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: center; z-index: 2; transition: transform 0.3s ease; }
