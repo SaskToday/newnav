@@ -834,6 +834,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </div>
                                 </a>
                             `;
+                            // Fade in logo when loaded
+                            const sportsLogo = brandSection.querySelector('.brand-logo');
+                            if (sportsLogo) {
+                                sportsLogo.addEventListener('load', () => {
+                                    sportsLogo.classList.add('loaded');
+                                });
+                                // Handle case where image is already cached
+                                if (sportsLogo.complete) {
+                                    sportsLogo.classList.add('loaded');
+                                }
+                            }
                         } else if (cat === 'agriculture') {
                             brandSection.innerHTML = `
                                 <h3>SaskAgToday</h3>
