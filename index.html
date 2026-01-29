@@ -350,11 +350,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Search functionality
-        const searchTrigger = document.getElementById('search-trigger');
-        const container = document.getElementById('village-nav-container');
-        let megaMenu = container ? container.querySelector('.desktop-mega-menu') : null;
-        
-        if (searchTrigger && window.innerWidth > 990) {
+        try {
+            const searchTrigger = document.getElementById('search-trigger');
+            const container = document.getElementById('village-nav-container');
+            let megaMenu = container ? container.querySelector('.desktop-mega-menu') : null;
+            
+            if (searchTrigger && window.innerWidth > 990) {
             searchTrigger.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -461,6 +462,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.addEventListener('click', closeHandler);
                 }, 100);
             });
+        }
+        } catch (error) {
+            console.error('Error initializing search:', error);
         }
         
         document.addEventListener('click', () => { document.getElementById('village-nav-dropdown-mobile').style.display = 'none'; });

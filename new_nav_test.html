@@ -362,11 +362,12 @@
             }
             
             // Search functionality
-            const searchTrigger = document.getElementById('search-trigger');
-            const container = document.getElementById('village-nav-container');
-            let megaMenu = container ? container.querySelector('.desktop-mega-menu') : null;
-            
-            if (searchTrigger && window.innerWidth > 990) {
+            try {
+                const searchTrigger = document.getElementById('search-trigger');
+                const container = document.getElementById('village-nav-container');
+                let megaMenu = container ? container.querySelector('.desktop-mega-menu') : null;
+                
+                if (searchTrigger && window.innerWidth > 990) {
                 searchTrigger.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
