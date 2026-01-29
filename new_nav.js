@@ -137,6 +137,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
             .desktop-mega-menu.visible { max-height: 400px; }
+            .desktop-mega-menu.search-menu { z-index: 1001; }
+            #village-nav-container:has(.desktop-mega-menu.search-menu.visible) .bottom-row.active { display: none !important; }
+            .desktop-mega-menu.search-menu { z-index: 1001; }
+            #village-nav-container:has(.desktop-mega-menu.search-menu.visible) .bottom-row.active { display: none !important; }
             .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px 30px 30px; gap: 80px; }
             .desktop-mega-menu-inner.communities-menu { gap: 80px; }
             .desktop-mega-menu-links { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
@@ -397,6 +401,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 searchMegaMenu.classList.add('visible');
                 if (container) container.classList.add('mega-menu-open');
                 
+                // Hide any active bottom-row when search menu is open
+                const activeBottomRow = document.querySelector('.bottom-row.active');
+                if (activeBottomRow) {
+                    activeBottomRow.style.display = 'none';
+                }
+                
                 // Fetch trending stories
                 fetch('https://staging-www2.villagemedia.ca/rss/agriculture', { mode: 'cors' })
                     .then(response => {
@@ -475,6 +485,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (searchMegaMenu) {
                     searchMegaMenu.classList.remove('visible');
                     if (container) container.classList.remove('mega-menu-open');
+                    
+                    // Restore bottom-row visibility when search menu is closed
+                    const activeBottomRow = document.querySelector('.bottom-row.active');
+                    if (activeBottomRow) {
+                        activeBottomRow.style.display = 'flex';
+                    }
                 }
             };
             
