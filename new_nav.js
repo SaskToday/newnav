@@ -368,6 +368,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Attach event listeners to keep menu open on hover
                     searchMegaMenu.addEventListener('mouseenter', () => {
                         clearTimeout(searchHoverTimeout);
+                        // Keep hover-active class when entering search menu
+                        searchTrigger.classList.add('hover-active');
                     });
                     
                     searchMegaMenu.addEventListener('mouseleave', () => {
@@ -381,6 +383,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
                     p.classList.remove('hover-active');
                 });
+                
+                // Add hover-active class to search trigger to show underline
+                searchTrigger.classList.add('hover-active');
                 
                 // Build search menu
                 const inner = document.createElement('div');
@@ -498,6 +503,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (searchMegaMenu) {
                     searchMegaMenu.classList.remove('visible');
                     if (container) container.classList.remove('mega-menu-open');
+                    
+                    // Remove hover-active class from search trigger
+                    searchTrigger.classList.remove('hover-active');
                     
                     // Restore bottom-row visibility when search menu is closed
                     const activeBottomRow = document.querySelector('.bottom-row.active');
