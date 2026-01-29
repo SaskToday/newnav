@@ -184,7 +184,8 @@
                 .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
                 .desktop-mega-menu-links a:hover { color: var(--primary); }
                 .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
-                .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; }
+                .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; background-color: #f1f3f5; }
+                .desktop-mega-menu-links a .community-icon.loaded { opacity: 1; }
                 .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
                 .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
                 .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
