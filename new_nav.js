@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (container) container.classList.add('mega-menu-open');
                 
                 // Fetch trending stories
-                fetch('https://www.sasktoday.ca/rss/trending', { mode: 'cors' })
+                fetch('https://staging-www2.villagemedia.ca/rss/agriculture', { mode: 'cors' })
                     .then(response => {
                         if (!response.ok) throw new Error('Network response was not ok');
                         return response.text();
