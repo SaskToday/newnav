@@ -142,8 +142,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 .desktop-mega-menu-trending { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; min-width: 300px; }
                 .desktop-mega-menu-trending h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
                 .desktop-mega-menu-trending-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-                .desktop-mega-menu-trending-items a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; line-height: 1.4; padding: 4px 0; transition: color 0.2s; }
+                .desktop-mega-menu-trending-items a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; line-height: 1.4; padding: 4px 0; transition: color 0.2s; display: flex; align-items: center; gap: 10px; }
                 .desktop-mega-menu-trending-items a:hover { color: var(--primary); }
+                .trending-story-image { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+                .trending-story-title { flex: 1; }
             }
 
             @media (max-width: 990px) {
@@ -431,10 +433,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                 const item = items[i];
                                 const titleEl = item.querySelector('title');
                                 const linkEl = item.querySelector('link');
+                                const enclosureEl = item.querySelector('enclosure');
+                                const mediaContentEl = item.querySelector('media\\:content, content');
                                 const title = titleEl ? titleEl.textContent.trim() : '';
                                 const link = linkEl ? linkEl.textContent.trim() : '';
+                                let imageUrl = '';
+                                
+                                // Try to get image from enclosure or media:content
+                                if (enclosureEl && enclosureEl.getAttribute('url')) {
+                                    imageUrl = enclosureEl.getAttribute('url');
+                                } else if (mediaContentEl && mediaContentEl.getAttribute('url')) {
+                                    imageUrl = mediaContentEl.getAttribute('url');
+                                }
+                                
                                 if (title && link) {
-                                    trendingStories.push({ title, link });
+                                    trendingStories.push({ title, link, imageUrl });
                                 }
                             }
                             
@@ -443,7 +456,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                 trendingStories.forEach(story => {
                                     const a = document.createElement('a');
                                     a.href = story.link;
-                                    a.textContent = story.title;
+                                    a.className = 'trending-story-item';
+                                    
+                                    if (story.imageUrl) {
+                                        const img = document.createElement('img');
+                                        img.src = story.imageUrl;
+                                        img.className = 'trending-story-image';
+                                        img.alt = story.title;
+                                        a.appendChild(img);
+                                    }
+                                    
+                                    const titleSpan = document.createElement('span');
+                                    titleSpan.textContent = story.title;
+                                    titleSpan.className = 'trending-story-title';
+                                    a.appendChild(titleSpan);
+                                    
                                     trendingItems.appendChild(a);
                                 });
                             } else {
