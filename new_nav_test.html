@@ -386,6 +386,14 @@
                         regularMegaMenu.classList.remove('visible');
                     }
                     
+                    // Check if megaMenu exists in the DOM, if not, reset the variable
+                    if (megaMenu && container && !container.contains(megaMenu)) {
+                        megaMenu = null;
+                    }
+                    
+                    // Query for existing search menu in DOM, or create new one
+                    megaMenu = container.querySelector('.desktop-mega-menu.search-menu');
+                    
                     if (!megaMenu) {
                         megaMenu = document.createElement('div');
                         megaMenu.className = 'desktop-mega-menu search-menu';

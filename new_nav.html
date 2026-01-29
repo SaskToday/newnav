@@ -345,6 +345,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Function to show search menu
             const showSearchMenu = () => {
+                // Remove any existing regular mega menu first
+                const regularMegaMenu = container.querySelector('.desktop-mega-menu:not(.search-menu)');
+                if (regularMegaMenu) {
+                    regularMegaMenu.classList.remove('visible');
+                }
+                
+                // Check if searchMegaMenu exists in the DOM, if not, reset the variable
+                if (searchMegaMenu && !container.contains(searchMegaMenu)) {
+                    searchMegaMenu = null;
+                }
+                
+                // Query for existing search menu in DOM, or create new one
+                searchMegaMenu = container.querySelector('.desktop-mega-menu.search-menu');
+                
                 if (!searchMegaMenu) {
                     searchMegaMenu = document.createElement('div');
                     searchMegaMenu.className = 'desktop-mega-menu search-menu';
