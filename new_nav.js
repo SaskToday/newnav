@@ -62,6 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <style>
             :root { --primary: #007bff; --nav-bg: #ffffff; --pill-bg: #f1f3f5; --text-inactive: #000000; --dropdown-glass: rgba(255, 255, 255, 0.95); --separator-color: #e9ecef; }
             #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; overflow: visible; }
+            @media (min-width: 991px) {
+                #nav.mainnav.show-below-new-nav { display: block !important; position: relative; top: 0; margin-top: 0; z-index: 999; width: 100%; }
+                header:has(#village-nav-container) #nav.mainnav.show-below-new-nav { margin-top: 0; }
+            }
             .nav-content-wrapper { width: 990px; margin: 0 auto; position: relative; padding: 0 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
             @media (max-width: 990px) { .nav-content-wrapper { width: 100%; } }
 
@@ -287,8 +291,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         const megaMenuTrigger = document.getElementById('mega-menu-trigger'), siteBurgButton = document.querySelector('.navbt-burg');
-        if (megaMenuTrigger && siteBurgButton) {
-            megaMenuTrigger.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); siteBurgButton.click(); });
+        const siteNav = document.getElementById('nav');
+        const container = document.getElementById('village-nav-container');
+        if (megaMenuTrigger) {
+            megaMenuTrigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.innerWidth > 990) {
+                    // Desktop: show site nav below new nav
+                    if (siteNav && container) {
+                        // Move nav to appear right after the new nav container if not already there
+                        if (siteNav.parentNode !== container.parentNode || siteNav.previousElementSibling !== container) {
+                            container.parentNode.insertBefore(siteNav, container.nextSibling);
+                        }
+                        siteNav.classList.toggle('show-below-new-nav');
+                    } else if (siteBurgButton) {
+                        siteBurgButton.click();
+                    }
+                } else {
+                    // Mobile: use existing burger button behavior
+                    if (siteBurgButton) {
+                        siteBurgButton.click();
+                    }
+                }
+            });
         }
         document.addEventListener('click', () => { document.getElementById('village-nav-dropdown-mobile').style.display = 'none'; });
     }
