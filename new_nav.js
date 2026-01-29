@@ -109,6 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 #category-sports .bottom-row-inner a[href*="sportscage.com"], #category-agriculture .bottom-row-inner a[href*="saskagtoday.com"] { display: none; }
                 #mega-menu-trigger .more-icon { display: none; }
                 #search-trigger { display: inline-flex !important; }
+                #search-trigger .search-icon { display: inline-flex; align-items: center; width: 24px; height: 24px; }
+                #search-trigger .search-icon svg { width: 100%; height: 100%; }
+                #search-trigger::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: center; z-index: 2; transition: transform 0.3s ease; border-radius: 2px 2px 0 0; }
+                #search-trigger:hover::after { transform: scaleX(1); }
                 .desktop-mega-menu.search-menu .desktop-mega-menu-inner { gap: 40px; }
                 .desktop-mega-menu-search { flex: 0 0 auto; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; min-width: 300px; }
                 .desktop-mega-menu-search h3 { font-size: 14px; font-weight: 500; margin: 0 0 8px 0; color: var(--text-inactive); }
@@ -194,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button class="category-pill" data-category="weather"><span>☀️</span><span>Weather</span></button>
                 <button class="category-pill" data-category="crime"><span>🔎</span><span>Crime & Safety</span></button>
                 <button class="category-pill" id="mega-menu-trigger" data-category="more"><span class="more-icon">☰</span><span>More</span></button>
-                <button class="category-pill search-trigger" id="search-trigger" style="display: none;"><span>🔍</span><span>Search</span></button>
+                <button class="category-pill search-trigger" id="search-trigger" style="display: none;"><span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span><span>Search</span></button>
             </div>
             
             <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/regina-today" class="text-link">All Regina</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-news" class="text-link">Regina News</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="https://staging-www2.villagemedia.ca/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
@@ -334,11 +338,12 @@ document.addEventListener('DOMContentLoaded', function() {
             let megaMenu = container ? container.querySelector('.desktop-mega-menu') : null;
             
             if (searchTrigger && window.innerWidth > 990) {
-            searchTrigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                if (!megaMenu) {
+                searchTrigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    
+                    if (!megaMenu) {
                     megaMenu = document.createElement('div');
                     megaMenu.className = 'desktop-mega-menu search-menu';
                     if (container) container.appendChild(megaMenu);
@@ -382,64 +387,79 @@ document.addEventListener('DOMContentLoaded', function() {
                 megaMenu.classList.add('visible');
                 if (container) container.classList.add('mega-menu-open');
                 
-                // Fetch trending stories
-                fetch('https://www.sasktoday.ca/rss/trending')
-                    .then(response => response.text())
-                    .then(str => {
-                        const parser = new DOMParser();
-                        const xml = parser.parseFromString(str, 'text/xml');
-                        const items = xml.querySelectorAll('item');
-                        const trendingStories = [];
-                        
-                        for (let i = 0; i < Math.min(5, items.length); i++) {
-                            const item = items[i];
-                            const title = item.querySelector('title')?.textContent || '';
-                            const link = item.querySelector('link')?.textContent || '';
-                            trendingStories.push({ title, link });
-                        }
-                        
-                        trendingItems.innerHTML = '';
-                        if (trendingStories.length > 0) {
-                            trendingStories.forEach(story => {
-                                const a = document.createElement('a');
-                                a.href = story.link;
-                                a.textContent = story.title;
-                                trendingItems.appendChild(a);
-                            });
-                        } else {
-                            trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">No trending stories available</div>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching trending stories:', error);
-                        trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Unable to load trending stories</div>';
-                    });
-                
-                // Handle search input
-                const searchInput = document.getElementById('search-input');
-                if (searchInput) {
-                    searchInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            const query = searchInput.value.trim();
-                            if (query) {
-                                window.location.href = `https://www.sasktoday.ca/search?q=${encodeURIComponent(query)}`;
+                    // Fetch trending stories
+                    fetch('https://www.sasktoday.ca/rss/trending', { mode: 'cors' })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.text();
+                        })
+                        .then(str => {
+                            const parser = new DOMParser();
+                            const xml = parser.parseFromString(str, 'text/xml');
+                            
+                            // Check for parsing errors
+                            const parseError = xml.querySelector('parsererror');
+                            if (parseError) {
+                                throw new Error('XML parsing error');
                             }
-                        }
-                    });
-                }
-                
-                // Close on click outside
-                setTimeout(() => {
-                    const closeHandler = (e) => {
-                        if (!megaMenu.contains(e.target) && !searchTrigger.contains(e.target)) {
-                            megaMenu.classList.remove('visible');
-                            if (container) container.classList.remove('mega-menu-open');
-                            document.removeEventListener('click', closeHandler);
-                        }
-                    };
-                    document.addEventListener('click', closeHandler);
-                }, 100);
-            });
+                            
+                            const items = xml.querySelectorAll('item');
+                            const trendingStories = [];
+                            
+                            for (let i = 0; i < Math.min(5, items.length); i++) {
+                                const item = items[i];
+                                const titleEl = item.querySelector('title');
+                                const linkEl = item.querySelector('link');
+                                const title = titleEl ? titleEl.textContent.trim() : '';
+                                const link = linkEl ? linkEl.textContent.trim() : '';
+                                if (title && link) {
+                                    trendingStories.push({ title, link });
+                                }
+                            }
+                            
+                            trendingItems.innerHTML = '';
+                            if (trendingStories.length > 0) {
+                                trendingStories.forEach(story => {
+                                    const a = document.createElement('a');
+                                    a.href = story.link;
+                                    a.textContent = story.title;
+                                    trendingItems.appendChild(a);
+                                });
+                            } else {
+                                trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">No trending stories available</div>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching trending stories:', error);
+                            trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Unable to load trending stories</div>';
+                        });
+                    
+                    // Handle search input
+                    const searchInput = document.getElementById('search-input');
+                    if (searchInput) {
+                        searchInput.addEventListener('keypress', (e) => {
+                            if (e.key === 'Enter') {
+                                const query = searchInput.value.trim();
+                                if (query) {
+                                    window.location.href = `https://www.sasktoday.ca/search?q=${encodeURIComponent(query)}`;
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Close on click outside
+                    setTimeout(() => {
+                        const closeHandler = (e) => {
+                            if (!megaMenu.contains(e.target) && !searchTrigger.contains(e.target)) {
+                                megaMenu.classList.remove('visible');
+                                if (container) container.classList.remove('mega-menu-open');
+                                document.removeEventListener('click', closeHandler);
+                            }
+                        };
+                        document.addEventListener('click', closeHandler);
+                    }, 100);
+                });
+            }
         }
         } catch (error) {
             console.error('Error initializing search:', error);
