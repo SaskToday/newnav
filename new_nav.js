@@ -122,7 +122,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .desktop-mega-menu-trending-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
                 .desktop-mega-menu-trending-items a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; line-height: 1.4; padding: 4px 0; transition: color 0.2s; display: flex; align-items: center; gap: 10px; }
                 .desktop-mega-menu-trending-items a:hover { color: var(--primary); }
-                .trending-story-image { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+                .trending-story-icon { width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+                .trending-story-icon svg { width: 100%; height: 100%; }
                 .trending-story-title { flex: 1; }
             }
 
@@ -419,21 +420,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             const item = items[i];
                             const titleEl = item.querySelector('title');
                             const linkEl = item.querySelector('link');
-                            const enclosureEl = item.querySelector('enclosure');
-                            const mediaContentEl = item.querySelector('media\\:content, content');
                             const title = titleEl ? titleEl.textContent.trim() : '';
                             const link = linkEl ? linkEl.textContent.trim() : '';
-                            let imageUrl = '';
-                            
-                            // Try to get image from enclosure or media:content
-                            if (enclosureEl && enclosureEl.getAttribute('url')) {
-                                imageUrl = enclosureEl.getAttribute('url');
-                            } else if (mediaContentEl && mediaContentEl.getAttribute('url')) {
-                                imageUrl = mediaContentEl.getAttribute('url');
-                            }
-                            
                             if (title && link) {
-                                trendingStories.push({ title, link, imageUrl });
+                                trendingStories.push({ title, link });
                             }
                         }
                         
@@ -444,13 +434,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 a.href = story.link;
                                 a.className = 'trending-story-item';
                                 
-                                if (story.imageUrl) {
-                                    const img = document.createElement('img');
-                                    img.src = story.imageUrl;
-                                    img.className = 'trending-story-image';
-                                    img.alt = story.title;
-                                    a.appendChild(img);
-                                }
+                                // Add trending icon
+                                const iconDiv = document.createElement('div');
+                                iconDiv.className = 'trending-story-icon';
+                                iconDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#22c55e"><path d="m136-240-56-56 296-298 160 160 208-206H640v-80h240v240h-80v-104L536-320 376-480 136-240Z"/></svg>';
+                                a.appendChild(iconDiv);
                                 
                                 const titleSpan = document.createElement('span');
                                 titleSpan.textContent = story.title;
