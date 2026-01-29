@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Parent Click Handlers
-        document.querySelectorAll('.category-pill:not(#mega-menu-trigger)').forEach(pill => {
+        document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
             pill.addEventListener('click', () => { window.location.href = routes.categories[pill.dataset.category]; });
         });
 
@@ -335,129 +335,160 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const searchTrigger = document.getElementById('search-trigger');
             const container = document.getElementById('village-nav-container');
-            let megaMenu = container ? container.querySelector('.desktop-mega-menu') : null;
+            let searchMegaMenu = container ? container.querySelector('.desktop-mega-menu.search-menu') : null;
+            let searchHoverTimeout = null;
+            let searchShowTimeout = null;
+            
+            // Function to show search menu
+            const showSearchMenu = () => {
+                if (!searchMegaMenu) {
+                    searchMegaMenu = document.createElement('div');
+                    searchMegaMenu.className = 'desktop-mega-menu search-menu';
+                    if (container) container.appendChild(searchMegaMenu);
+                    
+                    // Attach event listeners to keep menu open on hover
+                    searchMegaMenu.addEventListener('mouseenter', () => {
+                        clearTimeout(searchHoverTimeout);
+                    });
+                    
+                    searchMegaMenu.addEventListener('mouseleave', () => {
+                        searchHoverTimeout = setTimeout(() => {
+                            hideSearchMenu();
+                        }, 300);
+                    });
+                }
+                
+                // Close any other active mega menus
+                document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
+                    p.classList.remove('hover-active');
+                });
+                
+                // Build search menu
+                const inner = document.createElement('div');
+                inner.className = 'desktop-mega-menu-inner';
+                
+                // Left section - Search
+                const searchSection = document.createElement('div');
+                searchSection.className = 'desktop-mega-menu-search';
+                searchSection.innerHTML = `
+                    <h3>What do you want to find?</h3>
+                    <input type="text" id="search-input" placeholder="Search..." autofocus>
+                `;
+                inner.appendChild(searchSection);
+                
+                // Right section - Trending Stories
+                const trendingSection = document.createElement('div');
+                trendingSection.className = 'desktop-mega-menu-trending';
+                const trendingHeading = document.createElement('h3');
+                trendingHeading.textContent = 'Trending Stories';
+                trendingSection.appendChild(trendingHeading);
+                
+                const trendingItems = document.createElement('div');
+                trendingItems.className = 'desktop-mega-menu-trending-items';
+                trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Loading...</div>';
+                trendingSection.appendChild(trendingItems);
+                inner.appendChild(trendingSection);
+                
+                searchMegaMenu.innerHTML = '';
+                searchMegaMenu.classList.add('search-menu');
+                searchMegaMenu.appendChild(inner);
+                searchMegaMenu.classList.add('visible');
+                if (container) container.classList.add('mega-menu-open');
+                
+                // Fetch trending stories
+                fetch('https://www.sasktoday.ca/rss/trending', { mode: 'cors' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.text();
+                    })
+                    .then(str => {
+                        const parser = new DOMParser();
+                        const xml = parser.parseFromString(str, 'text/xml');
+                        
+                        // Check for parsing errors
+                        const parseError = xml.querySelector('parsererror');
+                        if (parseError) {
+                            throw new Error('XML parsing error');
+                        }
+                        
+                        const items = xml.querySelectorAll('item');
+                        const trendingStories = [];
+                        
+                        for (let i = 0; i < Math.min(5, items.length); i++) {
+                            const item = items[i];
+                            const titleEl = item.querySelector('title');
+                            const linkEl = item.querySelector('link');
+                            const title = titleEl ? titleEl.textContent.trim() : '';
+                            const link = linkEl ? linkEl.textContent.trim() : '';
+                            if (title && link) {
+                                trendingStories.push({ title, link });
+                            }
+                        }
+                        
+                        trendingItems.innerHTML = '';
+                        if (trendingStories.length > 0) {
+                            trendingStories.forEach(story => {
+                                const a = document.createElement('a');
+                                a.href = story.link;
+                                a.textContent = story.title;
+                                trendingItems.appendChild(a);
+                            });
+                        } else {
+                            trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">No trending stories available</div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching trending stories:', error);
+                        trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Unable to load trending stories</div>';
+                    });
+                
+                // Handle search input
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) {
+                    searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            const query = searchInput.value.trim();
+                            if (query) {
+                                window.location.href = `https://www.sasktoday.ca/search?q=${encodeURIComponent(query)}`;
+                            }
+                        }
+                    });
+                }
+            };
+            
+            // Function to hide search menu
+            const hideSearchMenu = () => {
+                if (searchMegaMenu) {
+                    searchMegaMenu.classList.remove('visible');
+                    if (container) container.classList.remove('mega-menu-open');
+                }
+            };
             
             if (searchTrigger && window.innerWidth > 990) {
+                // Click handler
                 searchTrigger.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
-                    
-                    if (!megaMenu) {
-                        megaMenu = document.createElement('div');
-                        megaMenu.className = 'desktop-mega-menu search-menu';
-                        if (container) container.appendChild(megaMenu);
-                    }
-                    
-                    // Close any other active mega menus
-                    document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
-                        p.classList.remove('hover-active');
-                    });
-                    
-                    // Build search menu
-                    const inner = document.createElement('div');
-                    inner.className = 'desktop-mega-menu-inner';
-                    
-                    // Left section - Search
-                    const searchSection = document.createElement('div');
-                    searchSection.className = 'desktop-mega-menu-search';
-                    searchSection.innerHTML = `
-                        <h3>What do you want to find?</h3>
-                        <input type="text" id="search-input" placeholder="Search..." autofocus>
-                    `;
-                    inner.appendChild(searchSection);
-                    
-                    // Right section - Trending Stories
-                    const trendingSection = document.createElement('div');
-                    trendingSection.className = 'desktop-mega-menu-trending';
-                    const trendingHeading = document.createElement('h3');
-                    trendingHeading.textContent = 'Trending Stories';
-                    trendingSection.appendChild(trendingHeading);
-                    
-                    const trendingItems = document.createElement('div');
-                    trendingItems.className = 'desktop-mega-menu-trending-items';
-                    trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Loading...</div>';
-                    trendingSection.appendChild(trendingItems);
-                    inner.appendChild(trendingSection);
-                    
-                    megaMenu.innerHTML = '';
-                    megaMenu.classList.remove('search-menu');
-                    megaMenu.classList.add('search-menu');
-                    megaMenu.appendChild(inner);
-                    megaMenu.classList.add('visible');
-                    if (container) container.classList.add('mega-menu-open');
-                    
-                    // Fetch trending stories
-                    fetch('https://www.sasktoday.ca/rss/trending', { mode: 'cors' })
-                        .then(response => {
-                            if (!response.ok) throw new Error('Network response was not ok');
-                            return response.text();
-                        })
-                        .then(str => {
-                            const parser = new DOMParser();
-                            const xml = parser.parseFromString(str, 'text/xml');
-                            
-                            // Check for parsing errors
-                            const parseError = xml.querySelector('parsererror');
-                            if (parseError) {
-                                throw new Error('XML parsing error');
-                            }
-                            
-                            const items = xml.querySelectorAll('item');
-                            const trendingStories = [];
-                            
-                            for (let i = 0; i < Math.min(5, items.length); i++) {
-                                const item = items[i];
-                                const titleEl = item.querySelector('title');
-                                const linkEl = item.querySelector('link');
-                                const title = titleEl ? titleEl.textContent.trim() : '';
-                                const link = linkEl ? linkEl.textContent.trim() : '';
-                                if (title && link) {
-                                    trendingStories.push({ title, link });
-                                }
-                            }
-                            
-                            trendingItems.innerHTML = '';
-                            if (trendingStories.length > 0) {
-                                trendingStories.forEach(story => {
-                                    const a = document.createElement('a');
-                                    a.href = story.link;
-                                    a.textContent = story.title;
-                                    trendingItems.appendChild(a);
-                                });
-                            } else {
-                                trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">No trending stories available</div>';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching trending stories:', error);
-                            trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Unable to load trending stories</div>';
-                        });
-                    
-                    // Handle search input
-                    const searchInput = document.getElementById('search-input');
-                    if (searchInput) {
-                        searchInput.addEventListener('keypress', (e) => {
-                            if (e.key === 'Enter') {
-                                const query = searchInput.value.trim();
-                                if (query) {
-                                    window.location.href = `https://www.sasktoday.ca/search?q=${encodeURIComponent(query)}`;
-                                }
-                            }
-                        });
-                    }
-                    
-                    // Close on click outside
-                    setTimeout(() => {
-                        const closeHandler = (e) => {
-                            if (!megaMenu.contains(e.target) && !searchTrigger.contains(e.target)) {
-                                megaMenu.classList.remove('visible');
-                                if (container) container.classList.remove('mega-menu-open');
-                                document.removeEventListener('click', closeHandler);
-                            }
-                        };
-                        document.addEventListener('click', closeHandler);
-                    }, 100);
+                    clearTimeout(searchHoverTimeout);
+                    clearTimeout(searchShowTimeout);
+                    showSearchMenu();
+                });
+                
+                // Hover handlers
+                searchTrigger.addEventListener('mouseenter', () => {
+                    clearTimeout(searchHoverTimeout);
+                    clearTimeout(searchShowTimeout);
+                    searchShowTimeout = setTimeout(() => {
+                        showSearchMenu();
+                    }, 250);
+                });
+                
+                searchTrigger.addEventListener('mouseleave', () => {
+                    clearTimeout(searchShowTimeout);
+                    searchHoverTimeout = setTimeout(() => {
+                        hideSearchMenu();
+                    }, 300);
                 });
             }
         } catch (error) {

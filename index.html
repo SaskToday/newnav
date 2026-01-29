@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Parent Click Handlers
-        document.querySelectorAll('.category-pill:not(#mega-menu-trigger)').forEach(pill => {
+        document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
             pill.addEventListener('click', () => { window.location.href = routes.categories[pill.dataset.category]; });
         });
 
