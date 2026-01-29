@@ -40,7 +40,16 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
             politics: [{ text: "All Politics", url: "https://staging-www2.villagemedia.ca/politics" }],
             weather: [{ text: "All Weather", url: "https://staging-www2.villagemedia.ca/weather" }],
-            crime: [{ text: "All Crime & Safety", url: "https://staging-www2.villagemedia.ca/crime-cops-court" }]
+            crime: [{ text: "All Crime & Safety", url: "https://staging-www2.villagemedia.ca/crime-cops-court" }],
+            more: [
+                { text: "Business & Energy", url: "https://staging-www2.villagemedia.ca/business" },
+                { text: "Opinion", url: "https://staging-www2.villagemedia.ca/opinion" },
+                { text: "Gas Prices", url: "https://staging-www2.villagemedia.ca/gas-prices" },
+                { text: "Politics", url: "https://staging-www2.villagemedia.ca/politics" },
+                { text: "Local Arts", url: "https://staging-www2.villagemedia.ca/local-arts" },
+                { text: "Everybody Has a Story", url: "https://staging-www2.villagemedia.ca/everybody-has-a-story" },
+                { text: "Videos", url: "https://staging-www2.villagemedia.ca/video" }
+            ]
         },
         communityLinks: {
             communities: [
@@ -172,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button class="category-pill" data-category="politics"><span>🏛️</span><span>Politics</span></button>
                 <button class="category-pill" data-category="weather"><span>☀️</span><span>Weather</span></button>
                 <button class="category-pill" data-category="crime"><span>🔎</span><span>Crime & Safety</span></button>
-                <button class="category-pill" id="mega-menu-trigger"><span>☰</span><span>More</span></button>
+                <button class="category-pill" id="mega-menu-trigger" data-category="more"><span>☰</span><span>More</span></button>
             </div>
             
             <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/regina-today" class="text-link">All Regina</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-news" class="text-link">Regina News</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="https://staging-www2.villagemedia.ca/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
@@ -293,24 +302,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const megaMenuTrigger = document.getElementById('mega-menu-trigger'), siteBurgButton = document.querySelector('.navbt-burg');
         if (megaMenuTrigger) {
             megaMenuTrigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (window.innerWidth > 990) {
-                    // Desktop: show site nav below new nav
-                    const siteNav = document.getElementById('nav');
-                    const container = document.getElementById('village-nav-container');
-                    if (siteNav && container) {
-                        // Toggle the class to show/hide
-                        const isShowing = siteNav.classList.contains('show-below-new-nav');
-                        if (!isShowing) {
-                            // Moving nav to appear right after the new nav container
-                            container.parentNode.insertBefore(siteNav, container.nextSibling);
-                        }
-                        siteNav.classList.toggle('show-below-new-nav');
-                    } else if (siteBurgButton) {
-                        siteBurgButton.click();
-                    }
-                } else {
+                // Only handle click on mobile - desktop uses hover mega menu
+                if (window.innerWidth <= 990) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     // Mobile: use existing burger button behavior
                     if (siteBurgButton) {
                         siteBurgButton.click();
@@ -323,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function initHoverDropdowns() {
         if (window.innerWidth <= 990) return;
-        const pills = document.querySelectorAll('.category-pill:not(#mega-menu-trigger), #comm-container');
+        const pills = document.querySelectorAll('.category-pill, #comm-container');
         const wrapper = document.querySelector('.nav-content-wrapper');
         const container = document.getElementById('village-nav-container');
         let hoverTimeout = null;
