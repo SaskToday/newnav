@@ -42,14 +42,12 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         categoryLinks: {
             sports: [
-                { text: "Go to SportsCage", url: "https://www.sportscage.com", external: true },
                 { text: "All Sports", url: "https://staging-www2.villagemedia.ca/sports" },
                 { text: "North Sports", url: "https://staging-www2.villagemedia.ca/north/local-sports" },
                 { text: "Central Sports", url: "https://staging-www2.villagemedia.ca/central/local-sports" },
                 { text: "Southwest Sports", url: "https://staging-www2.villagemedia.ca/southwest/local-sports" }
             ],
             agriculture: [
-                { text: "Go to SaskAgToday", url: "https://www.saskagtoday.com", external: true },
                 { text: "All Agriculture", url: "https://staging-www2.villagemedia.ca/agriculture" },
                 { text: "North Agriculture", url: "https://staging-www2.villagemedia.ca/north/agriculture" },
                 { text: "Central Agriculture", url: "https://staging-www2.villagemedia.ca/central/agriculture" }
@@ -561,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <a href="https://sportscage.com" target="_blank" class="desktop-mega-menu-brand-link">
                                     <div class="desktop-mega-menu-brand-content">
                                         <img src="https://www.vmcdn.ca/files/sportscage/images/logos/HMI-SPORTS-CAGE-RIDERS-green.svg" alt="SportsCage" class="brand-logo">
-                                        <p>Our most comprehensive Sask sports coverage is available on SportsCage. Visit SportsCage</p>
+                                        <p>Our most comprehensive Sask sports coverage is available on SportsCage. Visit SportsCage ${extIcon}</p>
                                     </div>
                                 </a>
                             `;
@@ -571,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <a href="https://saskagtoday.com" target="_blank" class="desktop-mega-menu-brand-link">
                                     <div class="desktop-mega-menu-brand-content">
                                         <img src="https://www.vmcdn.ca/files/ui/harvard/saskagtoday.svg" alt="SaskAgToday" class="brand-logo">
-                                        <p>Our most comprehensive ag news, crop pricing, weather forecasts and more are available on SaskAgToday. Visit SaskAgToday</p>
+                                        <p>Our most comprehensive ag news, crop pricing, weather forecasts and more are available on SaskAgToday. Visit SaskAgToday ${extIcon}</p>
                                     </div>
                                 </a>
                             `;
