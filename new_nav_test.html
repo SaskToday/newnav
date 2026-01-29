@@ -233,7 +233,7 @@
                     <button class="category-pill" data-category="obituaries">❤️ Obituaries</button>
                     <button class="category-pill" data-category="politics">🏛️ Politics</button>
                     <button class="category-pill" data-category="weather">☀️ Weather</button>
-                    <button class="category-pill" data-category="crime">🔎 Crime & Safety</button>
+                    <button class="category-pill" data-category="crime">🚔 Crime & Safety</button>
                     <button class="category-pill" id="mega-menu-trigger" data-category="more"><span class="more-icon">☰</span><span>More</span></button>
                     <button class="category-pill search-trigger" id="search-trigger" type="button" style="display: none;"><span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span></button>
                 </div>
@@ -675,15 +675,15 @@
                             const icon = document.createElement('img');
                             icon.className = 'community-icon';
                             // Map community names to city image placeholders
-                            const cityMap = {
-                                'All Communities': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=80&h=80&fit=crop',
-                                'Regina': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=80&h=80&fit=crop',
-                                'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=80&h=80&fit=crop',
-                                'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=80&h=80&fit=crop',
-                                'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=80&h=80&fit=crop',
-                                'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=80&h=80&fit=crop'
-                            };
-                            icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=80&h=80&fit=crop';
+                                const cityMap = {
+                                    'All Communities': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                                    'Regina': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                                    'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                                    'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                                    'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                                    'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75'
+                                };
+                                icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75';
                             icon.alt = link.text;
                             a.appendChild(icon);
                             if (link.external) {
