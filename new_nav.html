@@ -87,8 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     #village-nav-container:not(:has(.bottom-row.active)) #comm-container.active { padding-bottom: 10px; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0; }
                 #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after { opacity: 1; }
-                #comm-container::before { content: ""; position: absolute; right: -1px; top: 0; bottom: -2px; width: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0.3; border-bottom-left-radius: 8px; }
-                #village-nav-container.mega-menu-open #comm-container::before, #village-nav-container:has(.bottom-row.active) #comm-container::before { opacity: 0.5; bottom: -3px; }
                     .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: center; z-index: 2; transition: transform 0.3s ease; border-radius: 2px 2px 0 0; }
                     .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { transform: scaleX(1); }
                     .category-pill.active::after, #comm-container.active::after { transform: scaleX(1); background-color: var(--primary); z-index: 3; }
