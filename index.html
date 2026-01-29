@@ -429,6 +429,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 megaMenu.classList.add('visible');
                 if (container) container.classList.add('mega-menu-open');
                 
+                // Ensure hover-active class is maintained on search trigger when menu is visible
+                searchTrigger.classList.add('hover-active');
+                
                 // Hide any active bottom-row when search menu is open
                 const activeBottomRow = document.querySelector('.bottom-row.active');
                 if (activeBottomRow) {
