@@ -411,7 +411,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const trendingItems = document.createElement('div');
                 trendingItems.className = 'desktop-mega-menu-trending-items';
-                trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Loading...</div>';
+                
+                // Create 5 placeholder items to pre-allocate space and prevent height jump
+                for (let i = 0; i < 5; i++) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'trending-story-item';
+                    placeholder.style.opacity = '0.3';
+                    placeholder.style.pointerEvents = 'none';
+                    
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'trending-story-icon';
+                    iconDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#22c55e"><path d="m136-240-56-56 296-298 160 160 208-206H640v-80h240v240h-80v-104L536-320 376-480 136-240Z"/></svg>';
+                    placeholder.appendChild(iconDiv);
+                    
+                    const titleSpan = document.createElement('span');
+                    titleSpan.className = 'trending-story-title';
+                    titleSpan.textContent = 'Loading...';
+                    placeholder.appendChild(titleSpan);
+                    
+                    trendingItems.appendChild(placeholder);
+                }
+                
                 trendingSection.appendChild(trendingItems);
                 inner.appendChild(trendingSection);
                 
@@ -460,9 +480,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }
                         
+                        // Replace placeholder items with actual stories
                         trendingItems.innerHTML = '';
                         if (trendingStories.length > 0) {
-                            trendingStories.forEach(story => {
+                            trendingStories.forEach((story, index) => {
                                 const a = document.createElement('a');
                                 a.href = story.link;
                                 a.className = 'trending-story-item';
@@ -479,6 +500,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 a.appendChild(titleSpan);
                                 
                                 trendingItems.appendChild(a);
+                                
+                                // Cascading fade-in effect - each item fades in with a delay
+                                setTimeout(() => {
+                                    a.classList.add('visible');
+                                }, index * 50); // 50ms delay between each item
                             });
                         } else {
                             trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">No trending stories available</div>';
