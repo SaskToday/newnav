@@ -463,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         trendingItems.innerHTML = '';
                         if (trendingStories.length > 0) {
-                            trendingStories.forEach(story => {
+                            trendingStories.forEach((story, index) => {
                                 const a = document.createElement('a');
                                 a.href = story.link;
                                 a.className = 'trending-story-item';
@@ -480,6 +480,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 a.appendChild(titleSpan);
                                 
                                 trendingItems.appendChild(a);
+                                
+                                // Cascading fade-in effect - each item fades in with a delay
+                                setTimeout(() => {
+                                    a.classList.add('visible');
+                                }, index * 50); // 50ms delay between each item
                             });
                         } else {
                             trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">No trending stories available</div>';
