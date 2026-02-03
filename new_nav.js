@@ -2,20 +2,15 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // PostHog session recording helper
+    // Note: Configure PostHog to start recording when 'nav_interaction' event is captured
     const triggerPostHogRecording = (eventType) => {
         try {
-            if (typeof posthog !== 'undefined' && posthog) {
-                // Start session recording if not already recording
-                if (posthog.startSessionRecording) {
-                    posthog.startSessionRecording();
-                }
-                // Also capture the event for analytics
-                if (posthog.capture) {
-                    posthog.capture('nav_interaction', {
-                        event_type: eventType,
-                        viewport: window.innerWidth > 990 ? 'desktop' : 'mobile'
-                    });
-                }
+            if (typeof posthog !== 'undefined' && posthog && posthog.capture) {
+                // Capture the event - PostHog will start recording based on your settings
+                posthog.capture('nav_interaction', {
+                    event_type: eventType,
+                    viewport: window.innerWidth > 990 ? 'desktop' : 'mobile'
+                });
             }
         } catch (error) {
             // Silently fail if PostHog is not available
