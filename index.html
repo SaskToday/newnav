@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     #village-nav-container:not(:has(.bottom-row.active)) #comm-container.active { padding-bottom: 10px; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0; }
                 #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after, #village-nav-container:has(.desktop-mega-menu.visible) .top-row::after { opacity: 1; }
-                    .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -2px; left: 12px; width: var(--underline-width, auto); height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: left; z-index: 2; transition: transform 0.3s ease; border-radius: 2px 2px 0 0; }
+                    .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -2px; left: 12px; width: var(--underline-width, auto); height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: left; z-index: 2; transition: transform 0.3s ease; border-radius: 2px 2px 0 0; will-change: transform; }
                     .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { transform: scaleX(1); }
                     .category-pill.active::after, #comm-container.active::after { transform: scaleX(1); background-color: var(--primary); z-index: 3; }
                     .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { transform: scaleX(0); }
@@ -277,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Set underline width to match content width on desktop
         if (window.innerWidth > 990) {
+            let resizeTimeout = null;
             const setUnderlineWidth = () => {
                 document.querySelectorAll('.category-pill, #comm-container').forEach(pill => {
                     // Get all child elements (spans, SVGs) that are the content
@@ -294,13 +295,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     tempContainer.style.fontSize = '14px';
                     tempContainer.style.fontWeight = '550';
                     
-                    // Clone all content elements
+                    // Clone all content elements, ensuring SVGs are properly cloned
                     contentElements.forEach(el => {
                         const clone = el.cloneNode(true);
+                        // Ensure SVG elements maintain their dimensions
+                        if (clone.querySelector && clone.querySelector('svg')) {
+                            const svg = clone.querySelector('svg');
+                            if (svg) {
+                                svg.style.width = '18px';
+                                svg.style.height = '18px';
+                            }
+                        }
                         tempContainer.appendChild(clone);
                     });
                     
                     document.body.appendChild(tempContainer);
+                    // Force layout calculation
+                    void tempContainer.offsetWidth;
                     const contentWidth = tempContainer.offsetWidth;
                     document.body.removeChild(tempContainer);
                     
@@ -309,11 +320,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             };
             
-            // Set on load and resize
-            setUnderlineWidth();
+            // Set on load with a small delay to ensure SVGs are rendered
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setUnderlineWidth();
+                });
+            });
+            
+            // Debounce resize events
             window.addEventListener('resize', () => {
                 if (window.innerWidth > 990) {
-                    setUnderlineWidth();
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        setUnderlineWidth();
+                    }, 100);
                 }
             });
         }
