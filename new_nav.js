@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-0763b8a';
+    window.navVersion = '2024-12-19-74d4270';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             @media (max-width: 990px) {
-                .top-row { padding-left: 10px; }
+                .top-row { padding-left: 10px; position: relative; }
                 .category-pill.active, #comm-container.active { background: var(--primary) !important; color: white !important; }
                 .category-pill.active .category-icon-wrapper .category-icon path,
                 .category-pill.active .category-icon-wrapper svg.category-icon path,
@@ -179,8 +179,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 .category-pill.active .category-icon-wrapper .category-icon defs,
                 #comm-container.active .category-icon-wrapper .category-icon defs { display: none !important; }
                 .desktop-down-arrow { display: none !important; }
-                .bottom-row-inner { padding-top: 0; }
+                .bottom-row-inner { padding-top: 0; position: relative; }
                 .bottom-row { margin-top: 0 !important; }
+                
+                /* Fade effects for scrollable containers */
+                .top-row::before, .top-row::after,
+                .bottom-row-inner::before, .bottom-row-inner::after {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    width: 20px;
+                    pointer-events: none;
+                    z-index: 10;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+                .top-row::before, .bottom-row-inner::before {
+                    left: 0;
+                    background: linear-gradient(to right, var(--nav-bg), transparent);
+                }
+                .top-row::after, .bottom-row-inner::after {
+                    right: 0;
+                    background: linear-gradient(to left, var(--nav-bg), transparent);
+                }
+                .top-row.fade-left::before, .bottom-row-inner.fade-left::before { opacity: 1; }
+                .top-row.fade-right::after, .bottom-row-inner.fade-right::after { opacity: 1; }
             }
 
             .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
@@ -275,22 +299,91 @@ document.addEventListener('DOMContentLoaded', function() {
         initHoverDropdowns();
         handleScrollLogic();
         
-        // Watch for active class changes on mobile and update icon colors
+        // Align bottom-row with active pill on mobile (after initial render)
         if (window.innerWidth <= 990) {
-            const observer = new MutationObserver(() => {
-                updateActiveIconColors();
-            });
-            
-            // Observe all category pills and comm container for class changes
-            document.querySelectorAll('.category-pill, #comm-container').forEach(el => {
-                observer.observe(el, { attributes: true, attributeFilter: ['class'] });
-            });
-            
-            // Also update on window resize
-            window.addEventListener('resize', () => {
-                updateActiveIconColors();
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    alignBottomRowWithActivePill();
+                    // Initialize fade effects for scrollable containers
+                    const topRow = document.getElementById('main-top-row');
+                    if (topRow) {
+                        updateScrollFades(topRow);
+                        // Add scroll listener for top row if not already added
+                        topRow.addEventListener('scroll', () => updateScrollFades(topRow), { passive: true });
+                    }
+                    document.querySelectorAll('.bottom-row-inner').forEach(row => {
+                        updateScrollFades(row);
+                    });
+                });
             });
         }
+        
+        // Watch for active class changes on mobile and update icon colors (optimized)
+        let resizeTimeout = null;
+        const observer = new MutationObserver((mutations) => {
+            // Only update if 'active' class was added or removed
+            const hasActiveChange = mutations.some(mutation => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const target = mutation.target;
+                    const hadActive = mutation.oldValue?.includes('active');
+                    const hasActive = target.classList.contains('active');
+                    return hadActive !== hasActive;
+                }
+                return false;
+            });
+            
+            if (hasActiveChange && window.innerWidth <= 990) {
+                updateActiveIconColors();
+                // Re-align bottom row when active pill changes
+                requestAnimationFrame(() => {
+                    alignBottomRowWithActivePill();
+                    // Update fade effects after alignment
+                    const activeBottomRow = document.querySelector('.bottom-row.active .bottom-row-inner');
+                    if (activeBottomRow) {
+                        updateScrollFades(activeBottomRow);
+                    }
+                });
+            }
+        });
+        
+        // Observe all category pills and comm container for class changes
+        document.querySelectorAll('.category-pill, #comm-container').forEach(el => {
+            observer.observe(el, { 
+                attributes: true, 
+                attributeFilter: ['class'],
+                attributeOldValue: true // Needed to detect if active was added/removed
+            });
+        });
+        
+        // Debounced resize handler
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (window.innerWidth <= 990) {
+                    updateActiveIconColors();
+                    alignBottomRowWithActivePill();
+                    // Update fade effects on resize
+                    const topRow = document.getElementById('main-top-row');
+                    if (topRow) updateScrollFades(topRow);
+                    document.querySelectorAll('.bottom-row-inner').forEach(row => {
+                        updateScrollFades(row);
+                    });
+                } else {
+                    // Reset padding on desktop
+                    document.querySelectorAll('.bottom-row-inner').forEach(row => {
+                        row.style.paddingLeft = '';
+                    });
+                    // Remove fade classes on desktop
+                    const topRow = document.getElementById('main-top-row');
+                    if (topRow) {
+                        topRow.classList.remove('fade-left', 'fade-right');
+                    }
+                    document.querySelectorAll('.bottom-row-inner').forEach(row => {
+                        row.classList.remove('fade-left', 'fade-right');
+                    });
+                }
+            }, 150);
+        });
         
         // Set underline width to match content width on desktop
         if (window.innerWidth > 990) {
@@ -385,7 +478,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.querySelector('.bottom-row.active .bottom-row-inner');
             if (row) sessionStorage.setItem('nav_bottom_scroll', row.scrollLeft);
         };
-        document.querySelectorAll('.bottom-row-inner').forEach(r => r.addEventListener('scroll', saveScroll));
+        document.querySelectorAll('.bottom-row-inner').forEach(r => {
+            r.addEventListener('scroll', saveScroll);
+            // Update fade effects on scroll (mobile only)
+            if (window.innerWidth <= 990) {
+                r.addEventListener('scroll', () => updateScrollFades(r), { passive: true });
+            }
+        });
     }
 
     function scrollActiveIntoView(container, selector) {
@@ -394,24 +493,59 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeEl) container.scrollLeft = activeEl.offsetLeft - (container.offsetWidth / 2) + (activeEl.offsetWidth / 2);
     }
 
-    // Function to update icon colors for active pills on mobile
+    // Function to align bottom-row-inner with active parent pill on mobile
+    function alignBottomRowWithActivePill() {
+        if (window.innerWidth > 990) return; // Only run on mobile
+        
+        const activePill = document.querySelector('.category-pill.active, #comm-container.active');
+        const activeBottomRow = document.querySelector('.bottom-row.active .bottom-row-inner');
+        
+        if (activePill && activeBottomRow) {
+            // Get the left position of the active pill relative to the nav container
+            const navContainer = document.getElementById('village-nav-container');
+            const pillRect = activePill.getBoundingClientRect();
+            const containerRect = navContainer.getBoundingClientRect();
+            const pillLeft = pillRect.left - containerRect.left;
+            
+            // Set the bottom-row-inner padding-left to match the pill's left position
+            activeBottomRow.style.paddingLeft = `${pillLeft}px`;
+        }
+    }
+
+    // Function to update icon colors for active pills on mobile (optimized)
     function updateActiveIconColors() {
-        if (window.innerWidth <= 990) {
-            // Set white fill for active pills
-            document.querySelectorAll('.category-pill.active .category-icon path, #comm-container.active .category-icon path').forEach(path => {
+        if (window.innerWidth > 990) return; // Only run on mobile
+        
+        // Cache gradient IDs to avoid repeated DOM queries
+        const gradientCache = new Map();
+        
+        // Update active pills to white
+        document.querySelectorAll('.category-pill.active .category-icon path, #comm-container.active .category-icon path').forEach(path => {
+            const currentFill = path.getAttribute('fill');
+            if (currentFill !== 'white') {
                 path.setAttribute('fill', 'white');
-            });
-            // Restore original gradient fill for inactive pills
-            document.querySelectorAll('.category-pill:not(.active) .category-icon path, #comm-container:not(.active) .category-icon path').forEach(path => {
+            }
+        });
+        
+        // Only restore gradients for pills that were just deactivated (check if fill is white but pill is not active)
+        document.querySelectorAll('.category-pill:not(.active) .category-icon path, #comm-container:not(.active) .category-icon path').forEach(path => {
+            const currentFill = path.getAttribute('fill');
+            if (currentFill === 'white') {
+                // Only restore if it's currently white (was active before)
                 const svg = path.closest('svg');
                 if (svg) {
-                    const gradientId = svg.querySelector('defs radialGradient')?.getAttribute('id');
+                    let gradientId = gradientCache.get(svg);
+                    if (!gradientId) {
+                        const gradient = svg.querySelector('defs radialGradient');
+                        gradientId = gradient?.getAttribute('id');
+                        if (gradientId) gradientCache.set(svg, gradientId);
+                    }
                     if (gradientId) {
                         path.setAttribute('fill', `url(#${gradientId})`);
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     function initNavLogic() {
@@ -448,6 +582,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update icon colors for active pills on mobile
         updateActiveIconColors();
+        
+        // Align bottom-row-inner with active parent pill on mobile
+        alignBottomRowWithActivePill();
+        
+        // Update fade effects when active bottom row changes
+        if (window.innerWidth <= 990) {
+            const activeBottomRow = document.querySelector('.bottom-row.active .bottom-row-inner');
+            if (activeBottomRow) {
+                requestAnimationFrame(() => {
+                    updateScrollFades(activeBottomRow);
+                });
+            }
+        }
 
         // Parent Click Handlers
         document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
@@ -498,12 +645,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Track scroll on parent row (top-row)
             const topRow = document.getElementById('main-top-row');
             if (topRow && topRow.classList.contains('hide-scrollbar')) {
-                topRow.addEventListener('scroll', () => handleScroll(topRow), { passive: true });
+                topRow.addEventListener('scroll', () => {
+                    handleScroll(topRow);
+                    updateScrollFades(topRow);
+                }, { passive: true });
             }
 
             // Track scroll on child rows (bottom-row-inner)
             document.querySelectorAll('.bottom-row-inner.hide-scrollbar').forEach(childRow => {
-                childRow.addEventListener('scroll', () => handleScroll(childRow), { passive: true });
+                childRow.addEventListener('scroll', () => {
+                    handleScroll(childRow);
+                    updateScrollFades(childRow);
+                }, { passive: true });
             });
         }
 
