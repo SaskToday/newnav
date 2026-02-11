@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="village-nav-container">
         <style>
             :root { --primary: #000; --nav-bg: #ffffff; --pill-bg: #f1f3f5; --text-inactive: #000000; --dropdown-glass: rgba(255, 255, 255, 0.95); --separator-color: #e9ecef; }
-            #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; overflow: visible; }
+            #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 8; overflow: visible; }
             @media (min-width: 991px) {
                 #nav.show-below-new-nav { display: block !important; position: relative; top: 0; margin-top: 0; z-index: 999; width: 100%; }
             }
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     bottom: 0;
                     width: 20px;
                     pointer-events: none;
-                    z-index: 100;
+                    z-index: 8;
                     opacity: 0;
                     transition: opacity 0.3s ease;
                 }
@@ -220,9 +220,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 .scroll-fade-overlay.visible { opacity: 1; }
             }
 
-            .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
+            .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 8; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
             .desktop-mega-menu.visible { max-height: 400px; }
-            .desktop-mega-menu.search-menu { z-index: 1001; }
+            .desktop-mega-menu.search-menu { z-index: 8; }
             #village-nav-container:has(.desktop-mega-menu.search-menu.visible) .bottom-row.active { display: none !important; }
             .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px 30px 30px; gap: 80px; }
             @media (min-width: 768px) and (max-width: 991px) { .desktop-mega-menu-inner { width: 750px; } }
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .external-icon { width: 14px !important; height: 14px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
-            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 1000001; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; }
+            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; }
         </style>
         <div class="nav-content-wrapper">
             <div id="village-nav-dropdown-mobile" style="display: none;">
