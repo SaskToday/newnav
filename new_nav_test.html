@@ -41,7 +41,7 @@
         'use strict';
 
         // Version identifier - check in console: window.navVersion
-        window.navVersion = '2024-12-19-6147275';
+        window.navVersion = '2024-12-19-c2de4fe';
         if (console && console.log) {
             console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
         }
@@ -199,7 +199,7 @@
                     .trending-story-title { flex: 1; }
                 }
 
-                @media (max-width: 990px) {
+                @media (max-width: 991px) {
                     .top-row { padding-left: 10px; }
                     .category-pill.active, #comm-container.active { background: var(--primary) !important; color: white !important; }
                     .category-pill.active .category-icon-wrapper .category-icon path,
@@ -210,7 +210,7 @@
                     #comm-container.active .category-icon-wrapper .category-icon defs { display: none !important; }
                     .desktop-down-arrow { display: none !important; }
                     
-                    /* Fade effects for scrollable containers - using overlay divs */
+                    /* Fade effects for scrollable containers - using overlay divs (mobile and tablet) */
                     .scroll-fade-overlay {
                         position: fixed;
                         top: 0;
@@ -425,8 +425,9 @@
         const fadeOverlays = new Map(); // Store overlays for each element
         
         function updateScrollFades(element) {
-            if (!element || window.innerWidth > 990) {
-                // Clean up overlays on desktop
+            // Only apply fade effects on mobile and tablet (up to 991px), not desktop
+            if (!element || window.innerWidth > 991) {
+                // Clean up overlays on desktop (above 991px)
                 if (fadeOverlays.has(element)) {
                     const overlays = fadeOverlays.get(element);
                     if (overlays.left) overlays.left.remove();
@@ -435,6 +436,7 @@
                 }
                 return;
             }
+            // Apply fade effects on mobile (up to 767px) and tablet (768px-991px)
             
             const scrollLeft = element.scrollLeft;
             const scrollWidth = element.scrollWidth;

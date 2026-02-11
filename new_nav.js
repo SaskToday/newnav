@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-6147275';
+    window.navVersion = '2024-12-19-c2de4fe';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
             }
 
-            @media (max-width: 990px) {
+            @media (max-width: 991px) {
                 .top-row { padding-left: 10px; position: relative; }
                 .category-pill.active, #comm-container.active { background: var(--primary) !important; color: white !important; }
                 .category-pill.active .category-icon-wrapper .category-icon path,
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bottom-row-inner { padding-top: 0; position: relative; }
                 .bottom-row { margin-top: 0 !important; }
                 
-                /* Fade effects for scrollable containers - using overlay divs */
+                /* Fade effects for scrollable containers - using overlay divs (mobile and tablet) */
                 .scroll-fade-overlay {
                     position: fixed;
                     top: 0;
@@ -298,8 +298,8 @@ document.addEventListener('DOMContentLoaded', function() {
         initHoverDropdowns();
         handleScrollLogic();
         
-        // Align bottom-row with active pill on mobile (after initial render)
-        if (window.innerWidth <= 990) {
+        // Align bottom-row with active pill on mobile and tablet (after initial render)
+        if (window.innerWidth <= 991) {
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     alignBottomRowWithActivePill();
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             });
             
-            if (hasActiveChange && window.innerWidth <= 990) {
+            if (hasActiveChange && window.innerWidth <= 991) {
                 updateActiveIconColors();
                 // Re-align bottom row when active pill changes
                 requestAnimationFrame(() => {
@@ -358,10 +358,10 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                if (window.innerWidth <= 990) {
+                if (window.innerWidth <= 991) {
                     updateActiveIconColors();
                     alignBottomRowWithActivePill();
-                    // Update fade effects on resize
+                    // Update fade effects on resize (mobile and tablet)
                     const topRow = document.getElementById('main-top-row');
                     if (topRow) updateScrollFades(topRow);
                     document.querySelectorAll('.bottom-row-inner').forEach(row => {
@@ -477,8 +477,8 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         document.querySelectorAll('.bottom-row-inner').forEach(r => {
             r.addEventListener('scroll', saveScroll);
-            // Update fade effects on scroll (mobile only)
-            if (window.innerWidth <= 990) {
+            // Update fade effects on scroll (mobile and tablet)
+            if (window.innerWidth <= 991) {
                 r.addEventListener('scroll', () => updateScrollFades(r), { passive: true });
             }
         });
@@ -495,8 +495,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const fadeOverlays = new Map(); // Store overlays for each element
     
     function updateScrollFades(element) {
-        if (!element || window.innerWidth > 990) {
-            // Clean up overlays on desktop
+        // Only apply fade effects on mobile and tablet (up to 991px), not desktop
+        if (!element || window.innerWidth > 991) {
+            // Clean up overlays on desktop (above 991px)
             if (fadeOverlays.has(element)) {
                 const overlays = fadeOverlays.get(element);
                 if (overlays.left) overlays.left.remove();
@@ -505,6 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             return;
         }
+        // Apply fade effects on mobile (up to 767px) and tablet (768px-991px)
         
         const scrollLeft = element.scrollLeft;
         const scrollWidth = element.scrollWidth;
@@ -630,8 +632,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Align bottom-row-inner with active parent pill on mobile
         alignBottomRowWithActivePill();
         
-        // Update fade effects when active bottom row changes
-        if (window.innerWidth <= 990) {
+        // Update fade effects when active bottom row changes (mobile and tablet)
+        if (window.innerWidth <= 991) {
             const activeBottomRow = document.querySelector('.bottom-row.active .bottom-row-inner');
             if (activeBottomRow) {
                 requestAnimationFrame(() => {
@@ -676,8 +678,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (url === link.href.replace(/\/$/, "")) link.classList.add('active');
         });
 
-        // Mobile horizontal scroll tracking for PostHog
-        if (window.innerWidth <= 990) {
+        // Mobile and tablet horizontal scroll tracking for PostHog
+        if (window.innerWidth <= 991) {
             let scrollTimeout = null;
             const handleScroll = (element) => {
                 clearTimeout(scrollTimeout);
