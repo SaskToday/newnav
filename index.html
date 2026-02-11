@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-5721999';
+    window.navVersion = '2024-12-19-a898395';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -1243,54 +1243,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 megaMenu.innerHTML = '';
                 megaMenu.classList.remove('search-menu'); // Ensure regular mega menu doesn't have search-menu class
                 megaMenu.appendChild(inner);
+                
+                // Reserve space for bold text to prevent layout shift BEFORE making visible
+                // Calculate min-widths synchronously to ensure they're set before first hover
+                const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
+                allLinks.forEach(link => {
+                    const text = link.getAttribute('data-text') || link.textContent.trim();
+                    if (text) {
+                        // Check if this is a Communities link (has icon)
+                        const hasIcon = link.querySelector('.community-icon') !== null;
+                        
+                        if (hasIcon) {
+                            // For Communities links, measure the entire link width with bold text
+                            // Clone the link to measure without affecting the original
+                            const clone = link.cloneNode(true);
+                            clone.style.position = 'absolute';
+                            clone.style.visibility = 'hidden';
+                            clone.style.width = 'auto';
+                            clone.style.minWidth = 'auto';
+                            // Make text bold in clone
+                            const textSpan = clone.querySelector('span');
+                            if (textSpan) {
+                                textSpan.style.fontWeight = 'bold';
+                            }
+                            document.body.appendChild(clone);
+                            // Force layout calculation
+                            void clone.offsetWidth;
+                            const boldWidth = clone.offsetWidth;
+                            document.body.removeChild(clone);
+                            // Set min-width to prevent layout shift
+                            link.style.minWidth = `${boldWidth}px`;
+                        } else {
+                            // For regular links, just measure the bold text width
+                            const temp = document.createElement('span');
+                            temp.style.position = 'absolute';
+                            temp.style.visibility = 'hidden';
+                            temp.style.fontSize = '12px';
+                            temp.style.fontWeight = 'bold';
+                            temp.style.whiteSpace = 'nowrap';
+                            temp.textContent = text;
+                            document.body.appendChild(temp);
+                            // Force layout calculation
+                            void temp.offsetWidth;
+                            const boldWidth = temp.offsetWidth;
+                            document.body.removeChild(temp);
+                            // Set min-width to prevent layout shift
+                            link.style.minWidth = `${boldWidth}px`;
+                        }
+                    }
+                });
+                
+                // Now make the menu visible after min-widths are set
                 megaMenu.classList.add('visible');
                 container.classList.add('mega-menu-open');
-                
-                // Reserve space for bold text to prevent layout shift
-                requestAnimationFrame(() => {
-                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
-                    allLinks.forEach(link => {
-                        const text = link.getAttribute('data-text') || link.textContent.trim();
-                        if (text) {
-                            // Check if this is a Communities link (has icon)
-                            const hasIcon = link.querySelector('.community-icon') !== null;
-                            
-                            if (hasIcon) {
-                                // For Communities links, measure the entire link width with bold text
-                                // Clone the link to measure without affecting the original
-                                const clone = link.cloneNode(true);
-                                clone.style.position = 'absolute';
-                                clone.style.visibility = 'hidden';
-                                clone.style.width = 'auto';
-                                clone.style.minWidth = 'auto';
-                                // Make text bold in clone
-                                const textSpan = clone.querySelector('span');
-                                if (textSpan) {
-                                    textSpan.style.fontWeight = 'bold';
-                                }
-                                document.body.appendChild(clone);
-                                const boldWidth = clone.offsetWidth;
-                                document.body.removeChild(clone);
-                                // Set min-width to prevent layout shift
-                                link.style.minWidth = `${boldWidth}px`;
-                            } else {
-                                // For regular links, just measure the bold text width
-                                const temp = document.createElement('span');
-                                temp.style.position = 'absolute';
-                                temp.style.visibility = 'hidden';
-                                temp.style.fontSize = '12px';
-                                temp.style.fontWeight = 'bold';
-                                temp.style.whiteSpace = 'nowrap';
-                                temp.textContent = text;
-                                document.body.appendChild(temp);
-                                const boldWidth = temp.offsetWidth;
-                                document.body.removeChild(temp);
-                                // Set min-width to prevent layout shift
-                                link.style.minWidth = `${boldWidth}px`;
-                            }
-                        }
-                    });
-                });
                 
                 // Trigger PostHog recording when mega menu appears (desktop)
                 if (window.innerWidth > 990) {
