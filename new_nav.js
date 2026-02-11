@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-980e980';
+    window.navVersion = '2024-12-19-8ebb490';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -219,8 +219,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-links.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-links h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 40px; }
-            .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 40px; }
+            .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 60px; }
+            .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 60px; }
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-links a:hover { color: var(--primary); font-weight: bold; }
             .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
@@ -230,8 +230,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-newsletters-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 40px; }
-            .desktop-mega-menu-newsletters-items.multi-column.communities-columns { column-gap: 40px; }
+            .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 60px; }
+            .desktop-mega-menu-newsletters-items.multi-column.communities-columns { column-gap: 60px; }
             .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-newsletters a:hover { color: var(--primary); font-weight: bold; }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
