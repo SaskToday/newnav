@@ -241,8 +241,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; }
             .desktop-mega-menu-links a:hover { color: var(--primary); font-weight: bold; }
             .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
-            .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; background-color: #f1f3f5; }
+            .desktop-mega-menu-links a .community-icon-wrapper { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+            .desktop-mega-menu-links a .community-icon-skeleton { position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; }
+            .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; position: relative; z-index: 1; }
             .desktop-mega-menu-links a .community-icon.loaded { opacity: 1; }
+            .desktop-mega-menu-links a .community-icon.loaded ~ .community-icon-skeleton { display: none; }
             .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
@@ -1234,11 +1237,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
+                        
+                        // Create wrapper for icon and skeleton
+                        const iconWrapper = document.createElement('div');
+                        iconWrapper.className = 'community-icon-wrapper';
+                        
+                        // Create skeleton loader
+                        const skeleton = document.createElement('div');
+                        skeleton.className = 'community-icon-skeleton';
+                        iconWrapper.appendChild(skeleton);
+                        
+                        // Create image
                         const icon = document.createElement('img');
                         icon.className = 'community-icon';
                         icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75';
                         icon.alt = link.text;
-                        // Fade in image when loaded
+                        
+                        // Fade in image when loaded and hide skeleton
                         icon.addEventListener('load', () => {
                             icon.classList.add('loaded');
                         }, { once: true });
@@ -1251,7 +1266,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (icon.complete) {
                             icon.classList.add('loaded');
                         }
-                        a.appendChild(icon);
+                        
+                        iconWrapper.appendChild(icon);
+                        a.appendChild(iconWrapper);
                         if (link.external) {
                             a.target = '_blank';
                             const textSpan = document.createElement('span');

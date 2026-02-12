@@ -268,8 +268,11 @@
                 .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
                 .desktop-mega-menu-links a:hover { color: var(--primary); font-weight: bold; }
                 .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
-                .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; background-color: #f1f3f5; }
+                .desktop-mega-menu-links a .community-icon-wrapper { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+                .desktop-mega-menu-links a .community-icon-skeleton { position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; }
+                .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; position: relative; z-index: 1; }
                 .desktop-mega-menu-links a .community-icon.loaded { opacity: 1; }
+                .desktop-mega-menu-links a .community-icon.loaded ~ .community-icon-skeleton { display: none; }
                 .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
                 .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
                 .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
@@ -1016,38 +1019,55 @@
                             const a = document.createElement('a');
                             a.href = link.url;
                             a.setAttribute('data-text', link.text);
+                            
+                            // Create wrapper for icon and skeleton
+                            const iconWrapper = document.createElement('div');
+                            iconWrapper.className = 'community-icon-wrapper';
+                            
+                            // Create skeleton loader
+                            const skeleton = document.createElement('div');
+                            skeleton.className = 'community-icon-skeleton';
+                            iconWrapper.appendChild(skeleton);
+                            
+                            // Create image
                             const icon = document.createElement('img');
                             icon.className = 'community-icon';
                             // Map community names to city image placeholders
-                                const cityMap = {
-                                    'All Communities': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                                    'Regina': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                                    'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                                    'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                                    'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                                    'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                                    'The Battlefords': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
-                                    'Canora': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
-                                    'Preeceville': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75',
-                                    'Carlyle': 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=60&h=60&fit=crop&q=75',
-                                    'Humboldt': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                                    'Moose Jaw': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                                    'Outlook': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                                    'Prince Albert': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
-                                    'Unity-Wilkie': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
-                                    'Weyburn': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75'
-                                };
-                                icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75';
+                            const cityMap = {
+                                'All Communities': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                                'Regina': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                                'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                                'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                                'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                                'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                                'The Battlefords': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
+                                'Canora': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
+                                'Preeceville': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75',
+                                'Carlyle': 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=60&h=60&fit=crop&q=75',
+                                'Humboldt': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                                'Moose Jaw': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                                'Outlook': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                                'Prince Albert': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
+                                'Unity-Wilkie': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
+                                'Weyburn': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75'
+                            };
+                            icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75';
                             icon.alt = link.text;
                             // Fade in image when loaded
                             icon.addEventListener('load', () => {
                                 icon.classList.add('loaded');
-                            });
+                            }, { once: true });
+                            // Handle image load errors
+                            icon.addEventListener('error', () => {
+                                // Even on error, show the image (it might have a placeholder background)
+                                icon.classList.add('loaded');
+                            }, { once: true });
                             // Handle case where image is already cached
                             if (icon.complete) {
                                 icon.classList.add('loaded');
                             }
-                            a.appendChild(icon);
+                            iconWrapper.appendChild(icon);
+                            a.appendChild(iconWrapper);
                             if (link.external) {
                                 a.target = '_blank';
                                 const textSpan = document.createElement('span');
