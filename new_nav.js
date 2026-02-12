@@ -1,8 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
+    // Prevent script from running multiple times
+    if (window.navScriptLoaded) {
+        console.log('Navigation: Script already loaded, skipping');
+        return;
+    }
+    window.navScriptLoaded = true;
+
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-fc18cc7';
+    window.navVersion = '2024-12-19-8b1b05e';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -322,25 +329,50 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>`;
 
-    // Make nav initialization function available globally for re-initialization
-    window.initVillageNav = function() {
-        const targetHeader = document.querySelector('header');
+    // Check if nav already exists (prevent duplicates on page navigation)
+    const existingNav = document.querySelector('#village-nav-container');
+    if (existingNav) {
+        console.log('Navigation: Nav already exists, skipping insertion');
+        return; // Nav already exists, don't re-insert
+    }
+    
+    // Find header element
+    let targetHeader = document.querySelector('header');
+    
+    // If header doesn't exist, wait a bit and try again (for dynamically loaded headers)
+    if (!targetHeader) {
+        console.warn('Navigation: Header not found immediately, waiting 100ms...');
+        setTimeout(function() {
+            targetHeader = document.querySelector('header');
+            if (targetHeader) {
+                console.log('Navigation: Header found after delay, inserting nav');
+                insertNav();
+            } else {
+                console.error('Navigation: Header element not found after delay. Nav will not be displayed.');
+                // Fallback: Try to insert into body if header doesn't exist
+                const body = document.body;
+                if (body) {
+                    console.warn('Navigation: Inserting into body as fallback (header not found)');
+                    body.insertAdjacentHTML('afterbegin', navHTML);
+                    initializeNav();
+                }
+            }
+        }, 100);
+    } else {
+        insertNav();
+    }
+    
+    function insertNav() {
         if (!targetHeader) {
-            console.warn('Village Nav: No <header> element found. Navigation will not be inserted.');
-            return;
+            targetHeader = document.querySelector('header');
         }
-        
-        // Check if nav already exists to avoid duplicates
-        if (document.getElementById('village-nav-container')) {
-            // Nav already exists, just re-initialize logic
-            initNavLogic();
-            initHoverDropdowns();
-            handleScrollLogic();
-            return;
+        if (targetHeader) {
+            targetHeader.insertAdjacentHTML('beforeend', navHTML);
+            initializeNav();
         }
-        
-        // Insert nav HTML
-        targetHeader.insertAdjacentHTML('beforeend', navHTML);
+    }
+    
+    function initializeNav() {
         initNavLogic();
         initHoverDropdowns();
         handleScrollLogic();
@@ -1684,38 +1716,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 hide();
             });
         });
-    }
-    
-    // Initial initialization
-    window.initVillageNav();
-    
-    // Re-initialize on popstate (back/forward navigation)
-    window.addEventListener('popstate', function() {
-        setTimeout(window.initVillageNav, 100);
-    });
-    
-    // Watch for header element changes (for SPAs that replace content)
-    if (typeof MutationObserver !== 'undefined') {
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList') {
-                    const header = document.querySelector('header');
-                    const navExists = document.getElementById('village-nav-container');
-                    // If header exists but nav doesn't, initialize
-                    if (header && !navExists) {
-                        setTimeout(window.initVillageNav, 100);
-                    }
-                }
-            });
-        });
-        
-        // Observe body for header changes
-        if (document.body) {
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        }
     }
 });
 
