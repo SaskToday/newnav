@@ -1243,7 +1243,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     communitiesSection.appendChild(communitiesHeading);
                     
                     const communitiesItems = document.createElement('div');
-                    communitiesItems.className = 'desktop-mega-menu-links-items' + (links.length > 5 ? ' multi-column communities-columns' : '');
+                    const numColumns = Math.ceil(links.length / 4); // Limit to 4 items per column
+                    communitiesItems.className = 'desktop-mega-menu-links-items' + (links.length > 4 ? ' multi-column communities-columns' : '');
+                    if (links.length > 4) {
+                        communitiesItems.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
+                    }
                     
                     links.forEach(link => {
                         const a = document.createElement('a');
