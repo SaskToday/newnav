@@ -1241,7 +1241,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Fade in image when loaded
                         icon.addEventListener('load', () => {
                             icon.classList.add('loaded');
-                        });
+                        }, { once: true });
+                        // Handle image load errors
+                        icon.addEventListener('error', () => {
+                            // Even on error, show the image (it might have a placeholder background)
+                            icon.classList.add('loaded');
+                        }, { once: true });
                         // Handle case where image is already cached
                         if (icon.complete) {
                             icon.classList.add('loaded');
@@ -1423,6 +1428,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 let inner;
                 if (cachedMenuContent && lastCachedPill === pill) {
                     inner = cachedMenuContent.cloneNode(true);
+                    // Re-attach event listeners to images after cloning (cloneNode doesn't copy event listeners)
+                    const clonedImages = inner.querySelectorAll('.community-icon');
+                    clonedImages.forEach(icon => {
+                        // Only re-attach if image isn't already loaded
+                        if (!icon.complete || !icon.classList.contains('loaded')) {
+                            icon.addEventListener('load', () => {
+                                icon.classList.add('loaded');
+                            }, { once: true });
+                            icon.addEventListener('error', () => {
+                                // Even on error, show the image (it might have a placeholder)
+                                icon.classList.add('loaded');
+                            }, { once: true });
+                        } else {
+                            // If already loaded, ensure the loaded class is present
+                            icon.classList.add('loaded');
+                        }
+                    });
                 } else {
                     inner = buildMenuContent();
                     cachedMenuContent = inner.cloneNode(true);
