@@ -3,10 +3,11 @@ console.log('[NAV DEBUG] Script file loaded at:', new Date().toISOString());
 console.log('[NAV DEBUG] Document ready state:', document.readyState);
 console.log('[NAV DEBUG] Current URL:', window.location.href);
 
-document.addEventListener('DOMContentLoaded', function() {
+// Function to initialize navigation (can be called from DOMContentLoaded or immediately)
+function initNavigationScript() {
     'use strict';
     
-    console.log('[NAV DEBUG] DOMContentLoaded fired');
+    console.log('[NAV DEBUG] initNavigationScript() called');
     console.log('[NAV DEBUG] Document ready state:', document.readyState);
     console.log('[NAV DEBUG] Header exists:', !!document.querySelector('header'));
     console.log('[NAV DEBUG] Nav already exists:', !!document.querySelector('#village-nav-container'));
@@ -1776,5 +1777,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-});
+}
+
+// Try to run immediately if DOM is already ready, otherwise wait for DOMContentLoaded
+if (document.readyState === 'loading') {
+    console.log('[NAV DEBUG] DOM still loading, waiting for DOMContentLoaded');
+    document.addEventListener('DOMContentLoaded', initNavigationScript);
+} else {
+    console.log('[NAV DEBUG] DOM already ready, running immediately');
+    // DOM is already ready, run immediately
+    initNavigationScript();
+}
 
