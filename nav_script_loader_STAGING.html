@@ -16,7 +16,7 @@
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
 <!-- Note: Update commit hash in script below when you update this -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@64289df/new_nav.js" as="script">
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@00a0594/new_nav.js" as="script">
 
 <!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>
@@ -29,13 +29,18 @@ console.log('[NAV LOADER] Window object:', typeof window);
 try {
     console.log('[NAV LOADER] Starting script creation');
     
+    // Use commit hash instead of branch name for immediate updates (jsDelivr caches by branch)
+    // Update this commit hash when you push new changes to staging
+    const COMMIT_HASH = '00a0594'; // Latest staging commit - update this when you push
+    
     // Cache-busting for staging: Add timestamp to ensure we see updates immediately
     const cacheBuster = '?v=' + Date.now();
     console.log('[NAV LOADER] Cache buster:', cacheBuster);
+    console.log('[NAV LOADER] Using commit hash:', COMMIT_HASH);
     
-    // Try jsDelivr first (primary CDN - loads from @staging branch with cache-busting)
+    // Try jsDelivr first (primary CDN - loads from specific commit for immediate updates)
     const script = document.createElement('script');
-    const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js' + cacheBuster;
+    const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@' + COMMIT_HASH + '/new_nav.js' + cacheBuster;
     script.src = scriptUrl;
     script.defer = true;
     
