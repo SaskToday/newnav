@@ -1,9 +1,12 @@
 <!-- 
-    NAVIGATION SCRIPT LOADER - STAGING ENVIRONMENT
+    NAVIGATION SCRIPT LOADER - STAGING ENVIRONMENT (USING COMMIT HASH)
     Use this on your STAGING site for testing
     
-    This loads from the @staging branch, so you can test changes immediately
-    before promoting to production.
+    This version uses a commit hash instead of branch name for immediate updates.
+    Update the COMMIT_HASH below with the latest commit from staging branch.
+    
+    To get the latest commit hash:
+    git log staging -1 --format="%H" --abbrev=7
 -->
 
 <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
@@ -15,26 +18,26 @@
 <link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
-<!-- Note: Preload doesn't support dynamic cache-busting, so it may be cached -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js?v=staging" as="script">
+<!-- UPDATE COMMIT_HASH below with latest staging commit -->
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@COMMIT_HASH/new_nav.js" as="script">
 
-<!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
+<!-- Step 4: Load script with automatic fallback (USING COMMIT HASH) -->
 <script>
 (function() {
-    // Cache-busting for staging: Add timestamp to ensure we see updates immediately
-    // This bypasses CDN caching, which is fine for testing/staging
-    const cacheBuster = '?v=' + Date.now();
+    // UPDATE THIS with the latest commit hash from staging branch
+    // Get it with: git log staging -1 --format="%H" --abbrev=7
+    const COMMIT_HASH = 'UPDATE_ME'; // e.g., '8dde370'
     
-    // Try jsDelivr first (primary CDN - loads from @staging branch with cache-busting)
+    // Try jsDelivr first (primary CDN - loads from specific commit, no caching issues)
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js' + cacheBuster;
+    script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@' + COMMIT_HASH + '/new_nav.js';
     script.defer = true;
     
-    // Fallback to GitHub Pages if jsDelivr fails (from staging branch, also with cache-busting)
+    // Fallback to GitHub Pages if jsDelivr fails
     script.onerror = function() {
         console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback (staging)...');
         const fallbackScript = document.createElement('script');
-        fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js' + cacheBuster;
+        fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js?v=' + COMMIT_HASH;
         fallbackScript.defer = true;
         fallbackScript.onerror = function() {
             console.error('Navigation: Both script sources failed to load. Navigation may not function.');

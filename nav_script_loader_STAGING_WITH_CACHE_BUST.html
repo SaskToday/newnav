@@ -1,9 +1,9 @@
 <!-- 
-    NAVIGATION SCRIPT LOADER - STAGING ENVIRONMENT
+    NAVIGATION SCRIPT LOADER - STAGING ENVIRONMENT (WITH CACHE-BUSTING)
     Use this on your STAGING site for testing
     
-    This loads from the @staging branch, so you can test changes immediately
-    before promoting to production.
+    This version includes cache-busting to ensure you see updates immediately.
+    For production, use nav_script_loader_PRODUCTION.html (no cache-busting).
 -->
 
 <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
@@ -15,14 +15,13 @@
 <link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
-<!-- Note: Preload doesn't support dynamic cache-busting, so it may be cached -->
 <link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js?v=staging" as="script">
 
 <!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>
 (function() {
-    // Cache-busting for staging: Add timestamp to ensure we see updates immediately
-    // This bypasses CDN caching, which is fine for testing/staging
+    // Generate cache-busting parameter (timestamp updates on each page load)
+    // For staging, we want to see updates immediately, so we use a timestamp
     const cacheBuster = '?v=' + Date.now();
     
     // Try jsDelivr first (primary CDN - loads from @staging branch with cache-busting)
