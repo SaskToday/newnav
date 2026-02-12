@@ -251,19 +251,12 @@ function initNavigationScript() {
             @media (min-width: 768px) and (max-width: 991px) { .desktop-mega-menu-inner { width: 750px; } }
             .desktop-mega-menu-inner.communities-menu { gap: 80px; }
             .desktop-mega-menu-links { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
-            .desktop-mega-menu-links.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-links h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 60px; }
             .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 40px; }
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; white-space: nowrap; }
             .desktop-mega-menu-links a:hover { color: var(--primary); font-weight: bold; }
-            .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
-            .desktop-mega-menu-links a .community-icon-wrapper { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
-            .desktop-mega-menu-links a .community-icon-skeleton { position: absolute; top: 0; left: 0; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; }
-            .desktop-mega-menu-links a .community-icon { width: 32px; height: 32px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; position: relative; z-index: 1; }
-            .desktop-mega-menu-links a .community-icon.loaded { opacity: 1; }
-            .desktop-mega-menu-links a .community-icon.loaded ~ .community-icon-skeleton { display: none; }
             .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
@@ -1351,7 +1344,7 @@ function initNavigationScript() {
                     
                     // Left section - Communities list
                     const communitiesSection = document.createElement('div');
-                    communitiesSection.className = 'desktop-mega-menu-links communities-split';
+                    communitiesSection.className = 'desktop-mega-menu-links';
                     const communitiesHeading = document.createElement('h3');
                     communitiesHeading.textContent = isActive ? 'Change Your Community' : 'Pick a Community';
                     communitiesSection.appendChild(communitiesHeading);
@@ -1363,61 +1356,10 @@ function initNavigationScript() {
                         communitiesItems.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
                     }
                     
-                    // Map community names to city image placeholders (define once outside loop)
-                    const cityMap = {
-                        'All Communities': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                        'Regina': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                        'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                        'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                        'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                        'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                        'The Battlefords': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
-                        'Canora': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
-                        'Preeceville': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75',
-                        'Carlyle': 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=60&h=60&fit=crop&q=75',
-                        'Humboldt': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                        'Moose Jaw': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                        'Outlook': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                        'Prince Albert': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
-                        'Unity-Wilkie': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
-                        'Weyburn': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75'
-                    };
-                    
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
                         
-                        // Create wrapper for icon and skeleton
-                        const iconWrapper = document.createElement('div');
-                        iconWrapper.className = 'community-icon-wrapper';
-                        
-                        // Create skeleton loader
-                        const skeleton = document.createElement('div');
-                        skeleton.className = 'community-icon-skeleton';
-                        iconWrapper.appendChild(skeleton);
-                        
-                        // Create image
-                        const icon = document.createElement('img');
-                        icon.className = 'community-icon';
-                        icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75';
-                        icon.alt = link.text;
-                        
-                        // Fade in image when loaded and hide skeleton
-                        icon.addEventListener('load', () => {
-                            icon.classList.add('loaded');
-                        }, { once: true });
-                        // Handle image load errors
-                        icon.addEventListener('error', () => {
-                            // Even on error, show the image (it might have a placeholder background)
-                            icon.classList.add('loaded');
-                        }, { once: true });
-                        // Handle case where image is already cached
-                        if (icon.complete) {
-                            icon.classList.add('loaded');
-                        }
-                        
-                        iconWrapper.appendChild(icon);
-                        a.appendChild(iconWrapper);
                         if (link.external) {
                             a.target = '_blank';
                             const textSpan = document.createElement('span');
@@ -1439,7 +1381,7 @@ function initNavigationScript() {
                     // Right section - Community sections (only if active)
                     if (isActive && activeCommunityName && childLinks.length > 0) {
                         const sectionsSection = document.createElement('div');
-                        sectionsSection.className = 'desktop-mega-menu-newsletters communities-split';
+                        sectionsSection.className = 'desktop-mega-menu-newsletters';
                         const sectionsHeading = document.createElement('h3');
                         sectionsHeading.textContent = `${activeCommunityName} Sections`;
                         sectionsSection.appendChild(sectionsHeading);
@@ -1604,23 +1546,6 @@ function initNavigationScript() {
                 let inner;
                 if (cachedMenuContent && lastCachedPill === pill) {
                     inner = cachedMenuContent.cloneNode(true);
-                    // Re-attach event listeners to images after cloning (cloneNode doesn't copy event listeners)
-                    const clonedImages = inner.querySelectorAll('.community-icon');
-                    clonedImages.forEach(icon => {
-                        // Only re-attach if image isn't already loaded
-                        if (!icon.complete || !icon.classList.contains('loaded')) {
-                            icon.addEventListener('load', () => {
-                                icon.classList.add('loaded');
-                            }, { once: true });
-                            icon.addEventListener('error', () => {
-                                // Even on error, show the image (it might have a placeholder)
-                                icon.classList.add('loaded');
-                            }, { once: true });
-                        } else {
-                            // If already loaded, ensure the loaded class is present
-                            icon.classList.add('loaded');
-                        }
-                    });
                     
                     // Re-attach event listeners to brand logos after cloning
                     const clonedBrandLogos = inner.querySelectorAll('.brand-logo');
@@ -1663,33 +1588,16 @@ function initNavigationScript() {
                     allLinks.forEach(link => {
                         const text = link.getAttribute('data-text') || link.textContent.trim();
                         if (text) {
-                            // Check if this is a Communities link (has icon)
-                            const hasIcon = link.querySelector('.community-icon') !== null;
-                            
-                            if (hasIcon) {
-                                // For Communities links, calculate width = icon (32px) + gap (8px) + bold text width
-                                const linkText = text;
-                                const tempText = document.createElement('span');
-                                tempText.style.position = 'absolute';
-                                tempText.style.visibility = 'hidden';
-                                tempText.style.fontSize = '12px';
-                                tempText.style.fontWeight = 'bold';
-                                tempText.style.whiteSpace = 'nowrap';
-                                tempText.textContent = linkText;
-                                document.body.appendChild(tempText);
-                                measurements.push({ element: tempText, link, hasIcon: true });
-                            } else {
-                                // For regular links, just measure the bold text width
-                                const temp = document.createElement('span');
-                                temp.style.position = 'absolute';
-                                temp.style.visibility = 'hidden';
-                                temp.style.fontSize = '12px';
-                                temp.style.fontWeight = 'bold';
-                                temp.style.whiteSpace = 'nowrap';
-                                temp.textContent = text;
-                                document.body.appendChild(temp);
-                                measurements.push({ element: temp, link, hasIcon: false });
-                            }
+                            // Measure the bold text width
+                            const temp = document.createElement('span');
+                            temp.style.position = 'absolute';
+                            temp.style.visibility = 'hidden';
+                            temp.style.fontSize = '12px';
+                            temp.style.fontWeight = 'bold';
+                            temp.style.whiteSpace = 'nowrap';
+                            temp.textContent = text;
+                            document.body.appendChild(temp);
+                            measurements.push({ element: temp, link });
                         }
                     });
                     
@@ -1699,23 +1607,16 @@ function initNavigationScript() {
                     }
                     
                     // Phase 2: Read all widths and remove temp elements
-                    const widthData = measurements.map(({ element, link, hasIcon }) => {
+                    const widthData = measurements.map(({ element, link }) => {
                         const width = element.offsetWidth;
                         document.body.removeChild(element);
-                        return { link, width, hasIcon };
+                        return { link, width };
                     });
                     
                     // Phase 3: Apply all widths in one pass (batch DOM writes)
                     requestAnimationFrame(() => {
-                        widthData.forEach(({ link, width, hasIcon }) => {
-                            if (hasIcon) {
-                                // Total width = icon (32px) + gap (8px) + text width
-                                const totalWidth = 32 + 8 + width;
-                                link.style.minWidth = `${totalWidth}px`;
-                                link.style.maxWidth = `${totalWidth}px`;
-                            } else {
-                                link.style.minWidth = `${width}px`;
-                            }
+                        widthData.forEach(({ link, width }) => {
+                            link.style.minWidth = `${width}px`;
                         });
                     });
                 });
