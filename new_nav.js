@@ -1362,7 +1362,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (sportsLogo) {
                                 sportsLogo.addEventListener('load', () => {
                                     sportsLogo.classList.add('loaded');
-                                });
+                                }, { once: true });
+                                // Handle image load errors
+                                sportsLogo.addEventListener('error', () => {
+                                    // Even on error, show the logo (it might have a placeholder)
+                                    sportsLogo.classList.add('loaded');
+                                }, { once: true });
                                 // Handle case where image is already cached
                                 if (sportsLogo.complete) {
                                     sportsLogo.classList.add('loaded');
@@ -1383,7 +1388,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (logo) {
                                 logo.addEventListener('load', () => {
                                     logo.classList.add('loaded');
-                                });
+                                }, { once: true });
+                                // Handle image load errors
+                                logo.addEventListener('error', () => {
+                                    // Even on error, show the logo (it might have a placeholder)
+                                    logo.classList.add('loaded');
+                                }, { once: true });
                                 // Handle case where image is already cached
                                 if (logo.complete) {
                                     logo.classList.add('loaded');
@@ -1460,6 +1470,24 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else {
                             // If already loaded, ensure the loaded class is present
                             icon.classList.add('loaded');
+                        }
+                    });
+                    
+                    // Re-attach event listeners to brand logos after cloning
+                    const clonedBrandLogos = inner.querySelectorAll('.brand-logo');
+                    clonedBrandLogos.forEach(logo => {
+                        // Only re-attach if logo isn't already loaded
+                        if (!logo.complete || !logo.classList.contains('loaded')) {
+                            logo.addEventListener('load', () => {
+                                logo.classList.add('loaded');
+                            }, { once: true });
+                            logo.addEventListener('error', () => {
+                                // Even on error, show the logo (it might have a placeholder)
+                                logo.classList.add('loaded');
+                            }, { once: true });
+                        } else {
+                            // If already loaded, ensure the loaded class is present
+                            logo.classList.add('loaded');
                         }
                     });
                 } else {

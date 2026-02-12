@@ -1300,7 +1300,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (sportsLogo) {
                                 sportsLogo.addEventListener('load', () => {
                                     sportsLogo.classList.add('loaded');
-                                });
+                                }, { once: true });
+                                // Handle image load errors
+                                sportsLogo.addEventListener('error', () => {
+                                    // Even on error, show the logo (it might have a placeholder)
+                                    sportsLogo.classList.add('loaded');
+                                }, { once: true });
                                 // Handle case where image is already cached
                                 if (sportsLogo.complete) {
                                     sportsLogo.classList.add('loaded');
@@ -1321,7 +1326,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (agLogo) {
                                 agLogo.addEventListener('load', () => {
                                     agLogo.classList.add('loaded');
-                                });
+                                }, { once: true });
+                                // Handle image load errors
+                                agLogo.addEventListener('error', () => {
+                                    // Even on error, show the logo (it might have a placeholder)
+                                    agLogo.classList.add('loaded');
+                                }, { once: true });
                                 // Handle case where image is already cached
                                 if (agLogo.complete) {
                                     agLogo.classList.add('loaded');
