@@ -1,0 +1,49 @@
+<!-- 
+    NAVIGATION SCRIPT LOADER WITH FALLBACK
+    Copy this code into your site's <head> section
+    
+    This implementation:
+    1. Tries jsDelivr CDN first (fast, global CDN)
+    2. Automatically falls back to GitHub Pages if jsDelivr fails
+    3. Includes resource hints for optimal performance
+-->
+
+<!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+
+<!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+
+<!-- Step 3: Preload - Downloads script early (non-blocking) -->
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js" as="script">
+
+<!-- Step 4: Load script with automatic fallback -->
+<script>
+(function() {
+    // Try jsDelivr first (primary CDN - fast, global distribution)
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js';
+    script.defer = true;
+    
+    // Fallback to GitHub Pages if jsDelivr fails
+    script.onerror = function() {
+        console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback...');
+        const fallbackScript = document.createElement('script');
+        fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js';
+        fallbackScript.defer = true;
+        fallbackScript.onerror = function() {
+            console.error('Navigation: Both script sources failed to load. Navigation may not function.');
+            // Optional: You could trigger an analytics event here to track failures
+            // if (typeof posthog !== 'undefined') {
+            //     posthog.capture('nav_script_load_failed');
+            // }
+        };
+        document.head.appendChild(fallbackScript);
+    };
+    
+    document.head.appendChild(script);
+})();
+</script>
+

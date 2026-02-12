@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Optimized Script Loading Example</title>
+    
+    <!-- 
+        OPTIMIZED SCRIPT LOADING FOR GITHUB PAGES / JSDELIVR
+        Replace the URL below with your actual script URL
+    -->
+    
+    <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+    
+    <!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+    
+    <!-- Step 3: Preload - Downloads script early (non-blocking) -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js" as="script">
+    
+    <!-- Step 4: Load script with fallback (jsDelivr → GitHub Pages) -->
+    <script>
+    (function() {
+        // Try jsDelivr first (primary CDN)
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js';
+        script.defer = true;
+        
+        // Fallback to GitHub Pages if jsDelivr fails
+        script.onerror = function() {
+            console.warn('jsDelivr failed, trying GitHub Pages fallback...');
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js';
+            fallbackScript.defer = true;
+            fallbackScript.onerror = function() {
+                console.error('Both navigation script sources failed to load');
+            };
+            document.head.appendChild(fallbackScript);
+        };
+        
+        document.head.appendChild(script);
+    })();
+    </script>
+    
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            margin: 0;
+            color: #111;
+        }
+    </style>
+</head>
+<body>
+    <header></header>
+    <!-- Your page content -->
+</body>
+</html>
+
