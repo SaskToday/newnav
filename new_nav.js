@@ -1,9 +1,19 @@
+// Enhanced debugging for nav loading issues
+console.log('[NAV DEBUG] Script file loaded at:', new Date().toISOString());
+console.log('[NAV DEBUG] Document ready state:', document.readyState);
+console.log('[NAV DEBUG] Current URL:', window.location.href);
+
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
-
+    
+    console.log('[NAV DEBUG] DOMContentLoaded fired');
+    console.log('[NAV DEBUG] Document ready state:', document.readyState);
+    console.log('[NAV DEBUG] Header exists:', !!document.querySelector('header'));
+    console.log('[NAV DEBUG] Nav already exists:', !!document.querySelector('#village-nav-container'));
+    
     // Prevent script from running multiple times
     if (window.navScriptLoaded) {
-        console.log('Navigation: Script already loaded, skipping');
+        console.warn('[NAV DEBUG] Script already loaded, skipping');
         return;
     }
     window.navScriptLoaded = true;
@@ -329,53 +339,102 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>`;
 
+    console.log('[NAV DEBUG] Starting nav insertion process');
+    
     // Check if nav already exists (prevent duplicates on page navigation)
     const existingNav = document.querySelector('#village-nav-container');
     if (existingNav) {
-        console.log('Navigation: Nav already exists, skipping insertion');
+        console.log('[NAV DEBUG] Nav already exists, skipping insertion. Existing nav:', existingNav);
         return; // Nav already exists, don't re-insert
     }
     
+    console.log('[NAV DEBUG] No existing nav found, proceeding with insertion');
+    
     // Find header element
     let targetHeader = document.querySelector('header');
+    console.log('[NAV DEBUG] Header element found:', !!targetHeader);
+    
+    if (targetHeader) {
+        console.log('[NAV DEBUG] Header details:', {
+            tagName: targetHeader.tagName,
+            id: targetHeader.id,
+            className: targetHeader.className,
+            parentElement: targetHeader.parentElement?.tagName
+        });
+    }
     
     // If header doesn't exist, wait a bit and try again (for dynamically loaded headers)
     if (!targetHeader) {
-        console.warn('Navigation: Header not found immediately, waiting 100ms...');
+        console.warn('[NAV DEBUG] Header not found immediately, waiting 100ms...');
         setTimeout(function() {
+            console.log('[NAV DEBUG] Retry: Checking for header again');
             targetHeader = document.querySelector('header');
             if (targetHeader) {
-                console.log('Navigation: Header found after delay, inserting nav');
+                console.log('[NAV DEBUG] Header found after delay, inserting nav');
                 insertNav();
             } else {
-                console.error('Navigation: Header element not found after delay. Nav will not be displayed.');
+                console.error('[NAV DEBUG] Header element not found after delay. Nav will not be displayed.');
+                console.error('[NAV DEBUG] Available elements:', {
+                    body: !!document.body,
+                    head: !!document.head,
+                    html: !!document.documentElement
+                });
                 // Fallback: Try to insert into body if header doesn't exist
                 const body = document.body;
                 if (body) {
-                    console.warn('Navigation: Inserting into body as fallback (header not found)');
+                    console.warn('[NAV DEBUG] Inserting into body as fallback (header not found)');
                     body.insertAdjacentHTML('afterbegin', navHTML);
                     initializeNav();
+                } else {
+                    console.error('[NAV DEBUG] Body also not found! Cannot insert nav.');
                 }
             }
         }, 100);
     } else {
+        console.log('[NAV DEBUG] Header found immediately, inserting nav');
         insertNav();
     }
     
     function insertNav() {
+        console.log('[NAV DEBUG] insertNav() called');
         if (!targetHeader) {
             targetHeader = document.querySelector('header');
+            console.log('[NAV DEBUG] Re-checked for header:', !!targetHeader);
         }
         if (targetHeader) {
+            console.log('[NAV DEBUG] Inserting nav HTML into header');
             targetHeader.insertAdjacentHTML('beforeend', navHTML);
+            console.log('[NAV DEBUG] Nav HTML inserted, calling initializeNav()');
             initializeNav();
+        } else {
+            console.error('[NAV DEBUG] insertNav() called but no header found!');
         }
     }
     
     function initializeNav() {
-        initNavLogic();
-        initHoverDropdowns();
-        handleScrollLogic();
+        console.log('[NAV DEBUG] initializeNav() called');
+        console.log('[NAV DEBUG] Verifying nav was inserted:', !!document.querySelector('#village-nav-container'));
+        
+        try {
+            initNavLogic();
+            console.log('[NAV DEBUG] initNavLogic() completed');
+        } catch (e) {
+            console.error('[NAV DEBUG] Error in initNavLogic():', e);
+        }
+        
+        try {
+            initHoverDropdowns();
+            console.log('[NAV DEBUG] initHoverDropdowns() completed');
+        } catch (e) {
+            console.error('[NAV DEBUG] Error in initHoverDropdowns():', e);
+        }
+        
+        try {
+            handleScrollLogic();
+            console.log('[NAV DEBUG] handleScrollLogic() completed');
+        } catch (e) {
+            console.error('[NAV DEBUG] Error in handleScrollLogic():', e);
+        }
         
         // Align bottom-row with active pill on mobile and tablet (after initial render)
         if (window.innerWidth <= 991) {
