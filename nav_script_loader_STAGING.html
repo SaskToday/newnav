@@ -20,7 +20,7 @@
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
 <!-- Note: Update commit hash in script below when you update this -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@8124b0b/new_nav.js" as="script">
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@2f730bb/new_nav.js" as="script">
 
 <!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>
@@ -35,7 +35,7 @@ try {
     
     // Use commit hash instead of branch name for immediate updates (jsDelivr caches by branch)
     // Update this commit hash when you push new changes to staging
-    const COMMIT_HASH = '8124b0b'; // Latest staging commit - update this when you push
+    const COMMIT_HASH = '2f730bb'; // Latest staging commit - update this when you push
     
     // Cache-busting for staging: Add timestamp to ensure we see updates immediately
     const cacheBuster = '?v=' + Date.now();
