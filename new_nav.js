@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-8124b0b';
+    window.navVersion = '2026-02-13-58dfe3b';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -285,7 +285,9 @@ function initNavigationScript() {
             .external-icon { width: 10px !important; height: 10px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
-            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; max-height: calc(100vh - 120px); overflow-y: auto; }
+            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; max-height: 60vh; overflow-y: auto; overflow-x: hidden; }
+            #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; }
+            #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
         </style>
         <div class="nav-content-wrapper">
             <div id="village-nav-dropdown-mobile" style="display: none;">
@@ -821,10 +823,72 @@ function initNavigationScript() {
             const drop = document.getElementById('village-nav-dropdown-mobile');
             const rect = commContainer.getBoundingClientRect();
             const wrapperRect = document.querySelector('.nav-content-wrapper').getBoundingClientRect();
-            drop.style.left = (rect.left - wrapperRect.left) + 'px';
-            drop.style.top = (rect.bottom - wrapperRect.top + 4) + 'px';
+            
+            // Calculate position
+            const left = (rect.left - wrapperRect.left) + 'px';
+            let top = (rect.bottom - wrapperRect.top + 4) + 'px';
+            
+            // Calculate max-height based on viewport to avoid browser UI
+            const viewportHeight = window.innerHeight;
+            const dropdownTop = rect.bottom + 4;
+            const availableHeight = viewportHeight - dropdownTop - 20; // 20px padding from bottom
+            const maxHeight = Math.min(availableHeight, viewportHeight * 0.6); // Cap at 60vh or available space
+            
+            // If dropdown would go off-screen, position it above instead
+            const estimatedDropdownHeight = Math.min(maxHeight, drop.scrollHeight);
+            if (dropdownTop + estimatedDropdownHeight > viewportHeight - 20) {
+                // Position above the trigger
+                const topAbove = (rect.top - wrapperRect.top - estimatedDropdownHeight - 4) + 'px';
+                if (parseFloat(topAbove) > 0) {
+                    top = topAbove;
+                }
+            }
+            
+            drop.style.left = left;
+            drop.style.top = top;
+            drop.style.maxHeight = maxHeight + 'px';
             drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
+            
+            // Update scroll fade after showing
+            if (drop.style.display === 'block') {
+                requestAnimationFrame(() => {
+                    updateDropdownScrollFade(drop);
+                });
+            }
         });
+        
+        // Function to update scroll fade for mobile dropdown
+        function updateDropdownScrollFade(dropdown) {
+            if (!dropdown || window.innerWidth > 990) return;
+            
+            const scrollTop = dropdown.scrollTop;
+            const scrollHeight = dropdown.scrollHeight;
+            const clientHeight = dropdown.clientHeight;
+            const canScrollDown = scrollTop < scrollHeight - clientHeight - 1;
+            
+            // Get or create fade overlay
+            let fadeOverlay = dropdown.querySelector('.dropdown-scroll-fade-bottom');
+            if (!fadeOverlay) {
+                fadeOverlay = document.createElement('div');
+                fadeOverlay.className = 'dropdown-scroll-fade-bottom';
+                dropdown.appendChild(fadeOverlay);
+            }
+            
+            // Show/hide fade based on scroll position
+            if (canScrollDown) {
+                fadeOverlay.classList.add('visible');
+            } else {
+                fadeOverlay.classList.remove('visible');
+            }
+        }
+        
+        // Add scroll listener to dropdown
+        const mobileDropdown = document.getElementById('village-nav-dropdown-mobile');
+        if (mobileDropdown) {
+            mobileDropdown.addEventListener('scroll', () => {
+                updateDropdownScrollFade(mobileDropdown);
+            }, { passive: true });
+        }
 
         document.querySelectorAll('.dropdown-option').forEach(opt => {
             opt.addEventListener('click', () => {
