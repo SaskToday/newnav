@@ -711,22 +711,32 @@ function initNavigationScript() {
         overlays.right.classList.toggle('visible', canScrollRight);
     }
 
-    // Function to align bottom-row-inner with active parent pill on mobile
+    // Function to align bottom-row-inner with active parent pill on mobile and tablet
     function alignBottomRowWithActivePill() {
-        if (window.innerWidth > 990) return; // Only run on mobile
+        if (window.innerWidth > 990) return; // Only run on mobile and tablet
         
         const activePill = document.querySelector('.category-pill.active, #comm-container.active');
         const activeBottomRow = document.querySelector('.bottom-row.active .bottom-row-inner');
         
         if (activePill && activeBottomRow) {
-            // Get the left position of the active pill relative to the nav container
-            const navContainer = document.getElementById('village-nav-container');
+            // Get the left position of the active pill relative to the top-row
+            const topRow = document.querySelector('.top-row');
             const pillRect = activePill.getBoundingClientRect();
-            const containerRect = navContainer.getBoundingClientRect();
-            const pillLeft = pillRect.left - containerRect.left;
+            const topRowRect = topRow ? topRow.getBoundingClientRect() : null;
             
-            // Set the bottom-row-inner padding-left to match the pill's left position
-            activeBottomRow.style.paddingLeft = `${pillLeft}px`;
+            if (topRowRect) {
+                // Calculate pill position relative to top-row's left edge
+                const pillLeft = pillRect.left - topRowRect.left;
+                
+                // Set the bottom-row-inner padding-left to match the pill's left position
+                activeBottomRow.style.paddingLeft = `${pillLeft}px`;
+            } else {
+                // Fallback: use container if top-row not found
+                const navContainer = document.getElementById('village-nav-container');
+                const containerRect = navContainer.getBoundingClientRect();
+                const pillLeft = pillRect.left - containerRect.left;
+                activeBottomRow.style.paddingLeft = `${pillLeft}px`;
+            }
         }
     }
 
