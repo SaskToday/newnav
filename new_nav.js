@@ -233,11 +233,9 @@ function initNavigationScript() {
                     transition: opacity 0.3s ease;
                 }
                 .scroll-fade-overlay.fade-left {
-                    left: 0;
                     background: linear-gradient(to right, var(--nav-bg) 0%, var(--nav-bg) 40%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0.7) 80%, transparent 100%);
                 }
                 .scroll-fade-overlay.fade-right {
-                    right: 0;
                     background: linear-gradient(to left, var(--nav-bg) 0%, var(--nav-bg) 40%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0.7) 80%, transparent 100%);
                 }
                 .scroll-fade-overlay.visible { opacity: 1; }
@@ -699,11 +697,13 @@ function initNavigationScript() {
             fadeOverlays.set(element, overlays);
         }
         
-        // Update vertical position to match element's position
+        // Update position to match element's position
         const rect = element.getBoundingClientRect();
         overlays.left.style.top = `${rect.top}px`;
+        overlays.left.style.left = `${rect.left}px`;
         overlays.left.style.height = `${rect.height}px`;
         overlays.right.style.top = `${rect.top}px`;
+        overlays.right.style.right = `${window.innerWidth - rect.right}px`;
         overlays.right.style.height = `${rect.height}px`;
         
         // Show/hide based on scroll position
