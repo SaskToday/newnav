@@ -233,10 +233,10 @@ function initNavigationScript() {
                     transition: opacity 0.3s ease;
                 }
                 .scroll-fade-overlay.fade-left {
-                    background: linear-gradient(to right, var(--nav-bg) 0%, var(--nav-bg) 40%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0.7) 80%, transparent 100%);
+                    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0.7) 80%, transparent 100%);
                 }
                 .scroll-fade-overlay.fade-right {
-                    background: linear-gradient(to left, var(--nav-bg) 0%, var(--nav-bg) 40%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0.7) 80%, transparent 100%);
+                    background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0.7) 80%, transparent 100%);
                 }
                 .scroll-fade-overlay.visible { opacity: 1; }
             }
@@ -684,6 +684,18 @@ function initNavigationScript() {
         const canScrollLeft = scrollLeft > 0;
         const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1; // -1 for rounding
         
+        // Debug logging
+        if (window.DEBUG_FADES) {
+            console.log('[FADE DEBUG]', {
+                element: element.className || element.id,
+                scrollLeft,
+                scrollWidth,
+                clientWidth,
+                canScrollLeft,
+                canScrollRight
+            });
+        }
+        
         // Get or create overlay divs
         let overlays = fadeOverlays.get(element);
         if (!overlays) {
@@ -695,6 +707,10 @@ function initNavigationScript() {
             document.body.appendChild(rightOverlay);
             overlays = { left: leftOverlay, right: rightOverlay };
             fadeOverlays.set(element, overlays);
+            
+            if (window.DEBUG_FADES) {
+                console.log('[FADE DEBUG] Created overlays for', element.className || element.id);
+            }
         }
         
         // Update position to match element's position
@@ -712,6 +728,17 @@ function initNavigationScript() {
         // Show/hide based on scroll position
         overlays.left.classList.toggle('visible', canScrollLeft);
         overlays.right.classList.toggle('visible', canScrollRight);
+        
+        if (window.DEBUG_FADES) {
+            console.log('[FADE DEBUG] Overlay visibility:', {
+                left: overlays.left.classList.contains('visible'),
+                right: overlays.right.classList.contains('visible'),
+                leftOpacity: window.getComputedStyle(overlays.left).opacity,
+                rightOpacity: window.getComputedStyle(overlays.right).opacity,
+                leftRect: overlays.left.getBoundingClientRect(),
+                rightRect: overlays.right.getBoundingClientRect()
+            });
+        }
     }
 
     // Function to align bottom-row-inner with active parent pill on mobile and tablet
