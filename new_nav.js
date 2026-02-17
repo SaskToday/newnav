@@ -223,10 +223,10 @@ function initNavigationScript() {
                 
                 /* Fade effects for scrollable containers - using overlay divs (mobile and tablet) */
                 .scroll-fade-overlay {
-                    position: fixed;
+                    position: absolute;
                     width: 40px;
                     pointer-events: none;
-                    z-index: 18;
+                    z-index: 12;
                     opacity: 0;
                     transition: opacity 0.3s ease;
                     border: none;
@@ -689,18 +689,6 @@ function initNavigationScript() {
         const canScrollLeft = scrollLeft > 0;
         const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1; // -1 for rounding
         
-        // Debug logging
-        if (window.DEBUG_FADES) {
-            console.log('[FADE DEBUG]', {
-                element: element.className || element.id,
-                scrollLeft,
-                scrollWidth,
-                clientWidth,
-                canScrollLeft,
-                canScrollRight
-            });
-        }
-        
         // Get or create overlay divs
         let overlays = fadeOverlays.get(element);
         if (!overlays) {
@@ -708,71 +696,42 @@ function initNavigationScript() {
             leftOverlay.className = 'scroll-fade-overlay fade-left';
             const rightOverlay = document.createElement('div');
             rightOverlay.className = 'scroll-fade-overlay fade-right';
-            document.body.appendChild(leftOverlay);
-            document.body.appendChild(rightOverlay);
+            element.parentNode.appendChild(leftOverlay);
+            element.parentNode.appendChild(rightOverlay);
             overlays = { left: leftOverlay, right: rightOverlay };
             fadeOverlays.set(element, overlays);
-            
-            if (window.DEBUG_FADES) {
-                console.log('[FADE DEBUG] Created overlays for', element.className || element.id);
-            }
         }
         
-        // Update position to match element's position
-        const rect = element.getBoundingClientRect();
-        overlays.left.style.top = `${rect.top}px`;
-        overlays.left.style.left = `${rect.left}px`;
+        // Update position relative to the scrollable row's parent container
+        const overlayWidth = 40;
+        overlays.left.style.top = `${element.offsetTop}px`;
+        overlays.left.style.left = `${element.offsetLeft}px`;
+        overlays.left.style.height = `${element.clientHeight}px`;
         overlays.left.style.bottom = 'auto';
-        overlays.left.style.height = `${rect.height}px`;
-        overlays.right.style.top = `${rect.top}px`;
-        overlays.right.style.left = 'auto';
-        overlays.right.style.right = `${window.innerWidth - rect.right}px`;
+        overlays.left.style.right = 'auto';
+
+        overlays.right.style.top = `${element.offsetTop}px`;
+        overlays.right.style.left = `${element.offsetLeft + element.clientWidth - overlayWidth}px`;
+        overlays.right.style.height = `${element.clientHeight}px`;
         overlays.right.style.bottom = 'auto';
-        overlays.right.style.height = `${rect.height}px`;
+        overlays.right.style.right = 'auto';
         
         // Show/hide based on scroll position
         overlays.left.classList.toggle('visible', canScrollLeft);
         overlays.right.classList.toggle('visible', canScrollRight);
-        
-        // Always log for debugging
-        const leftComputed = window.getComputedStyle(overlays.left);
-        const rightComputed = window.getComputedStyle(overlays.right);
-        const leftRect = overlays.left.getBoundingClientRect();
-        const rightRect = overlays.right.getBoundingClientRect();
-        
-        console.log('[FADE DEBUG]', {
-            element: element.className || element.id || 'unknown',
-            scrollLeft,
-            scrollWidth,
-            clientWidth,
-            canScrollLeft,
-            canScrollRight,
-            elementRect: rect,
-            leftOverlay: {
-                visible: overlays.left.classList.contains('visible'),
-                opacity: leftComputed.opacity,
-                zIndex: leftComputed.zIndex,
-                position: leftComputed.position,
-                top: leftComputed.top,
-                left: leftComputed.left,
-                height: leftComputed.height,
-                width: leftComputed.width,
-                rect: leftRect,
-                inDOM: document.body.contains(overlays.left)
-            },
-            rightOverlay: {
-                visible: overlays.right.classList.contains('visible'),
-                opacity: rightComputed.opacity,
-                zIndex: rightComputed.zIndex,
-                position: rightComputed.position,
-                top: rightComputed.top,
-                right: rightComputed.right,
-                height: rightComputed.height,
-                width: rightComputed.width,
-                rect: rightRect,
-                inDOM: document.body.contains(overlays.right)
-            }
-        });
+
+        if (window.DEBUG_FADES) {
+            console.log('[FADE DEBUG]', {
+                element: element.className || element.id || 'unknown',
+                scrollLeft,
+                scrollWidth,
+                clientWidth,
+                canScrollLeft,
+                canScrollRight,
+                leftVisible: overlays.left.classList.contains('visible'),
+                rightVisible: overlays.right.classList.contains('visible')
+            });
+        }
     }
 
     // Function to align bottom-row-inner with active parent pill on mobile and tablet
