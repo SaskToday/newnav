@@ -1119,6 +1119,7 @@ function initNavigationScript() {
                 communityLinks.forEach(link => {
                     const a = document.createElement('a');
                     a.href = link.url;
+                    a.setAttribute('data-text', link.text);
                     a.textContent = link.text;
                     communityItems.appendChild(a);
                 });
@@ -1131,6 +1132,43 @@ function initNavigationScript() {
                 searchMegaMenu.appendChild(inner);
                 searchMegaMenu.classList.add('visible');
                 if (container) container.classList.add('mega-menu-open');
+
+                // Prevent column shift on hover by reserving bold-text width (same approach as Communities menu)
+                requestAnimationFrame(() => {
+                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
+                    const measurements = [];
+
+                    allLinks.forEach(link => {
+                        const text = link.getAttribute('data-text') || link.textContent.trim();
+                        if (text) {
+                            const temp = document.createElement('span');
+                            temp.style.position = 'absolute';
+                            temp.style.visibility = 'hidden';
+                            temp.style.fontSize = '12px';
+                            temp.style.fontWeight = 'bold';
+                            temp.style.whiteSpace = 'nowrap';
+                            temp.textContent = text;
+                            document.body.appendChild(temp);
+                            measurements.push({ element: temp, link });
+                        }
+                    });
+
+                    if (measurements.length > 0) {
+                        void measurements[0].element.offsetWidth;
+                    }
+
+                    const widthData = measurements.map(({ element, link }) => {
+                        const width = element.offsetWidth;
+                        document.body.removeChild(element);
+                        return { link, width };
+                    });
+
+                    requestAnimationFrame(() => {
+                        widthData.forEach(({ link, width }) => {
+                            link.style.minWidth = `${width}px`;
+                        });
+                    });
+                });
                 
                 // Trigger PostHog recording when search mega menu appears (desktop)
                 if (window.innerWidth > 990) {
