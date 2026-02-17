@@ -701,9 +701,12 @@ function initNavigationScript() {
         const rect = element.getBoundingClientRect();
         overlays.left.style.top = `${rect.top}px`;
         overlays.left.style.left = `${rect.left}px`;
+        overlays.left.style.bottom = 'auto';
         overlays.left.style.height = `${rect.height}px`;
         overlays.right.style.top = `${rect.top}px`;
+        overlays.right.style.left = 'auto';
         overlays.right.style.right = `${window.innerWidth - rect.right}px`;
+        overlays.right.style.bottom = 'auto';
         overlays.right.style.height = `${rect.height}px`;
         
         // Show/hide based on scroll position
