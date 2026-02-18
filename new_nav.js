@@ -594,7 +594,7 @@ function initNavigationScript() {
                     document.querySelectorAll('.bottom-row-inner').forEach(row => {
                         updateScrollFades(row);
                     });
-                    requestDesktopChildScrollControlsUpdate();
+                    cleanupDesktopChildScrollOverlays();
                 } else {
                     // Desktop updates
                     // Reset padding on desktop
@@ -761,6 +761,7 @@ function initNavigationScript() {
     }
 
     function ensureDesktopChildScrollElements(row) {
+        if (window.innerWidth <= 990) return null;
         if (!row) return null;
         const bottomRow = row.closest('.bottom-row');
         if (!bottomRow) return null;
@@ -833,9 +834,23 @@ function initNavigationScript() {
         });
     }
 
+    function cleanupDesktopChildScrollOverlays() {
+        desktopChildScrollOverlays.forEach((controls, row) => {
+            if (controls.leftFade && controls.leftFade.parentNode) controls.leftFade.remove();
+            if (controls.rightFade && controls.rightFade.parentNode) controls.rightFade.remove();
+            if (controls.leftArrow && controls.leftArrow.parentNode) controls.leftArrow.remove();
+            if (controls.rightArrow && controls.rightArrow.parentNode) controls.rightArrow.remove();
+        });
+        desktopChildScrollOverlays.clear();
+    }
+
     let desktopChildControlsRaf = null;
     let desktopChildControlsTimeout = null;
     function requestDesktopChildScrollControlsUpdate() {
+        if (window.innerWidth <= 990) {
+            cleanupDesktopChildScrollOverlays();
+            return;
+        }
         // Immediate pass for already-settled layouts
         updateAllDesktopChildScrollControls();
 
