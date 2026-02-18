@@ -28,6 +28,7 @@ function initNavigationScript() {
     // Bottom trending story feature flags (easy on/off + positioning override)
     const ENABLE_BOTTOM_TRENDING_STORY = window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
+    const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const TRENDING_RSS_URL = window.NAV_TRENDING_RSS_URL || 'https://www.sasktoday.ca/rss/trending';
     const TRENDING_RSS_SOURCES = Array.from(new Set([
         `${window.location.origin}/rss/agriculture`,
@@ -337,6 +338,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar .story-link:hover { color: #000; text-decoration: underline; }
             #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
             #bottom-trending-story-bar .close-btn:hover { color: #111827; }
+            #bottom-sticky-ad-sim { position: fixed; left: 0; right: 0; bottom: 0; height: 70px; background: #f3f4f6; border-top: 1px solid #d1d5db; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6b7280; }
             @media (max-width: 767px) {
                 #bottom-trending-story-bar { left: 8px; right: 8px; padding: 9px 10px; }
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
@@ -491,6 +493,15 @@ function initNavigationScript() {
         } catch (e) {
             console.error('[NAV DEBUG] Error in initBottomTrendingStoryBar():', e);
         }
+
+        // Keep bottom trending bar/ad synced to viewport mode (mobile-only feature)
+        let bottomTrendingResizeTimeout = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(bottomTrendingResizeTimeout);
+            bottomTrendingResizeTimeout = setTimeout(() => {
+                initBottomTrendingStoryBar();
+            }, 150);
+        });
         
         // Align bottom-row with active pill on mobile and tablet (after initial render)
         if (window.innerWidth <= 991) {
@@ -659,10 +670,29 @@ function initNavigationScript() {
 
     async function initBottomTrendingStoryBar() {
         const existing = document.getElementById('bottom-trending-story-bar');
-        if (!ENABLE_BOTTOM_TRENDING_STORY) {
+        const existingAd = document.getElementById('bottom-sticky-ad-sim');
+        const isMobileViewport = window.innerWidth <= 990;
+
+        if (!isMobileViewport) {
             if (existing) existing.remove();
+            if (existingAd) existingAd.remove();
             return;
         }
+
+        if (!ENABLE_BOTTOM_TRENDING_STORY) {
+            if (existing) existing.remove();
+            if (existingAd) existingAd.remove();
+            return;
+        }
+
+        if (ENABLE_FAKE_BOTTOM_AD_UNIT && !existingAd) {
+            const fakeAd = document.createElement('div');
+            fakeAd.id = 'bottom-sticky-ad-sim';
+            fakeAd.style.height = `${BOTTOM_STICKY_AD_HEIGHT}px`;
+            fakeAd.textContent = 'Sticky Ad Unit (Simulated)';
+            document.body.appendChild(fakeAd);
+        }
+
         if (existing) return;
         let lastError = null;
 
