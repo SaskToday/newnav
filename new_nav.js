@@ -545,6 +545,7 @@ function initNavigationScript() {
                 updateActiveIconColors();
                 // Re-align bottom row when active pill changes
                 requestAnimationFrame(() => {
+                    pinMobilePillOrder();
                     alignBottomRowWithActivePill();
                     // Update fade effects after alignment
                     const activeBottomRow = document.querySelector('.bottom-row.active .bottom-row-inner');
@@ -630,6 +631,7 @@ function initNavigationScript() {
                 if (window.innerWidth <= 991) {
                     // Mobile/tablet updates
                     updateActiveIconColors();
+                    pinMobilePillOrder();
                     alignBottomRowWithActivePill();
                     // Update fade effects on resize (mobile and tablet)
                     const topRow = document.getElementById('main-top-row');
@@ -1112,6 +1114,24 @@ function initNavigationScript() {
         });
     }
 
+    function pinMobilePillOrder() {
+        if (window.innerWidth > 990) return;
+        const topRow = document.getElementById('main-top-row');
+        const commContainer = document.getElementById('comm-container');
+        if (!topRow || !commContainer) return;
+
+        // Keep Communities pinned first.
+        if (topRow.firstElementChild !== commContainer) {
+            topRow.prepend(commContainer);
+        }
+
+        // Keep active parent pill pinned second (if it is not Communities itself).
+        const activePill = topRow.querySelector('.category-pill.active, #comm-container.active');
+        if (activePill && activePill !== commContainer && commContainer.nextElementSibling !== activePill) {
+            commContainer.insertAdjacentElement('afterend', activePill);
+        }
+    }
+
     function initNavLogic() {
         const url = window.location.href.split('?')[0].replace(/\/$/, "");
         const topRow = document.getElementById('main-top-row'), commContainer = document.getElementById('comm-container');
@@ -1123,7 +1143,6 @@ function initNavigationScript() {
             if (url.includes(cat)) {
                 const pill = document.querySelector(`[data-category="${cat}"]`);
                 pill?.classList.add('active');
-                if (window.innerWidth <= 990 && pill) topRow.prepend(pill);
                 const bottomRow = document.getElementById(`category-${cat}`);
                 bottomRow?.classList.add('active');
                 if (bottomRow) container.classList.add('mega-menu-open');
@@ -1134,7 +1153,6 @@ function initNavigationScript() {
             for (let commKey in routes.communities) {
                 if (commKey !== 'all' && url.includes(commKey)) {
                     commContainer.classList.add('active');
-                    if (window.innerWidth <= 990) topRow.prepend(commContainer);
                     document.getElementById('community-label').textContent = commKey.charAt(0).toUpperCase() + commKey.slice(1) + ', SK';
                     const bottomRow = document.getElementById(`community-${commKey}`);
                     bottomRow?.classList.add('active');
@@ -1150,6 +1168,8 @@ function initNavigationScript() {
             defaultBottomRow?.classList.add('active');
             if (defaultBottomRow) container.classList.add('mega-menu-open');
         }
+
+        pinMobilePillOrder();
         
         // Update icon colors for active pills on mobile
         updateActiveIconColors();
