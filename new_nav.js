@@ -763,9 +763,7 @@ function initNavigationScript() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) return;
 
-        const scrollableHeight = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-        const threshold = scrollableHeight * 0.2;
-        const passedThreshold = scrollableHeight <= 0 ? true : window.scrollY >= threshold;
+        const passedThreshold = window.scrollY >= 200;
         bar.classList.toggle('visible', passedThreshold);
     }
 
