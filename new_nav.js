@@ -25,6 +25,11 @@ function initNavigationScript() {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
 
+    // Bottom trending story feature flags (easy on/off + positioning override)
+    const ENABLE_BOTTOM_TRENDING_STORY = window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
+    const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
+    const TRENDING_RSS_URL = window.NAV_TRENDING_RSS_URL || 'https://www.sasktoday.ca/rss/trending';
+
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when any of these nav events are captured
     const triggerPostHogRecording = (eventName) => {
@@ -321,6 +326,16 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
+            #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; bottom: 70px; z-index: 1000; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+            #bottom-trending-story-bar .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; flex-shrink: 0; }
+            #bottom-trending-story-bar .story-link { font-size: 13px; font-weight: 600; color: #111827; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            #bottom-trending-story-bar .story-link:hover { color: #000; text-decoration: underline; }
+            #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
+            #bottom-trending-story-bar .close-btn:hover { color: #111827; }
+            @media (max-width: 767px) {
+                #bottom-trending-story-bar { left: 8px; right: 8px; padding: 9px 10px; }
+                #bottom-trending-story-bar .story-link { font-size: 12px; }
+            }
         </style>
         <div class="nav-content-wrapper">
             <div id="village-nav-dropdown-mobile" style="display: none;">
@@ -463,6 +478,13 @@ function initNavigationScript() {
             console.log('[NAV DEBUG] handleScrollLogic() completed');
         } catch (e) {
             console.error('[NAV DEBUG] Error in handleScrollLogic():', e);
+        }
+
+        try {
+            initBottomTrendingStoryBar();
+            console.log('[NAV DEBUG] initBottomTrendingStoryBar() completed');
+        } catch (e) {
+            console.error('[NAV DEBUG] Error in initBottomTrendingStoryBar():', e);
         }
         
         // Align bottom-row with active pill on mobile and tablet (after initial render)
@@ -628,6 +650,55 @@ function initNavigationScript() {
                 });
             });
         }
+    }
+
+    function initBottomTrendingStoryBar() {
+        const existing = document.getElementById('bottom-trending-story-bar');
+        if (!ENABLE_BOTTOM_TRENDING_STORY) {
+            if (existing) existing.remove();
+            return;
+        }
+        if (existing) return;
+
+        fetch(TRENDING_RSS_URL, { mode: 'cors' })
+            .then(response => {
+                if (!response.ok) throw new Error('Trending RSS request failed');
+                return response.text();
+            })
+            .then(xmlText => {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(xmlText, 'text/xml');
+                const parseError = xml.querySelector('parsererror');
+                if (parseError) throw new Error('Trending RSS parse error');
+
+                const firstItem = xml.querySelector('item');
+                if (!firstItem) return;
+
+                const title = firstItem.querySelector('title')?.textContent?.trim();
+                const link = firstItem.querySelector('link')?.textContent?.trim();
+                if (!title || !link) return;
+
+                const bar = document.createElement('div');
+                bar.id = 'bottom-trending-story-bar';
+                bar.style.bottom = `${BOTTOM_STICKY_AD_HEIGHT}px`;
+                bar.innerHTML = `
+                    <span class="label">Trending</span>
+                    <a class="story-link" href="${link}">${title}</a>
+                    <button class="close-btn" type="button" aria-label="Close trending story bar">&times;</button>
+                `;
+
+                const closeBtn = bar.querySelector('.close-btn');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
+                        bar.remove();
+                    });
+                }
+
+                document.body.appendChild(bar);
+            })
+            .catch(error => {
+                console.error('[NAV DEBUG] Failed to initialize bottom trending story bar:', error);
+            });
     }
 
     function handleScrollLogic() {
