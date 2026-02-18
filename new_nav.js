@@ -29,6 +29,11 @@ function initNavigationScript() {
     const ENABLE_BOTTOM_TRENDING_STORY = window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const TRENDING_RSS_URL = window.NAV_TRENDING_RSS_URL || 'https://www.sasktoday.ca/rss/trending';
+    const TRENDING_RSS_SOURCES = Array.from(new Set([
+        `${window.location.origin}/rss/trending`,
+        TRENDING_RSS_URL,
+        'https://www.sasktoday.ca/rss/trending'
+    ].filter(Boolean)));
 
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when any of these nav events are captured
@@ -652,53 +657,69 @@ function initNavigationScript() {
         }
     }
 
-    function initBottomTrendingStoryBar() {
+    async function initBottomTrendingStoryBar() {
         const existing = document.getElementById('bottom-trending-story-bar');
         if (!ENABLE_BOTTOM_TRENDING_STORY) {
             if (existing) existing.remove();
             return;
         }
         if (existing) return;
+        let lastError = null;
 
-        fetch(TRENDING_RSS_URL, { mode: 'cors' })
-            .then(response => {
-                if (!response.ok) throw new Error('Trending RSS request failed');
-                return response.text();
-            })
-            .then(xmlText => {
+        for (const rssUrl of TRENDING_RSS_SOURCES) {
+            try {
+                const response = await fetch(rssUrl, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`Trending RSS request failed: ${response.status}`);
+
+                const xmlText = await response.text();
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(xmlText, 'text/xml');
                 const parseError = xml.querySelector('parsererror');
                 if (parseError) throw new Error('Trending RSS parse error');
 
                 const firstItem = xml.querySelector('item');
-                if (!firstItem) return;
+                if (!firstItem) throw new Error('Trending RSS has no items');
 
                 const title = firstItem.querySelector('title')?.textContent?.trim();
                 const link = firstItem.querySelector('link')?.textContent?.trim();
-                if (!title || !link) return;
+                if (!title || !link) throw new Error('Trending RSS item missing title or link');
 
                 const bar = document.createElement('div');
                 bar.id = 'bottom-trending-story-bar';
                 bar.style.bottom = `${BOTTOM_STICKY_AD_HEIGHT}px`;
-                bar.innerHTML = `
-                    <span class="label">Trending</span>
-                    <a class="story-link" href="${link}">${title}</a>
-                    <button class="close-btn" type="button" aria-label="Close trending story bar">&times;</button>
-                `;
 
-                const closeBtn = bar.querySelector('.close-btn');
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', () => {
-                        bar.remove();
-                    });
-                }
+                const label = document.createElement('span');
+                label.className = 'label';
+                label.textContent = 'Trending';
 
+                const storyLink = document.createElement('a');
+                storyLink.className = 'story-link';
+                storyLink.href = link;
+                storyLink.textContent = title;
+
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'close-btn';
+                closeBtn.type = 'button';
+                closeBtn.setAttribute('aria-label', 'Close trending story bar');
+                closeBtn.textContent = '×';
+                closeBtn.addEventListener('click', () => {
+                    bar.remove();
+                });
+
+                bar.appendChild(label);
+                bar.appendChild(storyLink);
+                bar.appendChild(closeBtn);
                 document.body.appendChild(bar);
-            })
-            .catch(error => {
-                console.error('[NAV DEBUG] Failed to initialize bottom trending story bar:', error);
-            });
+
+                console.log('[NAV DEBUG] Bottom trending story loaded from:', rssUrl);
+                return;
+            } catch (error) {
+                lastError = error;
+                console.warn('[NAV DEBUG] Trending RSS source failed:', rssUrl, error);
+            }
+        }
+
+        console.error('[NAV DEBUG] Failed to initialize bottom trending story bar:', lastError);
     }
 
     function handleScrollLogic() {
