@@ -185,6 +185,16 @@ function initNavigationScript() {
                 .bottom-row { height: auto !important; }
                 .bottom-row-inner { padding: 7px 0 7px 12px !important; }
                 .text-link { font-size: 12px; }
+                .desktop-child-scroll-fade { position: absolute; top: 0; bottom: 0; width: 34px; pointer-events: none; opacity: 0; transition: opacity 0.2s ease; z-index: 6; }
+                .desktop-child-scroll-fade.fade-left { left: 0; background: linear-gradient(to right, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.35) 75%, transparent 100%); }
+                .desktop-child-scroll-fade.fade-right { right: 0; background: linear-gradient(to left, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.35) 75%, transparent 100%); }
+                .desktop-child-scroll-fade.visible { opacity: 1; }
+                .desktop-child-scroll-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border: 1px solid #e5e7eb; border-radius: 999px; background: #fff; color: #666; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease; z-index: 7; padding: 0; }
+                .desktop-child-scroll-arrow svg { width: 10px; height: 10px; fill: currentColor; }
+                .desktop-child-scroll-arrow.scroll-left { left: 6px; }
+                .desktop-child-scroll-arrow.scroll-right { right: 6px; }
+                .desktop-child-scroll-arrow.visible { opacity: 0.95; pointer-events: auto; }
+                .desktop-child-scroll-arrow:hover { border-color: #cbd5e1; color: #111; }
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
                 .external-icon { width: 10px !important; height: 10px !important; }
                 #category-sports .bottom-row-inner a[href*="sportscage.com"], #category-agriculture .bottom-row-inner a[href*="saskagtoday.com"] { display: none; }
@@ -577,6 +587,7 @@ function initNavigationScript() {
                     document.querySelectorAll('.bottom-row-inner').forEach(row => {
                         updateScrollFades(row);
                     });
+                    updateAllDesktopChildScrollControls();
                 } else {
                     // Desktop updates
                     // Reset padding on desktop
@@ -596,6 +607,7 @@ function initNavigationScript() {
                     fadeOverlays.clear();
                     // Update underline widths on desktop
                     setUnderlineWidth();
+                    updateAllDesktopChildScrollControls();
                 }
             }, 150);
         });
@@ -658,6 +670,7 @@ function initNavigationScript() {
     // Function to update fade effects based on scroll position
     // Uses fixed overlay divs that stay at viewport edges
     const fadeOverlays = new Map(); // Store overlays for each element
+    const desktopChildScrollOverlays = new Map(); // Store desktop child row fades/arrows
     
     // Cleanup function to remove overlays for elements no longer in DOM
     function cleanupFadeOverlays() {
@@ -738,6 +751,79 @@ function initNavigationScript() {
                 rightVisible: overlays.right.classList.contains('visible')
             });
         }
+    }
+
+    function ensureDesktopChildScrollElements(row) {
+        if (!row) return null;
+        const bottomRow = row.closest('.bottom-row');
+        if (!bottomRow) return null;
+
+        let controls = desktopChildScrollOverlays.get(row);
+        if (!controls) {
+            const leftFade = document.createElement('div');
+            leftFade.className = 'desktop-child-scroll-fade fade-left';
+
+            const rightFade = document.createElement('div');
+            rightFade.className = 'desktop-child-scroll-fade fade-right';
+
+            const leftArrow = document.createElement('button');
+            leftArrow.type = 'button';
+            leftArrow.className = 'desktop-child-scroll-arrow scroll-left';
+            leftArrow.setAttribute('aria-label', 'Scroll child menu left');
+            leftArrow.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 4.6 8 12l7.4 7.4-1.4 1.4L5.2 12 14 3.2z"/></svg>';
+
+            const rightArrow = document.createElement('button');
+            rightArrow.type = 'button';
+            rightArrow.className = 'desktop-child-scroll-arrow scroll-right';
+            rightArrow.setAttribute('aria-label', 'Scroll child menu right');
+            rightArrow.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8.6 19.4 7.4-7.4-7.4-7.4L10 3.2 18.8 12 10 20.8z"/></svg>';
+
+            leftArrow.addEventListener('click', (e) => {
+                e.preventDefault();
+                row.scrollBy({ left: -220, behavior: 'smooth' });
+            });
+            rightArrow.addEventListener('click', (e) => {
+                e.preventDefault();
+                row.scrollBy({ left: 220, behavior: 'smooth' });
+            });
+
+            row.addEventListener('scroll', () => updateDesktopChildScrollControls(row), { passive: true });
+
+            bottomRow.appendChild(leftFade);
+            bottomRow.appendChild(rightFade);
+            bottomRow.appendChild(leftArrow);
+            bottomRow.appendChild(rightArrow);
+
+            controls = { leftFade, rightFade, leftArrow, rightArrow };
+            desktopChildScrollOverlays.set(row, controls);
+        }
+
+        return controls;
+    }
+
+    function updateDesktopChildScrollControls(row) {
+        if (!row) return;
+        const controls = ensureDesktopChildScrollElements(row);
+        if (!controls) return;
+
+        const bottomRow = row.closest('.bottom-row');
+        const isDesktop = window.innerWidth > 990;
+        const isVisible = bottomRow && bottomRow.classList.contains('active') && getComputedStyle(bottomRow).display !== 'none';
+        const hasOverflow = row.scrollWidth > row.clientWidth + 1;
+        const canScrollLeft = row.scrollLeft > 1;
+        const canScrollRight = row.scrollLeft < row.scrollWidth - row.clientWidth - 1;
+        const showControls = isDesktop && isVisible && hasOverflow;
+
+        controls.leftFade.classList.toggle('visible', showControls && canScrollLeft);
+        controls.rightFade.classList.toggle('visible', showControls && canScrollRight);
+        controls.leftArrow.classList.toggle('visible', showControls && canScrollLeft);
+        controls.rightArrow.classList.toggle('visible', showControls && canScrollRight);
+    }
+
+    function updateAllDesktopChildScrollControls() {
+        document.querySelectorAll('.bottom-row-inner.hide-scrollbar').forEach(row => {
+            updateDesktopChildScrollControls(row);
+        });
     }
 
     // Function to align bottom-row-inner with active parent pill on mobile and tablet
@@ -964,6 +1050,13 @@ function initNavigationScript() {
             if (url === link.href.replace(/\/$/, "")) link.classList.add('active');
         });
 
+        // Desktop child-row overflow cues (fade + arrows)
+        if (window.innerWidth > 990) {
+            requestAnimationFrame(() => {
+                updateAllDesktopChildScrollControls();
+            });
+        }
+
         // Mobile and tablet horizontal scroll tracking for PostHog
         if (window.innerWidth <= 991) {
             let scrollTimeout = null;
@@ -1184,6 +1277,7 @@ function initNavigationScript() {
                 if (activeBottomRow) {
                     activeBottomRow.style.display = 'none';
                 }
+                updateAllDesktopChildScrollControls();
                 
                 // Handle search input
                 const searchInput = document.getElementById('search-input');
@@ -1217,6 +1311,7 @@ function initNavigationScript() {
                     if (activeBottomRow) {
                         activeBottomRow.style.display = 'flex';
                     }
+                    updateAllDesktopChildScrollControls();
                 }
             };
             
@@ -1576,6 +1671,7 @@ function initNavigationScript() {
                 document.querySelectorAll('.bottom-row').forEach(row => {
                     row.style.display = 'none';
                 });
+                updateAllDesktopChildScrollControls();
                 
                 // Remove JavaScript positioning - not needed with relative positioning
                 
@@ -1682,6 +1778,7 @@ function initNavigationScript() {
                     if (activeBottomRow) {
                         activeBottomRow.style.display = 'flex';
                     }
+                    updateAllDesktopChildScrollControls();
                 }, 300); // 300ms delay - longer than show delay to prevent flicker when moving between parents
             };
 
