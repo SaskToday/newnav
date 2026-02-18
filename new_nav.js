@@ -193,13 +193,13 @@ function initNavigationScript() {
                 .bottom-row-inner { padding: 7px 0 7px 12px !important; }
                 .text-link { font-size: 12px; }
                 .desktop-child-scroll-fade { position: absolute; top: 0; bottom: 0; width: 34px; pointer-events: none; opacity: 0; transition: opacity 0.2s ease; z-index: 6; }
-                .desktop-child-scroll-fade.fade-left { left: 0; background: linear-gradient(to right, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.35) 75%, transparent 100%); }
-                .desktop-child-scroll-fade.fade-right { right: 0; background: linear-gradient(to left, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.35) 75%, transparent 100%); }
+                .desktop-child-scroll-fade.fade-left { left: 24px; background: linear-gradient(to right, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.35) 75%, transparent 100%); }
+                .desktop-child-scroll-fade.fade-right { right: 24px; background: linear-gradient(to left, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0.35) 75%, transparent 100%); }
                 .desktop-child-scroll-fade.visible { opacity: 1; }
-                .desktop-child-scroll-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border: 1px solid #e5e7eb; border-radius: 999px; background: #fff; color: #666; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease; z-index: 7; padding: 0; }
+                .desktop-child-scroll-arrow { position: absolute; top: calc(50% - 1px); transform: translateY(-50%); width: 22px; height: 22px; border: 1px solid #e5e7eb; border-radius: 999px; background: #fff; color: #666; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease; z-index: 7; padding: 0; }
                 .desktop-child-scroll-arrow svg { width: 10px; height: 10px; fill: currentColor; }
-                .desktop-child-scroll-arrow.scroll-left { left: 6px; }
-                .desktop-child-scroll-arrow.scroll-right { right: 6px; }
+                .desktop-child-scroll-arrow.scroll-left { left: 0; }
+                .desktop-child-scroll-arrow.scroll-right { right: 0; }
                 .desktop-child-scroll-arrow.visible { opacity: 0.95; pointer-events: auto; }
                 .desktop-child-scroll-arrow:hover { border-color: #cbd5e1; color: #111; }
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
