@@ -333,7 +333,7 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
-            #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; bottom: 70px; z-index: 1000; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+            #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; bottom: 70px; z-index: 1000; background: var(--pill-bg); border: 1px solid #d1d5db; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; gap: 10px; }
             #bottom-trending-story-bar { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
             #bottom-trending-story-bar.visible { opacity: 1; pointer-events: auto; }
             #bottom-trending-story-bar .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; flex-shrink: 0; }
