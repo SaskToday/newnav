@@ -58,6 +58,7 @@ function initNavigationScript() {
     const COMMUNITY_OVERLAY_SEEN_SESSION_KEY = 'vm.nav.community.overlay.seen.session.v1';
     let communityOverlayEl = null;
     let communityOverlayShownThisPage = false;
+    let communityOverlayClosedThisPage = false;
     let communityOverlayAllowedAt = 0;
 
     const routes = {
@@ -1197,6 +1198,13 @@ function initNavigationScript() {
         updateCommunityOverlayVisibility();
     }
 
+    function closeCommunityOverlayForPage() {
+        communityOverlayClosedThisPage = true;
+        if (communityOverlayEl) {
+            communityOverlayEl.classList.remove('visible');
+        }
+    }
+
     function ensureCommunityOverlay() {
         if (communityOverlayEl) return communityOverlayEl;
         communityOverlayEl = document.createElement('div');
@@ -1224,7 +1232,7 @@ function initNavigationScript() {
         const dismissed = isCommunityOverlayDismissed();
         const seenInSession = isCommunityOverlaySeenInSession();
         const delaySatisfied = communityOverlayAllowedAt > 0 && Date.now() >= communityOverlayAllowedAt;
-        const shouldShow = !hasActiveParent && !isCommunitiesDropdownOpen && !isDesktopMegaVisible && !dismissed && delaySatisfied && (!seenInSession || communityOverlayShownThisPage);
+        const shouldShow = !communityOverlayClosedThisPage && !hasActiveParent && !isCommunitiesDropdownOpen && !isDesktopMegaVisible && !dismissed && delaySatisfied && (!seenInSession || communityOverlayShownThisPage);
 
         if (!shouldShow) {
             if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
@@ -1396,6 +1404,9 @@ function initNavigationScript() {
                 content.style.maxHeight = maxHeight + 'px';
             }
             drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
+            if (drop.style.display === 'block') {
+                closeCommunityOverlayForPage();
+            }
             updateCommunityOverlayVisibility();
             
             // Update scroll fade after showing
@@ -1648,6 +1659,7 @@ function initNavigationScript() {
                 searchMegaMenu.appendChild(inner);
                 searchMegaMenu.classList.add('visible');
                 if (container) container.classList.add('mega-menu-open');
+                closeCommunityOverlayForPage();
                 updateCommunityOverlayVisibility();
 
                 // Prevent column shift on hover by reserving bold-text width (same approach as Communities menu)
@@ -2144,6 +2156,7 @@ function initNavigationScript() {
                 // Show menu immediately - don't wait for images to load
                 megaMenu.classList.add('visible');
                 container.classList.add('mega-menu-open');
+                closeCommunityOverlayForPage();
                 updateCommunityOverlayVisibility();
                 
                 // Calculate min-widths asynchronously after showing menu to prevent layout shift
