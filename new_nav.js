@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-18-2d754cd';
+    window.navVersion = '2026-02-20-community-overlay';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -53,6 +53,9 @@ function initNavigationScript() {
             console.debug('PostHog not available:', error);
         }
     };
+
+    const COMMUNITY_OVERLAY_DISMISS_KEY = 'vm.nav.community.overlay.dismissed.v1';
+    let communityOverlayEl = null;
 
     const routes = {
         communities: {
@@ -282,6 +285,45 @@ function initNavigationScript() {
                     box-shadow: none;
                 }
                 .scroll-fade-overlay.visible { opacity: 1; }
+            }
+            .community-tip-overlay {
+                position: fixed;
+                z-index: 20;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 10px;
+                border-radius: 8px;
+                background: #111827;
+                color: #fff;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+                font-size: 12px;
+                font-weight: 700;
+                opacity: 0;
+                transform: translateY(-4px);
+                pointer-events: auto;
+                transition: opacity 0.18s ease, transform 0.18s ease;
+            }
+            .community-tip-overlay.visible { opacity: 1; transform: translateY(0); }
+            .community-tip-overlay::before {
+                content: "";
+                position: absolute;
+                top: -6px;
+                left: 16px;
+                width: 0;
+                height: 0;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-bottom: 6px solid #111827;
+            }
+            .community-tip-overlay-close {
+                border: 0;
+                background: transparent;
+                color: #fff;
+                font-size: 14px;
+                line-height: 1;
+                padding: 0;
+                cursor: pointer;
             }
 
             .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 8; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
@@ -518,11 +560,15 @@ function initNavigationScript() {
                     if (topRow) {
                         updateScrollFades(topRow);
                         // Add scroll listener for top row if not already added
-                        topRow.addEventListener('scroll', () => updateScrollFades(topRow), { passive: true });
+                        topRow.addEventListener('scroll', () => {
+                            updateScrollFades(topRow);
+                            updateCommunityOverlayVisibility();
+                        }, { passive: true });
                     }
                     document.querySelectorAll('.bottom-row-inner').forEach(row => {
                         updateScrollFades(row);
                     });
+                    updateCommunityOverlayVisibility();
                 });
             });
         }
@@ -552,6 +598,7 @@ function initNavigationScript() {
                     if (activeBottomRow) {
                         updateScrollFades(activeBottomRow);
                     }
+                    updateCommunityOverlayVisibility();
                 });
             }
         });
@@ -640,6 +687,7 @@ function initNavigationScript() {
                         updateScrollFades(row);
                     });
                     cleanupDesktopChildScrollOverlays();
+                    updateCommunityOverlayVisibility();
                 } else {
                     // Desktop updates
                     // Reset padding on desktop
@@ -660,9 +708,13 @@ function initNavigationScript() {
                     // Update underline widths on desktop
                     setUnderlineWidth();
                     requestDesktopChildScrollControlsUpdate();
+                    updateCommunityOverlayVisibility();
                 }
             }, 150);
         });
+        window.addEventListener('scroll', () => {
+            updateCommunityOverlayVisibility();
+        }, { passive: true });
         
         // Set underline width on initial load (desktop only)
         if (window.innerWidth > 990) {
@@ -1104,6 +1156,61 @@ function initNavigationScript() {
         }
     }
 
+    function isCommunityOverlayDismissed() {
+        try {
+            return localStorage.getItem(COMMUNITY_OVERLAY_DISMISS_KEY) === '1';
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function dismissCommunityOverlay() {
+        try {
+            localStorage.setItem(COMMUNITY_OVERLAY_DISMISS_KEY, '1');
+        } catch (error) {
+            // Ignore storage failures and just hide this session's overlay.
+        }
+        updateCommunityOverlayVisibility();
+    }
+
+    function ensureCommunityOverlay() {
+        if (communityOverlayEl) return communityOverlayEl;
+        communityOverlayEl = document.createElement('div');
+        communityOverlayEl.className = 'community-tip-overlay';
+        communityOverlayEl.innerHTML = '<span>Find your community</span><button type="button" class="community-tip-overlay-close" aria-label="Dismiss community tip">×</button>';
+        const closeBtn = communityOverlayEl.querySelector('.community-tip-overlay-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dismissCommunityOverlay();
+            });
+        }
+        document.body.appendChild(communityOverlayEl);
+        return communityOverlayEl;
+    }
+
+    function updateCommunityOverlayVisibility() {
+        const hasActiveParent = !!document.querySelector('.category-pill.active, #comm-container.active');
+        const shouldShow = window.innerWidth <= 990 && !hasActiveParent && !isCommunityOverlayDismissed();
+
+        if (!shouldShow) {
+            if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
+            return;
+        }
+
+        const commContainer = document.getElementById('comm-container');
+        if (!commContainer) {
+            if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
+            return;
+        }
+
+        const overlay = ensureCommunityOverlay();
+        const rect = commContainer.getBoundingClientRect();
+        overlay.style.top = `${rect.bottom + 10}px`;
+        overlay.style.left = `${Math.max(8, rect.left)}px`;
+        overlay.classList.add('visible');
+    }
+
     // Function to update icon colors for active pills on mobile (optimized)
     function updateActiveIconColors() {
         if (window.innerWidth > 990) return; // Only run on mobile
@@ -1178,11 +1285,17 @@ function initNavigationScript() {
             if (bottomRow) container.classList.add('mega-menu-open');
         }
 
-        // If no parent/community matched, show a default child row with all community links
+        // If no parent/community matched, show default row (desktop) or overlay cue (mobile).
         if (!document.querySelector('.category-pill.active, #comm-container.active')) {
             const defaultBottomRow = document.getElementById('category-default');
-            defaultBottomRow?.classList.add('active');
-            if (defaultBottomRow) container.classList.add('mega-menu-open');
+            const shouldUseMobileOverlay = window.innerWidth <= 990 && !isCommunityOverlayDismissed();
+            if (shouldUseMobileOverlay) {
+                defaultBottomRow?.classList.remove('active');
+                container.classList.remove('mega-menu-open');
+            } else {
+                defaultBottomRow?.classList.add('active');
+                if (defaultBottomRow) container.classList.add('mega-menu-open');
+            }
         }
 
         pinMobilePillOrder();
@@ -1202,6 +1315,7 @@ function initNavigationScript() {
                 });
             }
         }
+        updateCommunityOverlayVisibility();
 
         // Parent Click Handlers
         document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
