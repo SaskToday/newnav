@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-20-community-overlay-v2';
+    window.navVersion = '2026-02-20-community-overlay-v3';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -58,6 +58,7 @@ function initNavigationScript() {
     const COMMUNITY_OVERLAY_SEEN_SESSION_KEY = 'vm.nav.community.overlay.seen.session.v1';
     let communityOverlayEl = null;
     let communityOverlayShownThisPage = false;
+    let communityOverlayAllowedAt = 0;
 
     const routes = {
         communities: {
@@ -296,11 +297,11 @@ function initNavigationScript() {
                 gap: 14px;
                 padding: 8px 10px;
                 border-radius: 8px;
-                background: rgb(0, 69, 17);
+                background: rgba(30, 58, 138, 0.9);
                 color: #fff;
                 box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-                font-size: 12px;
-                font-weight: 500;
+                font-size: 10px;
+                font-weight: 700;
                 opacity: 0;
                 transform: translateY(-4px);
                 pointer-events: auto;
@@ -316,20 +317,7 @@ function initNavigationScript() {
                 height: 0;
                 border-left: 6px solid transparent;
                 border-right: 6px solid transparent;
-                border-bottom: 6px solid rgb(0, 69, 17);
-            }
-            .community-tip-overlay-action {
-                border: 0;
-                background: transparent;
-                color: #fff;
-                font: inherit;
-                font-size: 12px;
-                font-weight: 500;
-                line-height: 1.2;
-                padding: 0;
-                margin: 0;
-                cursor: pointer;
-                text-align: left;
+                border-bottom: 6px solid rgba(30, 58, 138, 0.9);
             }
             .community-tip-overlay-close {
                 border: 0;
@@ -528,6 +516,10 @@ function initNavigationScript() {
     function initializeNav() {
         console.log('[NAV DEBUG] initializeNav() called');
         console.log('[NAV DEBUG] Verifying nav was inserted:', !!document.querySelector('#village-nav-container'));
+        communityOverlayAllowedAt = Date.now() + 1000;
+        setTimeout(() => {
+            updateCommunityOverlayVisibility();
+        }, 1000);
         
         try {
             initNavLogic();
@@ -1209,14 +1201,10 @@ function initNavigationScript() {
         if (communityOverlayEl) return communityOverlayEl;
         communityOverlayEl = document.createElement('div');
         communityOverlayEl.className = 'community-tip-overlay';
-        communityOverlayEl.innerHTML = '<button type="button" class="community-tip-overlay-action">Find updates from your community</button><button type="button" class="community-tip-overlay-close" aria-label="Dismiss community tip">×</button>';
-        const actionBtn = communityOverlayEl.querySelector('.community-tip-overlay-action');
-        if (actionBtn) {
-            actionBtn.addEventListener('click', () => {
-                if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
-                openCommunitiesMenuFromOverlay();
-            });
-        }
+        communityOverlayEl.innerHTML = '<span>Find updates from your community</span><button type="button" class="community-tip-overlay-close" aria-label="Dismiss community tip">×</button>';
+        communityOverlayEl.addEventListener('click', () => {
+            dismissCommunityOverlay();
+        });
         const closeBtn = communityOverlayEl.querySelector('.community-tip-overlay-close');
         if (closeBtn) {
             closeBtn.addEventListener('click', (event) => {
@@ -1228,25 +1216,12 @@ function initNavigationScript() {
         return communityOverlayEl;
     }
 
-    function openCommunitiesMenuFromOverlay() {
-        const commContainer = document.getElementById('comm-container');
-        if (!commContainer) return;
-
-        if (window.innerWidth <= 990) {
-            commContainer.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-            return;
-        }
-
-        // Desktop communities uses hover-driven mega menu.
-        document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, cancelable: true }));
-        commContainer.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true, cancelable: true }));
-    }
-
     function updateCommunityOverlayVisibility() {
         const hasActiveParent = !!document.querySelector('.category-pill.active, #comm-container.active');
         const dismissed = isCommunityOverlayDismissed();
         const seenInSession = isCommunityOverlaySeenInSession();
-        const shouldShow = !hasActiveParent && !dismissed && (!seenInSession || communityOverlayShownThisPage);
+        const delaySatisfied = communityOverlayAllowedAt > 0 && Date.now() >= communityOverlayAllowedAt;
+        const shouldShow = !hasActiveParent && !dismissed && delaySatisfied && (!seenInSession || communityOverlayShownThisPage);
 
         if (!shouldShow) {
             if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
