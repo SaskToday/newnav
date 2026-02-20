@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-20-no-default-child-row';
+    window.navVersion = '2026-02-20-community-route-updates';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -56,6 +56,9 @@ function initNavigationScript() {
 
     const COMMUNITY_OVERLAY_DISMISS_KEY = 'vm.nav.community.overlay.dismissed.v1';
     const COMMUNITY_OVERLAY_SEEN_SESSION_KEY = 'vm.nav.community.overlay.seen.session.v1';
+    const COMMUNITY_DISPLAY_NAMES = {
+        unitywilkie: 'Unity-Wilkie'
+    };
     let communityOverlayEl = null;
     let communityOverlayShownThisPage = false;
     let communityOverlayClosedThisPage = false;
@@ -68,16 +71,16 @@ function initNavigationScript() {
             estevan: "https://staging-www2.villagemedia.ca/southeast/estevanmercury",
             yorkton: "https://staging-www2.villagemedia.ca/central/yorktonthisweek",
             kamsack: "https://staging-www2.villagemedia.ca/central/kamsacktimes",
-            thebattlefords: "https://staging-www2.villagemedia.ca/north/thebattlefords",
+            thebattlefords: "https://staging-www2.villagemedia.ca/north/battlefordsnewsoptimist",
             canora: "https://staging-www2.villagemedia.ca/central/canora",
-            preeceville: "https://staging-www2.villagemedia.ca/central/preeceville",
-            carlyle: "https://staging-www2.villagemedia.ca/southeast/carlyle",
-            humboldt: "https://staging-www2.villagemedia.ca/central/humboldt",
+            preeceville: "https://staging-www2.villagemedia.ca/central/preecevilleprogress",
+            carlyle: "https://staging-www2.villagemedia.ca/southeast/carlyleobserver",
+            humboldt: "https://staging-www2.villagemedia.ca/north/humboldtjournal",
             moosejaw: "https://staging-www2.villagemedia.ca/southwest/moosejaw",
-            outlook: "https://staging-www2.villagemedia.ca/central/outlook",
-            princealbert: "https://staging-www2.villagemedia.ca/north/princealbert",
-            unitywilkie: "https://staging-www2.villagemedia.ca/north/unitywilkie",
-            weyburn: "https://staging-www2.villagemedia.ca/southeast/weyburn",
+            outlook: "https://staging-www2.villagemedia.ca/north/theoutlook",
+            princealbert: "https://staging-www2.villagemedia.ca/north/prince-albert",
+            unitywilkie: "https://staging-www2.villagemedia.ca/north/unitywilkiepressherald",
+            weyburn: "https://staging-www2.villagemedia.ca/southeast/weyburnreview",
             all: "https://staging-www2.villagemedia.ca/" 
         },
         categories: {
@@ -144,16 +147,16 @@ function initNavigationScript() {
                 { text: "Estevan", url: "https://staging-www2.villagemedia.ca/southeast/estevanmercury" },
                 { text: "Yorkton", url: "https://staging-www2.villagemedia.ca/central/yorktonthisweek" },
                 { text: "Kamsack", url: "https://staging-www2.villagemedia.ca/central/kamsacktimes" },
-                { text: "The Battlefords", url: "https://staging-www2.villagemedia.ca/north/thebattlefords" },
+                { text: "The Battlefords", url: "https://staging-www2.villagemedia.ca/north/battlefordsnewsoptimist" },
                 { text: "Canora", url: "https://staging-www2.villagemedia.ca/central/canora" },
-                { text: "Preeceville", url: "https://staging-www2.villagemedia.ca/central/preeceville" },
-                { text: "Carlyle", url: "https://staging-www2.villagemedia.ca/southeast/carlyle" },
-                { text: "Humboldt", url: "https://staging-www2.villagemedia.ca/central/humboldt" },
+                { text: "Preeceville", url: "https://staging-www2.villagemedia.ca/central/preecevilleprogress" },
+                { text: "Carlyle", url: "https://staging-www2.villagemedia.ca/southeast/carlyleobserver" },
+                { text: "Humboldt", url: "https://staging-www2.villagemedia.ca/north/humboldtjournal" },
                 { text: "Moose Jaw", url: "https://staging-www2.villagemedia.ca/southwest/moosejaw" },
-                { text: "Outlook", url: "https://staging-www2.villagemedia.ca/central/outlook" },
-                { text: "Prince Albert", url: "https://staging-www2.villagemedia.ca/north/princealbert" },
-                { text: "Unity-Wilkie", url: "https://staging-www2.villagemedia.ca/north/unitywilkie" },
-                { text: "Weyburn", url: "https://staging-www2.villagemedia.ca/southeast/weyburn" }
+                { text: "Outlook", url: "https://staging-www2.villagemedia.ca/north/theoutlook" },
+                { text: "Prince Albert", url: "https://staging-www2.villagemedia.ca/north/prince-albert" },
+                { text: "Unity-Wilkie", url: "https://staging-www2.villagemedia.ca/north/unitywilkiepressherald" },
+                { text: "Weyburn", url: "https://staging-www2.villagemedia.ca/southeast/weyburnreview" }
             ]
         }
     };
@@ -1324,7 +1327,8 @@ function initNavigationScript() {
             if (bottomRow) container.classList.add('mega-menu-open');
         } else if (activeParent?.type === 'community') {
             commContainer.classList.add('active');
-            document.getElementById('community-label').textContent = activeParent.key.charAt(0).toUpperCase() + activeParent.key.slice(1) + ', SK';
+            const communityName = COMMUNITY_DISPLAY_NAMES[activeParent.key] || (activeParent.key.charAt(0).toUpperCase() + activeParent.key.slice(1));
+            document.getElementById('community-label').textContent = `${communityName}, SK`;
             const bottomRow = document.getElementById(`community-${activeParent.key}`);
             bottomRow?.classList.add('active');
             if (bottomRow) container.classList.add('mega-menu-open');
