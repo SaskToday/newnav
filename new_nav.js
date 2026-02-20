@@ -391,7 +391,7 @@ function initNavigationScript() {
             .desktop-mega-menu-brand a { text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 12px; width: 100%; cursor: pointer; transition: opacity 0.2s; }
             .desktop-mega-menu-brand a:hover { opacity: 0.7; }
             .desktop-mega-menu-brand-content { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-brand-content .brand-logo { width: 100px; height: auto; margin-bottom: 8px; opacity: 0; transition: opacity 0.3s ease-in-out; }
+            .desktop-mega-menu-brand-content .brand-logo { width: 125px; height: auto; margin-bottom: 8px; opacity: 0; transition: opacity 0.3s ease-in-out; }
             .desktop-mega-menu-brand-content .brand-logo.loaded { opacity: 1; }
             .desktop-mega-menu-brand-content p { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
             @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
@@ -956,7 +956,9 @@ function initNavigationScript() {
 
     function isPathMatch(currentPath, routePath) {
         if (!currentPath || !routePath) return false;
-        return currentPath === routePath || currentPath.startsWith(`${routePath}/`);
+        const current = currentPath.toLowerCase();
+        const route = routePath.toLowerCase();
+        return current === route || current.startsWith(`${route}/`);
     }
 
     function resolveActiveParentFromPath(currentPath) {
