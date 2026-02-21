@@ -293,7 +293,7 @@ function initNavigationScript() {
                 .category-pill.active .category-icon-wrapper .category-icon defs,
                 #comm-container.active .category-icon-wrapper .category-icon defs { display: none !important; }
                 .desktop-down-arrow { display: none !important; }
-                .bottom-row-inner { padding-top: 0; position: relative; }
+                .bottom-row-inner { padding-top: 7px; padding-bottom: 7px; position: relative; }
                 .bottom-row { margin-top: 0 !important; }
                 
                 /* Fade effects for scrollable containers - using overlay divs (mobile and tablet) */
