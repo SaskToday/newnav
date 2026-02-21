@@ -800,6 +800,7 @@ function initNavigationScript() {
 
         if (existing) {
             existing.style.bottom = `${BOTTOM_TRENDING_BOTTOM_OFFSET}px`;
+            applyBottomTrendingBarLayout();
             updateBottomTrendingBarVisibility();
             return;
         }
@@ -849,6 +850,7 @@ function initNavigationScript() {
                 bar.appendChild(storyLink);
                 bar.appendChild(closeBtn);
                 document.body.appendChild(bar);
+                applyBottomTrendingBarLayout();
                 updateBottomTrendingBarVisibility();
                 bindBottomTrendingBarVisibilityHandlers();
 
@@ -865,7 +867,7 @@ function initNavigationScript() {
 
     let bottomTrendingVisibilityHandlersBound = false;
     let bottomTrendingVisibilityTimeout = null;
-    function getFirstParagraphScrollThreshold() {
+    function getFirstContentParagraph() {
         const paragraphs = document.querySelectorAll('main p, article p, .entry-content p, .post-content p, p');
         for (const p of paragraphs) {
             if (!p || !p.isConnected) continue;
@@ -876,6 +878,43 @@ function initNavigationScript() {
             if (style.display === 'none' || style.visibility === 'hidden') continue;
             const rect = p.getBoundingClientRect();
             if (rect.height < 8) continue;
+            return p;
+        }
+        return null;
+    }
+
+    function applyBottomTrendingBarLayout() {
+        const bar = document.getElementById('bottom-trending-story-bar');
+        if (!bar) return;
+
+        if (window.innerWidth <= 990) {
+            // Let CSS handle mobile/tablet sizing.
+            bar.style.left = '';
+            bar.style.right = '';
+            bar.style.transform = '';
+            bar.style.width = '';
+            return;
+        }
+
+        const anchorParagraph = getFirstContentParagraph();
+        if (!anchorParagraph) return;
+
+        const rect = anchorParagraph.getBoundingClientRect();
+        const maxAllowedWidth = window.innerWidth - 20;
+        const width = Math.min(rect.width, maxAllowedWidth);
+        const left = Math.max(10, Math.min(rect.left, window.innerWidth - width - 10));
+
+        // Match desktop bar width/position to the story content column.
+        bar.style.left = `${left}px`;
+        bar.style.right = 'auto';
+        bar.style.transform = 'none';
+        bar.style.width = `${width}px`;
+    }
+
+    function getFirstParagraphScrollThreshold() {
+        const firstParagraph = getFirstContentParagraph();
+        if (firstParagraph) {
+            const rect = firstParagraph.getBoundingClientRect();
             // Trigger when user has passed the end of the first real paragraph.
             return Math.max(0, window.scrollY + rect.bottom);
         }
@@ -898,6 +937,7 @@ function initNavigationScript() {
         const onScrollOrResize = () => {
             clearTimeout(bottomTrendingVisibilityTimeout);
             bottomTrendingVisibilityTimeout = setTimeout(() => {
+                applyBottomTrendingBarLayout();
                 updateBottomTrendingBarVisibility();
             }, 10);
         };
