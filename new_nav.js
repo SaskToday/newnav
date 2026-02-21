@@ -294,6 +294,7 @@ function initNavigationScript() {
                 #comm-container.active .category-icon-wrapper .category-icon defs { display: none !important; }
                 .desktop-down-arrow { display: none !important; }
                 .bottom-row-inner { padding: 3px 0 3px 10px !important; position: relative; }
+                .bottom-row { height: auto !important; }
                 .bottom-row { margin-top: 0 !important; }
                 
                 /* Fade effects for scrollable containers - using overlay divs (mobile and tablet) */
