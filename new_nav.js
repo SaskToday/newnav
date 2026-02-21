@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-20-564457a';
+    window.navVersion = '2026-02-21-bottom-trending-desktop';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -28,7 +28,7 @@ function initNavigationScript() {
     // Bottom trending story feature flags (easy on/off + positioning override)
     const ENABLE_BOTTOM_TRENDING_STORY = window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
-    const BOTTOM_TRENDING_BAR_GAP = Number(window.NAV_BOTTOM_TRENDING_BAR_GAP || 8);
+    const BOTTOM_TRENDING_BOTTOM_OFFSET = Number(window.NAV_BOTTOM_TRENDING_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_FALLBACK_SCROLL_PX = Number(window.NAV_BOTTOM_TRENDING_FALLBACK_SCROLL_PX || 300);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const TRENDING_RSS_URL = window.NAV_TRENDING_RSS_URL || 'https://www.sasktoday.ca/rss/trending';
@@ -413,17 +413,17 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
-            #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; bottom: 70px; z-index: 1000; background: var(--pill-bg); border: 1px solid #d1d5db; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; gap: 10px; }
+            #bottom-trending-story-bar { position: fixed; left: 50%; transform: translateX(-50%); width: min(990px, calc(100% - 20px)); bottom: 100px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; gap: 10px; }
             #bottom-trending-story-bar { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
             #bottom-trending-story-bar.visible { opacity: 1; pointer-events: auto; }
-            #bottom-trending-story-bar .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; flex-shrink: 0; }
+            #bottom-trending-story-bar .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; flex-shrink: 0; }
             #bottom-trending-story-bar .story-link { font-size: 13px; font-weight: 600; color: #111827; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             #bottom-trending-story-bar .story-link:hover { color: #000; text-decoration: underline; }
             #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
             #bottom-trending-story-bar .close-btn:hover { color: #111827; }
             #bottom-sticky-ad-sim { position: fixed; left: 0; right: 0; bottom: 0; height: 70px; background: #f3f4f6; border-top: 1px solid #d1d5db; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6b7280; }
             @media (max-width: 767px) {
-                #bottom-trending-story-bar { left: 8px; right: 8px; padding: 9px 10px; }
+                #bottom-trending-story-bar { width: calc(100% - 16px); padding: 9px 10px; }
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
             }
         </style>
@@ -782,27 +782,27 @@ function initNavigationScript() {
         const existingAd = document.getElementById('bottom-sticky-ad-sim');
         const isMobileViewport = window.innerWidth <= 990;
 
-        if (!isMobileViewport) {
-            if (existing) existing.remove();
-            if (existingAd) existingAd.remove();
-            return;
-        }
-
         if (!ENABLE_BOTTOM_TRENDING_STORY) {
             if (existing) existing.remove();
             if (existingAd) existingAd.remove();
             return;
         }
 
-        if (ENABLE_FAKE_BOTTOM_AD_UNIT && !existingAd) {
+        if (isMobileViewport && ENABLE_FAKE_BOTTOM_AD_UNIT && !existingAd) {
             const fakeAd = document.createElement('div');
             fakeAd.id = 'bottom-sticky-ad-sim';
             fakeAd.style.height = `${BOTTOM_STICKY_AD_HEIGHT}px`;
             fakeAd.textContent = 'Sticky Ad Unit (Simulated)';
             document.body.appendChild(fakeAd);
+        } else if (!isMobileViewport && existingAd) {
+            existingAd.remove();
         }
 
-        if (existing) return;
+        if (existing) {
+            existing.style.bottom = `${BOTTOM_TRENDING_BOTTOM_OFFSET}px`;
+            updateBottomTrendingBarVisibility();
+            return;
+        }
         let lastError = null;
 
         for (const rssUrl of TRENDING_RSS_SOURCES) {
@@ -825,7 +825,7 @@ function initNavigationScript() {
 
                 const bar = document.createElement('div');
                 bar.id = 'bottom-trending-story-bar';
-                bar.style.bottom = `${BOTTOM_STICKY_AD_HEIGHT + BOTTOM_TRENDING_BAR_GAP}px`;
+                bar.style.bottom = `${BOTTOM_TRENDING_BOTTOM_OFFSET}px`;
 
                 const label = document.createElement('span');
                 label.className = 'label';
