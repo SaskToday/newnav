@@ -32,6 +32,7 @@ function initNavigationScript() {
     const NEXT_READ_SHOW_PROGRESS = Number(window.NAV_NEXT_READ_SHOW_PROGRESS ?? 0.25);
     const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS ?? -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 200);
+    const NEXT_READ_MOBILE_HIDE_TOP_PX = Number(window.NAV_NEXT_READ_MOBILE_HIDE_TOP_PX || 80);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || 'https://www.sasktoday.ca/rss';
     const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
@@ -1121,11 +1122,21 @@ function initNavigationScript() {
 
         const { showPx, hidePx } = getNextReadScrollThresholds();
         const currentY = window.scrollY;
+        const isMobileViewport = window.innerWidth <= 990;
 
-        if (!bottomTrendingVisibleState && currentY >= showPx) {
-            bottomTrendingVisibleState = true;
-        } else if (bottomTrendingVisibleState && currentY <= hidePx) {
-            bottomTrendingVisibleState = false;
+        if (isMobileViewport) {
+            // Mobile latch to avoid slow-scroll threshold chattering/jitter.
+            if (!bottomTrendingVisibleState && currentY >= showPx) {
+                bottomTrendingVisibleState = true;
+            } else if (bottomTrendingVisibleState && currentY <= NEXT_READ_MOBILE_HIDE_TOP_PX) {
+                bottomTrendingVisibleState = false;
+            }
+        } else {
+            if (!bottomTrendingVisibleState && currentY >= showPx) {
+                bottomTrendingVisibleState = true;
+            } else if (bottomTrendingVisibleState && currentY <= hidePx) {
+                bottomTrendingVisibleState = false;
+            }
         }
 
         bar.classList.toggle('visible', bottomTrendingVisibleState);
