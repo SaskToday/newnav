@@ -29,7 +29,8 @@ function initNavigationScript() {
     const ENABLE_NEXT_READ = window.NAV_ENABLE_NEXT_READ !== false && window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const BOTTOM_TRENDING_BOTTOM_OFFSET = Number(window.NAV_BOTTOM_TRENDING_BOTTOM_OFFSET || 100);
-    const BOTTOM_TRENDING_FALLBACK_SCROLL_PX = Number(window.NAV_BOTTOM_TRENDING_FALLBACK_SCROLL_PX || 300);
+    const NEXT_READ_SHOW_PROGRESS = Number(window.NAV_NEXT_READ_SHOW_PROGRESS ?? 0.25);
+    const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 200);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || 'https://www.sasktoday.ca/rss';
     const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
@@ -997,7 +998,6 @@ function initNavigationScript() {
 
     let bottomTrendingVisibilityHandlersBound = false;
     let bottomTrendingParagraphCache = null;
-    let bottomTrendingThresholdCache = null;
     let bottomTrendingLayoutRaf = null;
     let bottomTrendingLayoutMode = '';
     let bottomTrendingLayoutLeft = '';
@@ -1005,7 +1005,6 @@ function initNavigationScript() {
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
-        bottomTrendingThresholdCache = null;
     }
 
     function getFirstContentParagraph() {
@@ -1069,24 +1068,18 @@ function initNavigationScript() {
         }
     }
 
-    function getFirstParagraphScrollThreshold() {
-        if (bottomTrendingThresholdCache !== null) return bottomTrendingThresholdCache;
-        const firstParagraph = getFirstContentParagraph();
-        if (firstParagraph) {
-            const rect = firstParagraph.getBoundingClientRect();
-            // Trigger when user has passed the end of the first real paragraph.
-            bottomTrendingThresholdCache = Math.max(0, window.scrollY + rect.bottom);
-            return bottomTrendingThresholdCache;
-        }
-        bottomTrendingThresholdCache = BOTTOM_TRENDING_FALLBACK_SCROLL_PX;
-        return bottomTrendingThresholdCache;
+    function getNextReadScrollThreshold() {
+        const maxScrollable = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        const clampedProgress = Math.min(0.95, Math.max(0, NEXT_READ_SHOW_PROGRESS));
+        const progressThreshold = maxScrollable * clampedProgress;
+        return Math.max(NEXT_READ_MIN_SHOW_SCROLL_PX, progressThreshold);
     }
 
     function updateBottomTrendingBarVisibility() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) return;
 
-        const threshold = getFirstParagraphScrollThreshold();
+        const threshold = getNextReadScrollThreshold();
         const passedThreshold = window.scrollY >= threshold;
         bar.classList.toggle('visible', passedThreshold);
     }
