@@ -413,9 +413,12 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
-            #bottom-trending-story-bar { position: fixed; left: 50%; transform: translateX(-50%); width: min(990px, calc(100% - 20px)); bottom: 100px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; gap: 10px; }
+            #bottom-trending-story-bar { position: fixed; left: 50%; transform: translateX(-50%); width: min(990px, calc(100% - 20px)); bottom: 100px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; gap: 10px; overflow: visible; }
             #bottom-trending-story-bar { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
             #bottom-trending-story-bar.visible { opacity: 1; pointer-events: auto; }
+            #bottom-trending-story-bar::before, #bottom-trending-story-bar::after { content: ""; position: absolute; left: 10px; right: 10px; height: 12px; pointer-events: none; filter: blur(6px); opacity: 0.45; }
+            #bottom-trending-story-bar::before { top: -9px; background: linear-gradient(to top, rgba(255,255,255,0.65), rgba(255,255,255,0)); }
+            #bottom-trending-story-bar::after { bottom: -9px; background: linear-gradient(to bottom, rgba(255,255,255,0.65), rgba(255,255,255,0)); }
             #bottom-trending-story-bar .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; flex-shrink: 0; }
             #bottom-trending-story-bar .story-link { font-size: 13px; font-weight: 600; color: #111827; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             #bottom-trending-story-bar .story-link:hover { color: #000; text-decoration: underline; }
@@ -830,7 +833,7 @@ function initNavigationScript() {
 
                 const label = document.createElement('span');
                 label.className = 'label';
-                label.textContent = 'For You';
+                label.textContent = 'NEXT READ';
 
                 const storyLink = document.createElement('a');
                 storyLink.className = 'story-link';
