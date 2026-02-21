@@ -293,7 +293,7 @@ function initNavigationScript() {
                 .category-pill.active .category-icon-wrapper .category-icon defs,
                 #comm-container.active .category-icon-wrapper .category-icon defs { display: none !important; }
                 .desktop-down-arrow { display: none !important; }
-                .bottom-row-inner { padding: 6px 0 3px 10px !important; position: relative; }
+                .bottom-row-inner { padding: 6px 0 5px 10px !important; position: relative; }
                 .bottom-row { height: auto !important; }
                 .bottom-row { margin-top: 0 !important; }
                 
