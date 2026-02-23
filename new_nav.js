@@ -425,6 +425,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
             #bottom-trending-story-bar .close-btn:hover { color: #111827; }
             #bottom-sticky-ad-sim { position: fixed; left: 0; right: 0; bottom: 0; height: 70px; background: #f3f4f6; border-top: 1px solid #d1d5db; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6b7280; }
+            #body-container { margin-top: var(--nav-total-height, 0px); transition: margin-top 0.2s ease; }
             @media (max-width: 767px) {
                 #bottom-trending-story-bar { left: 8px; right: 8px; width: auto; padding: 9px 10px; contain: layout style paint; }
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
@@ -601,6 +602,7 @@ function initNavigationScript() {
                 clearTimeout(bottomTrendingResizeTimeout);
                 bottomTrendingResizeTimeout = setTimeout(() => {
                     initBottomTrendingStoryBar();
+                    updateBodyContainerMargin();
                 }, 150);
             });
         }
@@ -624,6 +626,7 @@ function initNavigationScript() {
                         updateScrollFades(row);
                     });
                     updateCommunityOverlayVisibility();
+                    updateBodyContainerMargin();
                 });
             });
         }
@@ -1590,6 +1593,28 @@ function initNavigationScript() {
         }
     }
 
+    function updateBodyContainerMargin() {
+        requestAnimationFrame(() => {
+            const navContainer = document.getElementById('village-nav-container');
+            if (!navContainer) return;
+            
+            const topRow = document.getElementById('main-top-row');
+            const activeBottomRow = document.querySelector('.bottom-row.active');
+            
+            let totalHeight = 0;
+            if (topRow) {
+                totalHeight += topRow.offsetHeight || 0;
+            }
+            if (activeBottomRow) {
+                totalHeight += activeBottomRow.offsetHeight || 0;
+            }
+            
+            document.documentElement.style.setProperty('--nav-total-height', `${totalHeight}px`);
+            
+            console.log('[NAV DEBUG] Updated body-container margin:', totalHeight, 'px');
+        });
+    }
+
     // Function to update icon colors for active pills on mobile (optimized)
     function updateActiveIconColors() {
         if (window.innerWidth > 990) return; // Only run on mobile
@@ -1690,6 +1715,7 @@ function initNavigationScript() {
             }
         }
         updateCommunityOverlayVisibility();
+        updateBodyContainerMargin();
 
         // Parent Click Handlers
         document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
