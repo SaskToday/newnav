@@ -425,7 +425,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
             #bottom-trending-story-bar .close-btn:hover { color: #111827; }
             #bottom-sticky-ad-sim { position: fixed; left: 0; right: 0; bottom: 0; height: 70px; background: #f3f4f6; border-top: 1px solid #d1d5db; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6b7280; }
-            #body-container { margin-top: var(--nav-total-height, 0px); transition: margin-top 0.2s ease; }
+            #body-container { margin-top: var(--nav-total-height, 100px); transition: margin-top 0.2s ease; }
             @media (max-width: 767px) {
                 #bottom-trending-story-bar { left: 8px; right: 8px; width: auto; padding: 9px 10px; contain: layout style paint; }
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
@@ -552,7 +552,10 @@ function initNavigationScript() {
         if (targetHeader) {
             console.log('[NAV DEBUG] Inserting nav HTML into header');
             targetHeader.insertAdjacentHTML('beforeend', navHTML);
-            console.log('[NAV DEBUG] Nav HTML inserted, calling initializeNav()');
+            console.log('[NAV DEBUG] Nav HTML inserted');
+            // Set margin immediately to prevent layout shift
+            updateBodyContainerMargin(false);
+            console.log('[NAV DEBUG] Calling initializeNav()');
             initializeNav();
         } else {
             console.error('[NAV DEBUG] insertNav() called but no header found!');
@@ -602,7 +605,7 @@ function initNavigationScript() {
                 clearTimeout(bottomTrendingResizeTimeout);
                 bottomTrendingResizeTimeout = setTimeout(() => {
                     initBottomTrendingStoryBar();
-                    updateBodyContainerMargin();
+                    updateBodyContainerMargin(true); // Use rAF for resize updates
                 }, 150);
             });
         }
@@ -626,7 +629,7 @@ function initNavigationScript() {
                         updateScrollFades(row);
                     });
                     updateCommunityOverlayVisibility();
-                    updateBodyContainerMargin();
+                    updateBodyContainerMargin(true); // Use rAF for post-layout updates
                 });
             });
         }
@@ -1593,8 +1596,8 @@ function initNavigationScript() {
         }
     }
 
-    function updateBodyContainerMargin() {
-        requestAnimationFrame(() => {
+    function updateBodyContainerMargin(useRaf = false) {
+        const update = () => {
             const navContainer = document.getElementById('village-nav-container');
             if (!navContainer) return;
             
@@ -1612,7 +1615,13 @@ function initNavigationScript() {
             document.documentElement.style.setProperty('--nav-total-height', `${totalHeight}px`);
             
             console.log('[NAV DEBUG] Updated body-container margin:', totalHeight, 'px');
-        });
+        };
+        
+        if (useRaf) {
+            requestAnimationFrame(update);
+        } else {
+            update();
+        }
     }
 
     // Function to update icon colors for active pills on mobile (optimized)
