@@ -202,6 +202,29 @@ function initNavigationScript() {
     const iconCrime = `<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gradient-crime" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#3a66d9;stop-opacity:1" /><stop offset="50%" style="stop-color:#2563eb;stop-opacity:1" /><stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" /></radialGradient></defs><path d="m368-336 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Z" fill="url(#gradient-crime)"/></svg>`;
     const iconMore = `<svg class="category-icon more-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="#9ca3af"/></svg>`;
 
+    function hasSecondaryNavForPath(path) {
+        return !!resolveActiveParentFromPath(path);
+    }
+
+    function syncBodyContainerTopOffset() {
+        const hasActiveBottomRow = !!document.querySelector('.bottom-row.active');
+        document.documentElement.classList.toggle('vm-nav-has-secondary-row', hasActiveBottomRow);
+    }
+
+    const bodyOffsetStyleId = 'vm-nav-body-offset-style';
+    if (!document.getElementById(bodyOffsetStyleId)) {
+        const bodyOffsetStyle = document.createElement('style');
+        bodyOffsetStyle.id = bodyOffsetStyleId;
+        bodyOffsetStyle.textContent = `
+            html.vm-nav-has-secondary-row #body-container { margin-top: 148px !important; transition: none !important; }
+            @media (min-width: 992px) { html.vm-nav-has-secondary-row #body-container { margin-top: 160px !important; } }
+        `;
+        document.head.appendChild(bodyOffsetStyle);
+    }
+
+    // Apply expected offset class as early as possible to minimize layout shift.
+    document.documentElement.classList.toggle('vm-nav-has-secondary-row', hasSecondaryNavForPath(normalizePath(window.location.pathname)));
+
     const navHTML = `
     <div id="village-nav-container">
         <style>
@@ -425,7 +448,6 @@ function initNavigationScript() {
             #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
             #bottom-trending-story-bar .close-btn:hover { color: #111827; }
             #bottom-sticky-ad-sim { position: fixed; left: 0; right: 0; bottom: 0; height: 70px; background: #f3f4f6; border-top: 1px solid #d1d5db; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6b7280; }
-            #body-container { margin-top: var(--nav-total-height, 100px); transition: margin-top 0.2s ease; }
             @media (max-width: 767px) {
                 #bottom-trending-story-bar { left: 8px; right: 8px; width: auto; padding: 9px 10px; contain: layout style paint; }
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
@@ -552,10 +574,7 @@ function initNavigationScript() {
         if (targetHeader) {
             console.log('[NAV DEBUG] Inserting nav HTML into header');
             targetHeader.insertAdjacentHTML('beforeend', navHTML);
-            console.log('[NAV DEBUG] Nav HTML inserted');
-            // Set margin immediately to prevent layout shift
-            updateBodyContainerMargin(false);
-            console.log('[NAV DEBUG] Calling initializeNav()');
+            console.log('[NAV DEBUG] Nav HTML inserted, calling initializeNav()');
             initializeNav();
         } else {
             console.error('[NAV DEBUG] insertNav() called but no header found!');
@@ -605,7 +624,6 @@ function initNavigationScript() {
                 clearTimeout(bottomTrendingResizeTimeout);
                 bottomTrendingResizeTimeout = setTimeout(() => {
                     initBottomTrendingStoryBar();
-                    updateBodyContainerMargin(true); // Use rAF for resize updates
                 }, 150);
             });
         }
@@ -629,7 +647,6 @@ function initNavigationScript() {
                         updateScrollFades(row);
                     });
                     updateCommunityOverlayVisibility();
-                    updateBodyContainerMargin(true); // Use rAF for post-layout updates
                 });
             });
         }
@@ -1596,34 +1613,6 @@ function initNavigationScript() {
         }
     }
 
-    function updateBodyContainerMargin(useRaf = false) {
-        const update = () => {
-            const navContainer = document.getElementById('village-nav-container');
-            if (!navContainer) return;
-            
-            const topRow = document.getElementById('main-top-row');
-            const activeBottomRow = document.querySelector('.bottom-row.active');
-            
-            let totalHeight = 0;
-            if (topRow) {
-                totalHeight += topRow.offsetHeight || 0;
-            }
-            if (activeBottomRow) {
-                totalHeight += activeBottomRow.offsetHeight || 0;
-            }
-            
-            document.documentElement.style.setProperty('--nav-total-height', `${totalHeight}px`);
-            
-            console.log('[NAV DEBUG] Updated body-container margin:', totalHeight, 'px');
-        };
-        
-        if (useRaf) {
-            requestAnimationFrame(update);
-        } else {
-            update();
-        }
-    }
-
     // Function to update icon colors for active pills on mobile (optimized)
     function updateActiveIconColors() {
         if (window.innerWidth > 990) return; // Only run on mobile
@@ -1724,7 +1713,7 @@ function initNavigationScript() {
             }
         }
         updateCommunityOverlayVisibility();
-        updateBodyContainerMargin();
+        syncBodyContainerTopOffset();
 
         // Parent Click Handlers
         document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
