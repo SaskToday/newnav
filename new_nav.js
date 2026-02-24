@@ -1050,6 +1050,20 @@ function initNavigationScript() {
         bottomTrendingThresholdViewportWidth = null;
     }
 
+    function getNextReadScrollContainer() {
+        const bodyContainer = document.getElementById('body-container');
+        if (bodyContainer && bodyContainer.scrollHeight > bodyContainer.clientHeight + 1) {
+            return bodyContainer;
+        }
+        return null;
+    }
+
+    function getCurrentScrollTop() {
+        const container = getNextReadScrollContainer();
+        if (container) return container.scrollTop || 0;
+        return window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    }
+
     function getFirstContentParagraph() {
         if (bottomTrendingParagraphCache && bottomTrendingParagraphCache.isConnected) {
             return bottomTrendingParagraphCache;
@@ -1124,7 +1138,10 @@ function initNavigationScript() {
             };
         }
 
-        const maxScrollable = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        const scrollContainer = getNextReadScrollContainer();
+        const maxScrollable = scrollContainer
+            ? Math.max(0, scrollContainer.scrollHeight - scrollContainer.clientHeight)
+            : Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
         const clampedShowProgress = Math.min(0.95, Math.max(0, NEXT_READ_SHOW_PROGRESS));
         const defaultHideProgress = Math.max(0, clampedShowProgress - 0.03);
         const clampedHideProgress = Math.min(clampedShowProgress, Math.max(0, NEXT_READ_HIDE_PROGRESS >= 0 ? NEXT_READ_HIDE_PROGRESS : defaultHideProgress));
@@ -1144,7 +1161,7 @@ function initNavigationScript() {
         }
 
         const { showPx, hidePx } = getNextReadScrollThresholds();
-        const currentY = window.scrollY;
+        const currentY = getCurrentScrollTop();
         const isMobileViewport = window.innerWidth <= 990;
 
         if (isMobileViewport) {
@@ -1190,6 +1207,12 @@ function initNavigationScript() {
         window.addEventListener('scroll', () => {
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true });
+        const bodyContainer = document.getElementById('body-container');
+        if (bodyContainer) {
+            bodyContainer.addEventListener('scroll', () => {
+                scheduleBottomTrendingFrameUpdate();
+            }, { passive: true });
+        }
         window.addEventListener('resize', () => {
             const widthChanged = Math.abs(window.innerWidth - bottomTrendingLastViewportWidth) > 1;
             bottomTrendingLastViewportWidth = window.innerWidth;
