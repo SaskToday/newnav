@@ -239,21 +239,25 @@ function initNavigationScript() {
             @media (min-width: 768px) and (max-width: 991px) { .nav-content-wrapper { width: 750px; } }
             @media (max-width: 767px) { .nav-content-wrapper { width: 100%; } }
 
-            .top-row { display: flex !important; gap: 8px; align-items: center; width: 100%; position: relative; z-index: 11; margin-bottom: 8px; }
+            .top-row { display: flex !important; align-items: center; width: 100%; position: relative; z-index: 11; margin-bottom: 8px; }
+            .top-row > * + * { margin-left: 8px; }
             .hide-scrollbar { overflow-x: auto; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
             .hide-scrollbar::-webkit-scrollbar { display: none; }
             
             .category-pill, #comm-container { 
                 background: var(--pill-bg); border-radius: 20px; border: 2px solid transparent; 
                 font-weight: 600; font-size: 13px; padding: 6px 14px; cursor: pointer; transition: all 0.2s ease; 
-                display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; color: var(--text-inactive); position: relative;
+                display: inline-flex; align-items: center; white-space: nowrap; color: var(--text-inactive); position: relative;
             }
+            .category-pill > * + *, #comm-container > * + * { margin-left: 4px; }
             .category-icon-wrapper { display: inline-flex; align-items: center; flex-shrink: 0; }
             .category-icon { width: 15px; height: 15px; display: block; }
 
             @media (min-width: 991px) {
                 .top-row { gap: 0px; padding-left: 0; overflow: visible; margin-bottom: 0; }
-                .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; font-weight: 550; gap: 6px; transition: all 0.3s ease; cursor: default; }
+                .top-row > * + * { margin-left: 0; }
+                .category-pill, #comm-container { background: transparent !important; border: none !important; border-radius: 0; padding: 8px 12px; font-size: 14px; font-weight: 550; transition: all 0.3s ease; cursor: default; }
+                .category-pill > * + *, #comm-container > * + * { margin-left: 6px; }
                 .category-pill span, #comm-container span { cursor: pointer; }
                 .category-pill:hover, #comm-container:hover, .category-pill.hover-active, #comm-container.hover-active, .category-pill.active, #comm-container.active { font-weight: 700; }
                 #village-nav-container:not(:has(.bottom-row.active)) .category-pill.active, 
@@ -441,7 +445,8 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
-            #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; transform: translateZ(0); width: auto; bottom: 50px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; gap: 10px; will-change: opacity; backface-visibility: hidden; -webkit-backface-visibility: hidden; contain: layout style paint; }
+            #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; transform: translateZ(0); width: auto; bottom: 50px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; will-change: opacity; backface-visibility: hidden; -webkit-backface-visibility: hidden; contain: layout style paint; }
+            #bottom-trending-story-bar > * + * { margin-left: 10px; }
             #bottom-trending-story-bar { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
             #bottom-trending-story-bar.visible { opacity: 1; pointer-events: auto; }
             #bottom-trending-story-bar .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; flex-shrink: 0; }
