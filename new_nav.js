@@ -40,6 +40,7 @@ function initNavigationScript() {
     const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
     const NEXT_READ_FEED_CACHE_PREFIX = 'nav_next_read_feed_cache_v1:';
     const NEXT_READ_DEBUG = window.NAV_NEXT_READ_DEBUG === true;
+    const nextReadFeedMemoryCache = new Map();
 
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when any of these nav events are captured
@@ -878,7 +879,6 @@ function initNavigationScript() {
         }
     }
 
-    const nextReadFeedMemoryCache = new Map();
     function getNextReadFeedCacheKey(rssUrl) {
         return `${NEXT_READ_FEED_CACHE_PREFIX}${rssUrl}`;
     }
