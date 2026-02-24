@@ -1144,7 +1144,15 @@ function initNavigationScript() {
             if (style.display !== 'none' && style.visibility !== 'hidden') {
                 const rect = primaryColumn.getBoundingClientRect();
                 if (rect.width > 0 && rect.height > 0) {
-                    return rect;
+                    const paddingLeft = parseFloat(style.paddingLeft) || 0;
+                    const paddingRight = parseFloat(style.paddingRight) || 0;
+                    const borderLeft = parseFloat(style.borderLeftWidth) || 0;
+                    const borderRight = parseFloat(style.borderRightWidth) || 0;
+                    const contentLeft = rect.left + paddingLeft + borderLeft;
+                    const contentWidth = Math.max(0, rect.width - paddingLeft - paddingRight - borderLeft - borderRight);
+                    if (contentWidth > 0) {
+                        return { left: contentLeft, width: contentWidth };
+                    }
                 }
             }
         }
@@ -1176,11 +1184,11 @@ function initNavigationScript() {
             return;
         }
 
-        const rect = getNextReadDesktopAnchorRect();
-        if (!rect) return;
+        const anchorRect = getNextReadDesktopAnchorRect();
+        if (!anchorRect) return;
         const maxAllowedWidth = window.innerWidth - 20;
-        const width = Math.min(rect.width, maxAllowedWidth);
-        const left = Math.max(10, Math.min(rect.left, window.innerWidth - width - 10));
+        const width = Math.min(anchorRect.width, maxAllowedWidth);
+        const left = Math.max(10, Math.min(anchorRect.left, window.innerWidth - width - 10));
         const widthPx = `${Math.round(width)}px`;
         const leftPx = `${Math.round(left)}px`;
 
