@@ -30,8 +30,8 @@ function initNavigationScript() {
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_MOBILE_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_DESKTOP_BOTTOM_OFFSET || 50);
-    const NEXT_READ_SHOW_PROGRESS = Number(window.NAV_NEXT_READ_SHOW_PROGRESS ?? 0.25);
-    const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS ?? -1);
+    const NEXT_READ_SHOW_PROGRESS = Number(window.NAV_NEXT_READ_SHOW_PROGRESS != null ? window.NAV_NEXT_READ_SHOW_PROGRESS : 0.25);
+    const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS != null ? window.NAV_NEXT_READ_HIDE_PROGRESS : -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 200);
     const NEXT_READ_MOBILE_HIDE_TOP_PX = Number(window.NAV_NEXT_READ_MOBILE_HIDE_TOP_PX || 80);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
@@ -531,7 +531,7 @@ function initNavigationScript() {
             tagName: targetHeader.tagName,
             id: targetHeader.id,
             className: targetHeader.className,
-            parentElement: targetHeader.parentElement?.tagName
+            parentElement: targetHeader.parentElement != null ? targetHeader.parentElement.tagName : undefined
         });
     }
     
@@ -660,7 +660,7 @@ function initNavigationScript() {
             const hasActiveChange = mutations.some(mutation => {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                     const target = mutation.target;
-                    const hadActive = mutation.oldValue?.includes('active');
+                    const hadActive = mutation.oldValue != null && mutation.oldValue.includes('active');
                     const hasActive = target.classList.contains('active');
                     return hadActive !== hasActive;
                 }
@@ -935,8 +935,10 @@ function initNavigationScript() {
         const items = [];
         const itemNodes = xml.querySelectorAll('item');
         itemNodes.forEach(item => {
-            const title = item.querySelector('title')?.textContent?.trim();
-            const rawLink = item.querySelector('link')?.textContent?.trim();
+            const titleEl = item.querySelector('title');
+            const title = titleEl != null && titleEl.textContent ? titleEl.textContent.trim() : '';
+            const linkEl = item.querySelector('link');
+            const rawLink = linkEl != null && linkEl.textContent ? linkEl.textContent.trim() : '';
             if (!title || !rawLink) return;
             try {
                 const absolute = new URL(rawLink, rssUrl);
@@ -953,7 +955,7 @@ function initNavigationScript() {
     function pickNextReadItem(items, currentPath, visitedSet, includeVisited) {
         const seenPaths = new Set();
         for (const item of items) {
-            if (!item?.path || !item?.link || !item?.title) continue;
+            if (!item || !item.path || !item.link || !item.title) continue;
             if (seenPaths.has(item.path)) continue;
             seenPaths.add(item.path);
 
@@ -1010,8 +1012,8 @@ function initNavigationScript() {
                 failedFeeds.push({
                     rssUrl,
                     includeVisited,
-                    name: error?.name || 'Error',
-                    message: error?.message || String(error)
+                    name: (error != null && error.name) ? error.name : 'Error',
+                    message: (error != null && error.message) ? error.message : String(error)
                 });
                 return null;
             }
@@ -1613,7 +1615,7 @@ function initNavigationScript() {
         if (window.innerWidth > 990) return; // Only run on mobile and tablet
         
         const topRow = document.getElementById('main-top-row');
-        const leftmostPill = topRow?.firstElementChild;
+        const leftmostPill = topRow != null ? topRow.firstElementChild : null;
         const activeBottomRow = document.querySelector('.bottom-row.active .bottom-row-inner');
         
         if (leftmostPill && activeBottomRow) {
@@ -1744,7 +1746,7 @@ function initNavigationScript() {
                     let gradientId = gradientCache.get(svg);
                     if (!gradientId) {
                         const gradient = svg.querySelector('defs radialGradient');
-                        gradientId = gradient?.getAttribute('id');
+                        gradientId = gradient != null ? gradient.getAttribute('id') : undefined;
                         if (gradientId) gradientCache.set(svg, gradientId);
                     }
                     if (gradientId) {
@@ -1779,25 +1781,25 @@ function initNavigationScript() {
         const container = document.getElementById('village-nav-container');
         const activeParent = resolveActiveParentFromPath(currentPath);
 
-        if (activeParent?.type === 'category') {
+        if (activeParent != null && activeParent.type === 'category') {
             const pill = document.querySelector(`[data-category="${activeParent.key}"]`);
-            pill?.classList.add('active');
+            if (pill) pill.classList.add('active');
             const bottomRow = document.getElementById(`category-${activeParent.key}`);
-            bottomRow?.classList.add('active');
+            if (bottomRow) bottomRow.classList.add('active');
             if (bottomRow) container.classList.add('mega-menu-open');
-        } else if (activeParent?.type === 'community') {
+        } else if (activeParent != null && activeParent.type === 'community') {
             commContainer.classList.add('active');
             const communityName = COMMUNITY_DISPLAY_NAMES[activeParent.key] || (activeParent.key.charAt(0).toUpperCase() + activeParent.key.slice(1));
             document.getElementById('community-label').textContent = `${communityName}, SK`;
             const bottomRow = document.getElementById(`community-${activeParent.key}`);
-            bottomRow?.classList.add('active');
+            if (bottomRow) bottomRow.classList.add('active');
             if (bottomRow) container.classList.add('mega-menu-open');
         }
 
         // If no parent/community matched, do not show a default child row.
         if (!document.querySelector('.category-pill.active, #comm-container.active')) {
             const defaultBottomRow = document.getElementById('category-default');
-            defaultBottomRow?.classList.remove('active');
+            if (defaultBottomRow) defaultBottomRow.classList.remove('active');
             container.classList.remove('mega-menu-open');
         }
 
