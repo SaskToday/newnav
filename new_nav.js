@@ -967,7 +967,7 @@ function initNavigationScript() {
     async function initBottomTrendingStoryBar() {
         const existing = document.getElementById('bottom-trending-story-bar');
         const existingAd = document.getElementById('bottom-sticky-ad-sim');
-        const isMobileViewport = window.innerWidth <= 990;
+        const isMobileViewport = window.innerWidth <= 767;
         const currentPath = normalizePath(window.location.pathname);
         const isArticle = isArticlePath(currentPath);
 
@@ -1170,8 +1170,8 @@ function initNavigationScript() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) return;
 
-        if (window.innerWidth <= 990) {
-            // Let CSS handle mobile/tablet sizing.
+        if (window.innerWidth <= 767) {
+            // Let CSS handle mobile sizing.
             if (bottomTrendingLayoutMode !== 'mobile') {
                 bar.style.left = '';
                 bar.style.right = '';
@@ -1238,7 +1238,7 @@ function initNavigationScript() {
 
         const { showPx, hidePx } = getNextReadScrollThresholds();
         const currentY = getCurrentScrollTop();
-        const isMobileViewport = window.innerWidth <= 990;
+        const isMobileViewport = window.innerWidth <= 767;
 
         if (isMobileViewport) {
             // Mobile latch to avoid slow-scroll threshold chattering/jitter.
