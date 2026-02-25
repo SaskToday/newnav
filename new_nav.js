@@ -30,7 +30,6 @@ function initNavigationScript() {
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_MOBILE_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_DESKTOP_BOTTOM_OFFSET || 50);
-    const NEXT_READ_SHOW_PROGRESS = Number(window.NAV_NEXT_READ_SHOW_PROGRESS != null ? window.NAV_NEXT_READ_SHOW_PROGRESS : 0.25);
     const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS != null ? window.NAV_NEXT_READ_HIDE_PROGRESS : -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 200);
     const NEXT_READ_MOBILE_HIDE_TOP_PX = Number(window.NAV_NEXT_READ_MOBILE_HIDE_TOP_PX || 80);
@@ -1231,10 +1230,9 @@ function initNavigationScript() {
         }
 
         const maxScrollable = getMaxScrollableDistance();
-        const clampedShowProgress = Math.min(0.95, Math.max(0, NEXT_READ_SHOW_PROGRESS));
-        const defaultHideProgress = Math.max(0, clampedShowProgress - 0.03);
-        const clampedHideProgress = Math.min(clampedShowProgress, Math.max(0, NEXT_READ_HIDE_PROGRESS >= 0 ? NEXT_READ_HIDE_PROGRESS : defaultHideProgress));
-        const showPx = Math.min(maxScrollable, Math.max(NEXT_READ_MIN_SHOW_SCROLL_PX, maxScrollable * clampedShowProgress));
+        const showPx = Math.min(maxScrollable, NEXT_READ_MIN_SHOW_SCROLL_PX);
+        const defaultHideProgress = 0.22;
+        const clampedHideProgress = Math.min(0.95, Math.max(0, NEXT_READ_HIDE_PROGRESS >= 0 ? NEXT_READ_HIDE_PROGRESS : defaultHideProgress));
         const hidePx = Math.min(showPx, Math.max(0, maxScrollable * clampedHideProgress));
         bottomTrendingShowThresholdCache = showPx;
         bottomTrendingHideThresholdCache = hidePx;
