@@ -195,31 +195,13 @@ function initNavigationScript() {
     const extIcon = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 13V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H11M21 3L11 13M21 3H15M21 3V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const downArrow = `<svg class="desktop-down-arrow" style="width:15px; height:15px; flex-shrink:0;" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
     
-    // Material Symbols icons (24x24 viewBox) - inline SVGs with unique gradient IDs per instance to avoid iPad Safari paint-server resolution bugs
-    function getIconLocation(suffix) {
-        const id = 'gradient-location-' + suffix;
-        return '<svg class="category-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="' + id + '" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#e85a5a;stop-opacity:1" /><stop offset="50%" style="stop-color:#ef4444;stop-opacity:1" /><stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" /></radialGradient></defs><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="url(#' + id + ')"/></svg>';
-    }
-    function getIconSports(suffix) {
-        const id = 'gradient-sports-' + suffix;
-        return '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="' + id + '" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#7a5f3f;stop-opacity:1" /><stop offset="50%" style="stop-color:#815337;stop-opacity:1" /><stop offset="100%" style="stop-color:#5c3a26;stop-opacity:1" /></radialGradient></defs><path d="M363-121q-47 5-113.5-2.5T148-148q-14-32-23.5-100T120-364l243 243Zm95-16L136-459q17-75 49.5-136.5T261-701q43-43 104.5-74.5T498-823l324 324q-16 74-47 136t-74 105q-45 44-107.5 75.5T458-137Zm-82-183 264-264-56-56-264 264 56 56Zm462-274L595-839q48-6 118 2t99 25q18 40 25 103.5t1 114.5Z" fill="url(#' + id + ')"/></svg>';
-    }
-    function getIconAgriculture(suffix) {
-        const id = 'gradient-agriculture-' + suffix;
-        return '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="' + id + '" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#d4a574;stop-opacity:1" /><stop offset="50%" style="stop-color:#b8860b;stop-opacity:1" /><stop offset="100%" style="stop-color:#8b6914;stop-opacity:1" /></radialGradient></defs><path d="m137-79-56-56 96-97q-32-32-53-61t-21-79q0-32 12-61t35-52l46-45 45 45q29 28 41 68t1 79l63-63q-32-33-53-62t-21-79q0-32 11.5-61t34.5-52l46-45 45 45q29 29 41 69.5t1 79.5l52-52q-30-33-53-62.5T427-698q0-32 13-62.5t36-53.5l99-99 56 56-56 57q23 28 32.5 65.5T606-662l218-218 56 57-220 220q36-11 74-2.5t67 31.5l56-57 58 58-100 101q-23 23-52.5 35T701-425q-42 0-77-23t-65-53l-55 55q40-13 82-1t72 41l45 46-45 45q-23 23-52.5 35T544-268q-42 0-76.5-23.5T402-344l-69 69q41-14 83.5-2t72.5 41l46 46-45 45q-23 23-52.5 35T376-98q-43 0-77.5-23.5T233-175l-96 96Z" fill="url(#' + id + ')"/></svg>';
-    }
-    function getIconObituaries(suffix) {
-        const id = 'gradient-obituaries-' + suffix;
-        return '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="' + id + '" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#e99fc4;stop-opacity:1" /><stop offset="50%" style="stop-color:#f472b6;stop-opacity:1" /><stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" /></radialGradient></defs><path d="M440-80q-100 0-170-70t-70-170v-80q71-1 134 29t106 81v-153q-86-14-143-80.5T240-680v-136q0-26 23-36.5t43 6.5l74 64 69-84q12-14 31-14t31 14l69 84 74-64q20-17 43-6.5t23 36.5v136q0 90-57 156.5T520-443v153q43-51 106-81t134-29v80q0 100-70 170T520-80h-80Z" fill="url(#' + id + ')"/></svg>';
-    }
-    function getIconOpinions(suffix) {
-        const id = 'gradient-opinions-' + suffix;
-        return '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="' + id + '" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#8b9dc3;stop-opacity:1" /><stop offset="50%" style="stop-color:#6b7fa8;stop-opacity:1" /><stop offset="100%" style="stop-color:#4a5d8a;stop-opacity:1" /></radialGradient></defs><path d="M611-461 461-612l111-110-29-29-219 219-56-56 218-219q24-24 56.5-24t56.5 24l29 29 50-50q12-12 28.5-12t28.5 12l93 93q12 12 12 28.5T828-678L611-461ZM270-120H120v-150l284-285 151 150-285 285Z" fill="url(#' + id + ')"/></svg>';
-    }
-    function getIconCrime(suffix) {
-        const id = 'gradient-crime-' + suffix;
-        return '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="' + id + '" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#3a66d9;stop-opacity:1" /><stop offset="50%" style="stop-color:#2563eb;stop-opacity:1" /><stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" /></radialGradient></defs><path d="m368-336 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Z" fill="url(#' + id + ')"/></svg>';
-    }
+    // Category icons: solid fill (no gradients) so older iOS 14/16 WebKit renders them reliably; colors match former gradient mid-stops. data-fill used by mobile to restore color when pill deactivates.
+    const iconLocation = '<svg class="category-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path data-fill="#ef4444" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#ef4444"/></svg>';
+    const iconSports = '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path data-fill="#815337" d="M363-121q-47 5-113.5-2.5T148-148q-14-32-23.5-100T120-364l243 243Zm95-16L136-459q17-75 49.5-136.5T261-701q43-43 104.5-74.5T498-823l324 324q-16 74-47 136t-74 105q-45 44-107.5 75.5T458-137Zm-82-183 264-264-56-56-264 264 56 56Zm462-274L595-839q48-6 118 2t99 25q18 40 25 103.5t1 114.5Z" fill="#815337"/></svg>';
+    const iconAgriculture = '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path data-fill="#b8860b" d="m137-79-56-56 96-97q-32-32-53-61t-21-79q0-32 12-61t35-52l46-45 45 45q29 28 41 68t1 79l63-63q-32-33-53-62t-21-79q0-32 11.5-61t34.5-52l46-45 45 45q29 29 41 69.5t1 79.5l52-52q-30-33-53-62.5T427-698q0-32 13-62.5t36-53.5l99-99 56 56-56 57q23 28 32.5 65.5T606-662l218-218 56 57-220 220q36-11 74-2.5t67 31.5l56-57 58 58-100 101q-23 23-52.5 35T701-425q-42 0-77-23t-65-53l-55 55q40-13 82-1t72 41l45 46-45 45q-23 23-52.5 35T544-268q-42 0-76.5-23.5T402-344l-69 69q41-14 83.5-2t72.5 41l46 46-45 45q-23 23-52.5 35T376-98q-43 0-77.5-23.5T233-175l-96 96Z" fill="#b8860b"/></svg>';
+    const iconObituaries = '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path data-fill="#f472b6" d="M440-80q-100 0-170-70t-70-170v-80q71-1 134 29t106 81v-153q-86-14-143-80.5T240-680v-136q0-26 23-36.5t43 6.5l74 64 69-84q12-14 31-14t31 14l69 84 74-64q20-17 43-6.5t23 36.5v136q0 90-57 156.5T520-443v153q43-51 106-81t134-29v80q0 100-70 170T520-80h-80Z" fill="#f472b6"/></svg>';
+    const iconOpinions = '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path data-fill="#6b7fa8" d="M611-461 461-612l111-110-29-29-219 219-56-56 218-219q24-24 56.5-24t56.5 24l29 29 50-50q12-12 28.5-12t28.5 12l93 93q12 12 12 28.5T828-678L611-461ZM270-120H120v-150l284-285 151 150-285 285Z" fill="#6b7fa8"/></svg>';
+    const iconCrime = '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path data-fill="#2563eb" d="m368-336 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Z" fill="#2563eb"/></svg>';
     const iconMore = '<svg class="category-icon more-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="#9ca3af"/></svg>';
 
     function hasSecondaryNavForPath(path) {
@@ -339,8 +321,6 @@ function initNavigationScript() {
                 .category-pill.active .category-icon-wrapper svg.category-icon path,
                 #comm-container.active .category-icon-wrapper .category-icon path,
                 #comm-container.active .category-icon-wrapper svg.category-icon path { fill: white !important; }
-                .category-pill.active .category-icon-wrapper .category-icon defs,
-                #comm-container.active .category-icon-wrapper .category-icon defs { display: none !important; }
                 .desktop-down-arrow { display: none !important; }
                 .bottom-row-inner { padding: 6px 0 5px 10px !important; position: relative; }
                 .bottom-row { height: auto !important; }
@@ -503,14 +483,14 @@ function initNavigationScript() {
 
             <div class="top-row hide-scrollbar" id="main-top-row">
                 <div id="comm-container" data-category="communities">
-                    <span class="category-icon-wrapper">${getIconLocation('communities')}</span><span id="community-label">Communities</span>
+                    <span class="category-icon-wrapper">${iconLocation}</span><span id="community-label">Communities</span>
                     <svg class="dropdown-arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
                 </div>
-                <button class="category-pill" data-category="obituaries"><span class="category-icon-wrapper">${getIconObituaries('obituaries')}</span><span>Obituaries</span></button>
-                <button class="category-pill" data-category="sports"><span class="category-icon-wrapper">${getIconSports('sports')}</span><span>Sports</span></button>
-                <button class="category-pill" data-category="agriculture"><span class="category-icon-wrapper">${getIconAgriculture('agriculture')}</span><span>Agriculture</span></button>
-                <button class="category-pill" data-category="opinions"><span class="category-icon-wrapper">${getIconOpinions('opinions')}</span><span>Opinion</span></button>
-                <button class="category-pill" data-category="crime"><span class="category-icon-wrapper">${getIconCrime('crime')}</span><span>Crime</span></button>
+                <button class="category-pill" data-category="obituaries"><span class="category-icon-wrapper">${iconObituaries}</span><span>Obituaries</span></button>
+                <button class="category-pill" data-category="sports"><span class="category-icon-wrapper">${iconSports}</span><span>Sports</span></button>
+                <button class="category-pill" data-category="agriculture"><span class="category-icon-wrapper">${iconAgriculture}</span><span>Agriculture</span></button>
+                <button class="category-pill" data-category="opinions"><span class="category-icon-wrapper">${iconOpinions}</span><span>Opinion</span></button>
+                <button class="category-pill" data-category="crime"><span class="category-icon-wrapper">${iconCrime}</span><span>Crime</span></button>
                 <button class="category-pill" id="mega-menu-trigger" data-category="more"><span class="category-icon-wrapper more-icon">${iconMore}</span><span>More</span></button>
                 <button class="category-pill search-trigger" id="search-trigger" type="button" style="display: none;"><span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span></button>
             </div>
@@ -1749,9 +1729,6 @@ function initNavigationScript() {
     function updateActiveIconColors() {
         if (window.innerWidth > 990) return; // Only run on mobile
         
-        // Cache gradient IDs to avoid repeated DOM queries
-        const gradientCache = new Map();
-        
         // Update active pills to white
         document.querySelectorAll('.category-pill.active .category-icon path, #comm-container.active .category-icon path').forEach(path => {
             const currentFill = path.getAttribute('fill');
@@ -1760,23 +1737,11 @@ function initNavigationScript() {
             }
         });
         
-        // Only restore gradients for pills that were just deactivated (check if fill is white but pill is not active)
+        // Restore solid fill for pills that were just deactivated (fill is white but pill is not active)
         document.querySelectorAll('.category-pill:not(.active) .category-icon path, #comm-container:not(.active) .category-icon path').forEach(path => {
-            const currentFill = path.getAttribute('fill');
-            if (currentFill === 'white') {
-                // Only restore if it's currently white (was active before)
-                const svg = path.closest('svg');
-                if (svg) {
-                    let gradientId = gradientCache.get(svg);
-                    if (!gradientId) {
-                        const gradient = svg.querySelector('defs radialGradient');
-                        gradientId = gradient != null ? gradient.getAttribute('id') : undefined;
-                        if (gradientId) gradientCache.set(svg, gradientId);
-                    }
-                    if (gradientId) {
-                        path.setAttribute('fill', `url(#${gradientId})`);
-                    }
-                }
+            if (path.getAttribute('fill') === 'white') {
+                const dataFill = path.getAttribute('data-fill');
+                if (dataFill) path.setAttribute('fill', dataFill);
             }
         });
     }
