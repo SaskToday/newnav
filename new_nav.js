@@ -99,99 +99,103 @@ function initNavigationScript() {
     let communityOverlayClosedThisPage = false;
     let communityOverlayAllowedAt = 0;
 
+    // Base URL: use current origin so staging uses staging-www2, production uses www.sasktoday.ca. Override with window.NAV_BASE_URL if set.
+    var base = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin.replace(/\/$/, '') : 'https://staging-www2.villagemedia.ca';
+    if (typeof window !== 'undefined' && window.NAV_BASE_URL != null) { base = String(window.NAV_BASE_URL).replace(/\/$/, ''); }
+
     const routes = {
         communities: {
-            regina: "https://staging-www2.villagemedia.ca/regina-today",
-            saskatoon: "https://staging-www2.villagemedia.ca/saskatoon-today",
-            estevan: "https://staging-www2.villagemedia.ca/southeast/estevanmercury",
-            yorkton: "https://staging-www2.villagemedia.ca/central/yorktonthisweek",
-            kamsack: "https://staging-www2.villagemedia.ca/central/kamsacktimes",
-            thebattlefords: "https://staging-www2.villagemedia.ca/north/battlefordsnewsoptimist",
-            canora: "https://staging-www2.villagemedia.ca/central/canora",
-            preeceville: "https://staging-www2.villagemedia.ca/central/preecevilleprogress",
-            carlyle: "https://staging-www2.villagemedia.ca/southeast/carlyleobserver",
-            humboldt: "https://staging-www2.villagemedia.ca/north/humboldtjournal",
-            moosejaw: "https://staging-www2.villagemedia.ca/southwest/moosejaw",
-            outlook: "https://staging-www2.villagemedia.ca/north/theoutlook",
-            princealbert: "https://staging-www2.villagemedia.ca/north/prince-albert",
-            unitywilkie: "https://staging-www2.villagemedia.ca/north/unitywilkiepressherald",
-            weyburn: "https://staging-www2.villagemedia.ca/southeast/weyburnreview",
-            all: "https://staging-www2.villagemedia.ca/" 
+            regina: base + "/regina-today",
+            saskatoon: base + "/saskatoon-today",
+            estevan: base + "/southeast/estevanmercury",
+            yorkton: base + "/central/yorktonthisweek",
+            kamsack: base + "/central/kamsacktimes",
+            thebattlefords: base + "/north/battlefordsnewsoptimist",
+            canora: base + "/central/canora",
+            preeceville: base + "/central/preecevilleprogress",
+            carlyle: base + "/southeast/carlyleobserver",
+            humboldt: base + "/north/humboldtjournal",
+            moosejaw: base + "/southwest/moosejaw",
+            outlook: base + "/north/theoutlook",
+            princealbert: base + "/north/prince-albert",
+            unitywilkie: base + "/north/unitywilkiepressherald",
+            weyburn: base + "/southeast/weyburnreview",
+            all: base + "/"
         },
         categories: {
-            sports: "https://staging-www2.villagemedia.ca/sports",
-            obituaries: "https://staging-www2.villagemedia.ca/obituaries",
-            agriculture: "https://staging-www2.villagemedia.ca/agriculture",
-            opinions: "https://staging-www2.villagemedia.ca/opinion",
-            crime: "https://staging-www2.villagemedia.ca/crime-cops-court"
+            sports: base + "/sports",
+            obituaries: base + "/obituaries",
+            agriculture: base + "/agriculture",
+            opinions: base + "/opinion",
+            crime: base + "/crime-cops-court"
         },
         categoryLinks: {
             sports: [
-                { text: "All Sports", url: "https://staging-www2.villagemedia.ca/sports" },
-                { text: "North Sask Sports", url: "https://staging-www2.villagemedia.ca/north/local-sports" },
-                { text: "Central Sask Sports", url: "https://staging-www2.villagemedia.ca/central/local-sports" },
-                { text: "Southwest Sask Sports", url: "https://staging-www2.villagemedia.ca/southwest/local-sports" }
+                { text: "All Sports", url: base + "/sports" },
+                { text: "North Sask Sports", url: base + "/north/local-sports" },
+                { text: "Central Sask Sports", url: base + "/central/local-sports" },
+                { text: "Southwest Sask Sports", url: base + "/southwest/local-sports" }
             ],
             agriculture: [
-                { text: "All Agriculture", url: "https://staging-www2.villagemedia.ca/agriculture" },
-                { text: "North Sask Agriculture", url: "https://staging-www2.villagemedia.ca/north/agriculture" },
-                { text: "Central Sask Agriculture", url: "https://staging-www2.villagemedia.ca/central/agriculture" }
+                { text: "All Agriculture", url: base + "/agriculture" },
+                { text: "North Sask Agriculture", url: base + "/north/agriculture" },
+                { text: "Central Sask Agriculture", url: base + "/central/agriculture" }
             ],
             obituaries: [
-                { text: "All Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries" },
-                { text: "Regina Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" },
-                { text: "Saskatoon Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" },
-                { text: "Yorkton Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/yorkton-obituaries" },
-                { text: "Assiniboia Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" },
-                { text: "Estevan Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" },
-                { text: "Humboldt Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/humboldt-obituaries" },
-                { text: "Canora Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/canora-obituaries" },
-                { text: "Unity-Wilkie Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/unitywilkie-obituaries" },
-                { text: "Moose Jaw Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/moosejaw-obituaries" },
-                { text: "Outlook Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/outlook-obituaries" },
-                { text: "Preeceville Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/preeceville-obituaries" },
-                { text: "Prince Albert Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/princealbert-obituaries" }
+                { text: "All Obituaries", url: base + "/obituaries" },
+                { text: "Regina Obituaries", url: base + "/obituaries/regina-obituaries" },
+                { text: "Saskatoon Obituaries", url: base + "/obituaries/saskatoon-obituaries" },
+                { text: "Yorkton Obituaries", url: base + "/obituaries/yorkton-obituaries" },
+                { text: "Assiniboia Obituaries", url: base + "/obituaries/assiniboia-obituaries" },
+                { text: "Estevan Obituaries", url: base + "/obituaries/estevan-obituaries" },
+                { text: "Humboldt Obituaries", url: base + "/obituaries/humboldt-obituaries" },
+                { text: "Canora Obituaries", url: base + "/obituaries/canora-obituaries" },
+                { text: "Unity-Wilkie Obituaries", url: base + "/obituaries/unitywilkie-obituaries" },
+                { text: "Moose Jaw Obituaries", url: base + "/obituaries/moosejaw-obituaries" },
+                { text: "Outlook Obituaries", url: base + "/obituaries/outlook-obituaries" },
+                { text: "Preeceville Obituaries", url: base + "/obituaries/preeceville-obituaries" },
+                { text: "Prince Albert Obituaries", url: base + "/obituaries/princealbert-obituaries" }
             ],
             opinions: [
-                { text: "All Opinion", url: "https://staging-www2.villagemedia.ca/opinion" },
-                { text: "North Opinion", url: "https://staging-www2.villagemedia.ca/north/opinion" },
-                { text: "Central Opinion", url: "https://staging-www2.villagemedia.ca/central/opinion" },
-                { text: "South Opinion", url: "https://staging-www2.villagemedia.ca/south/opinion" }
+                { text: "All Opinion", url: base + "/opinion" },
+                { text: "North Opinion", url: base + "/north/opinion" },
+                { text: "Central Opinion", url: base + "/central/opinion" },
+                { text: "South Opinion", url: base + "/south/opinion" }
             ],
-            crime: [{ text: "All Crime", url: "https://staging-www2.villagemedia.ca/crime-cops-court" }],
+            crime: [{ text: "All Crime", url: base + "/crime-cops-court" }],
             more: [
-                { text: "Business & Energy", url: "https://staging-www2.villagemedia.ca/business" },
-                { text: "Provincial News", url: "https://staging-www2.villagemedia.ca/provincial-news" },
-                { text: "National News", url: "https://staging-www2.villagemedia.ca/national-news" },
-                { text: "Opinion", url: "https://staging-www2.villagemedia.ca/opinion" },
-                { text: "Gas Prices", url: "https://staging-www2.villagemedia.ca/gas-prices" },
-                { text: "Politics", url: "https://staging-www2.villagemedia.ca/politics" },
-                { text: "Local Arts", url: "https://staging-www2.villagemedia.ca/local-arts" },
-                { text: "Everybody Has a Story", url: "https://staging-www2.villagemedia.ca/everybody-has-a-story" },
-                { text: "Videos", url: "https://staging-www2.villagemedia.ca/video" },
-                { text: "Classifieds", url: "https://staging-www2.villagemedia.ca/classifieds" },
-                { text: "Newsletters", url: "https://staging-www2.villagemedia.ca/newsletters" },
-                { text: "Contact Us", url: "https://staging-www2.villagemedia.ca/contact" }
+                { text: "Business & Energy", url: base + "/business" },
+                { text: "Provincial News", url: base + "/provincial-news" },
+                { text: "National News", url: base + "/national-news" },
+                { text: "Opinion", url: base + "/opinion" },
+                { text: "Gas Prices", url: base + "/gas-prices" },
+                { text: "Politics", url: base + "/politics" },
+                { text: "Local Arts", url: base + "/local-arts" },
+                { text: "Everybody Has a Story", url: base + "/everybody-has-a-story" },
+                { text: "Videos", url: base + "/video" },
+                { text: "Classifieds", url: base + "/classifieds" },
+                { text: "Newsletters", url: base + "/newsletters" },
+                { text: "Contact Us", url: base + "/contact" }
             ]
         },
         communityLinks: {
             communities: [
-                { text: "All Communities", url: "https://staging-www2.villagemedia.ca/" },
-                { text: "Regina", url: "https://staging-www2.villagemedia.ca/regina-today" },
-                { text: "Saskatoon", url: "https://staging-www2.villagemedia.ca/saskatoon-today" },
-                { text: "Estevan", url: "https://staging-www2.villagemedia.ca/southeast/estevanmercury" },
-                { text: "Yorkton", url: "https://staging-www2.villagemedia.ca/central/yorktonthisweek" },
-                { text: "Kamsack", url: "https://staging-www2.villagemedia.ca/central/kamsacktimes" },
-                { text: "The Battlefords", url: "https://staging-www2.villagemedia.ca/north/battlefordsnewsoptimist" },
-                { text: "Canora", url: "https://staging-www2.villagemedia.ca/central/canora" },
-                { text: "Preeceville", url: "https://staging-www2.villagemedia.ca/central/preecevilleprogress" },
-                { text: "Carlyle", url: "https://staging-www2.villagemedia.ca/southeast/carlyleobserver" },
-                { text: "Humboldt", url: "https://staging-www2.villagemedia.ca/north/humboldtjournal" },
-                { text: "Moose Jaw", url: "https://staging-www2.villagemedia.ca/southwest/moosejaw" },
-                { text: "Outlook", url: "https://staging-www2.villagemedia.ca/north/theoutlook" },
-                { text: "Prince Albert", url: "https://staging-www2.villagemedia.ca/north/prince-albert" },
-                { text: "Unity-Wilkie", url: "https://staging-www2.villagemedia.ca/north/unitywilkiepressherald" },
-                { text: "Weyburn", url: "https://staging-www2.villagemedia.ca/southeast/weyburnreview" }
+                { text: "All Communities", url: base + "/" },
+                { text: "Regina", url: base + "/regina-today" },
+                { text: "Saskatoon", url: base + "/saskatoon-today" },
+                { text: "Estevan", url: base + "/southeast/estevanmercury" },
+                { text: "Yorkton", url: base + "/central/yorktonthisweek" },
+                { text: "Kamsack", url: base + "/central/kamsacktimes" },
+                { text: "The Battlefords", url: base + "/north/battlefordsnewsoptimist" },
+                { text: "Canora", url: base + "/central/canora" },
+                { text: "Preeceville", url: base + "/central/preecevilleprogress" },
+                { text: "Carlyle", url: base + "/southeast/carlyleobserver" },
+                { text: "Humboldt", url: base + "/north/humboldtjournal" },
+                { text: "Moose Jaw", url: base + "/southwest/moosejaw" },
+                { text: "Outlook", url: base + "/north/theoutlook" },
+                { text: "Prince Albert", url: base + "/north/prince-albert" },
+                { text: "Unity-Wilkie", url: base + "/north/unitywilkiepressherald" },
+                { text: "Weyburn", url: base + "/southeast/weyburnreview" }
             ]
         }
     };
@@ -499,22 +503,22 @@ function initNavigationScript() {
                 <button class="category-pill search-trigger" id="search-trigger" type="button" style="display: none;"><span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span></button>
             </div>
             
-            <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/regina-today" class="text-link">All Regina</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-news" class="text-link">Regina News</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="https://staging-www2.villagemedia.ca/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
-            <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/saskatoon-today" class="text-link">All Saskatoon</a><a href="https://staging-www2.villagemedia.ca/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="https://staging-www2.villagemedia.ca/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="https://staging-www2.villagemedia.ca/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="https://staging-www2.villagemedia.ca/classifieds/saskatoon-classifieds" class="text-link">Saskatoon Classifieds</a></div></div>
-            <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="https://staging-www2.villagemedia.ca/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
-            <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/southeast/estevanmercury" class="text-link">All Estevan</a><a href="https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
-            <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/north/humboldtjournal" class="text-link">All Humboldt</a><a href="https://staging-www2.villagemedia.ca/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
-            <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/central/canora" class="text-link">All Canora</a><a href="https://staging-www2.villagemedia.ca/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
-            <div class="bottom-row" id="community-unitywilkie"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/north/unitywilkiepressherald" class="text-link">All Unity-Wilkie</a><a href="https://staging-www2.villagemedia.ca/obituaries/unitywilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a></div></div>
-            <div class="bottom-row" id="community-moosejaw"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/southwest/moosejaw" class="text-link">All Moose Jaw</a><a href="https://staging-www2.villagemedia.ca/obituaries/moosejaw-obituaries" class="text-link">Moose Jaw Obituaries</a></div></div>
-            <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/north/theoutlook" class="text-link">All Outlook</a><a href="https://staging-www2.villagemedia.ca/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
-            <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/central/preecevilleprogress" class="text-link">All Preeceville</a><a href="https://staging-www2.villagemedia.ca/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
-            <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/north/prince-albert" class="text-link">All Prince Albert</a><a href="https://staging-www2.villagemedia.ca/obituaries/princealbert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
-            <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="https://staging-www2.villagemedia.ca/sports" class="text-link">All Sports</a><a href="https://staging-www2.villagemedia.ca/north/local-sports" class="text-link">North Sask Sports</a><a href="https://staging-www2.villagemedia.ca/central/local-sports" class="text-link">Central Sask Sports</a><a href="https://staging-www2.villagemedia.ca/southwest/local-sports" class="text-link">Southwest Sask Sports</a></div></div>
-            <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="https://staging-www2.villagemedia.ca/agriculture" class="text-link">All Agriculture</a><a href="https://staging-www2.villagemedia.ca/north/agriculture" class="text-link">North Sask Agriculture</a><a href="https://staging-www2.villagemedia.ca/central/agriculture" class="text-link">Central Sask Agriculture</a></div></div>
-            <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/obituaries" class="text-link">All Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/unitywilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/moosejaw-obituaries" class="text-link">Moose Jaw Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/princealbert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
-            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/opinion" class="text-link">All Opinion</a><a href="https://staging-www2.villagemedia.ca/north/opinion" class="text-link">North Opinion</a><a href="https://staging-www2.villagemedia.ca/central/opinion" class="text-link">Central Opinion</a><a href="https://staging-www2.villagemedia.ca/south/opinion" class="text-link">South Opinion</a></div></div>
-            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/crime-cops-court" class="text-link">All Crime</a></div></div>
+            <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
+            <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon-classifieds" class="text-link">Saskatoon Classifieds</a></div></div>
+            <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
+            <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
+            <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
+            <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/canora" class="text-link">All Canora</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
+            <div class="bottom-row" id="community-unitywilkie"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/unitywilkiepressherald" class="text-link">All Unity-Wilkie</a><a href="${base}/obituaries/unitywilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a></div></div>
+            <div class="bottom-row" id="community-moosejaw"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southwest/moosejaw" class="text-link">All Moose Jaw</a><a href="${base}/obituaries/moosejaw-obituaries" class="text-link">Moose Jaw Obituaries</a></div></div>
+            <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/theoutlook" class="text-link">All Outlook</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
+            <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/preecevilleprogress" class="text-link">All Preeceville</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
+            <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/prince-albert" class="text-link">All Prince Albert</a><a href="${base}/obituaries/princealbert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
+            <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="${base}/sports" class="text-link">All Sports</a><a href="${base}/north/local-sports" class="text-link">North Sask Sports</a><a href="${base}/central/local-sports" class="text-link">Central Sask Sports</a><a href="${base}/southwest/local-sports" class="text-link">Southwest Sask Sports</a></div></div>
+            <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="${base}/agriculture" class="text-link">All Agriculture</a><a href="${base}/north/agriculture" class="text-link">North Sask Agriculture</a><a href="${base}/central/agriculture" class="text-link">Central Sask Agriculture</a></div></div>
+            <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/obituaries" class="text-link">All Obituaries</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="${base}/obituaries/unitywilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="${base}/obituaries/moosejaw-obituaries" class="text-link">Moose Jaw Obituaries</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="${base}/obituaries/princealbert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
+            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/opinion" class="text-link">All Opinion</a><a href="${base}/north/opinion" class="text-link">North Opinion</a><a href="${base}/central/opinion" class="text-link">Central Opinion</a><a href="${base}/south/opinion" class="text-link">South Opinion</a></div></div>
+            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/crime-cops-court" class="text-link">All Crime</a></div></div>
             <div class="bottom-row" id="category-default"><div class="bottom-row-inner hide-scrollbar">${routes.communityLinks.communities.filter(link => link.text !== 'All Communities').map(link => `<a href="${link.url}" class="text-link">${link.text}</a>`).join('')}</div></div>
         </div>
     </div>`;
@@ -2236,7 +2240,7 @@ function initNavigationScript() {
                             const query = searchInput.value.trim();
                             if (query) {
                                 triggerPostHogRecording('nav_search_submit', { query: query, query_length: query.length });
-                                window.location.href = `https://www.sasktoday.ca/search?q=${encodeURIComponent(query)}`;
+                                window.location.href = base + '/search?q=' + encodeURIComponent(query);
                             }
                         }
                     });
