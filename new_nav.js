@@ -58,8 +58,8 @@ function initNavigationScript() {
                 );
                 posthog.capture(eventName, payload);
                 // Umbrella event once per session so session recording can trigger on one event without duplicate events
-                // Skip nav_next_read_click so it does not trigger session recording
-                if (eventName !== 'nav_next_read_click') {
+                // Skip nav_next_read_click and nav_community_overlay_seen so they do not trigger session recording
+                if (eventName !== 'nav_next_read_click' && eventName !== 'nav_community_overlay_seen') {
                     try {
                         if (!sessionStorage.getItem(NAV_ACTIVITY_SENT_KEY)) {
                             posthog.capture('nav_activity', Object.assign({ action: eventName }, payload));
