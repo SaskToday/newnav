@@ -18,9 +18,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
 
-<!-- Step 3: Preload - Downloads script early (non-blocking) -->
-<!-- Note: Update commit hash in script below when you update this -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@b716589/new_nav.js" as="script">
+<!-- Step 3: Preload omitted for staging - script URL includes cache buster (?v=...) so it would never match the preload and would trigger a console warning -->
 
 <!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>

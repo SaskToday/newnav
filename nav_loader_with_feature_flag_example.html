@@ -1,0 +1,184 @@
+<script>
+posthog.onFeatureFlags(function() {
+    if (posthog.isFeatureEnabled('my-flag')) {
+        // 1. Inject nav CSS (hide mainnav on desktop, header placeholder)
+        var style = document.createElement('style');
+        style.textContent = '@media (min-width: 991px) {\n.mainnav {\n    display: none !important;\n  }\n}\n/* Nav placeholder */\nheader {\n  background: var(--nav-bg, #fff);\n  min-height: 111px;\n}';
+        document.head.appendChild(style);
+
+        // 2. Inject resource hints (create elements in JS – no HTML inside script)
+        // Stylesheet: add separately in <head>, always (not in flag):
+        //   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Harvard-Media/staging-sask@main/stylesheet.css" onerror="this.onerror=null;this.href='https://harvard-media.github.io/staging-sask/stylesheet.css';">
+        var dns1 = document.createElement('link');
+        dns1.rel = 'dns-prefetch';
+        dns1.href = 'https://cdn.jsdelivr.net';
+        document.head.appendChild(dns1);
+        var dns2 = document.createElement('link');
+        dns2.rel = 'dns-prefetch';
+        dns2.href = 'https://sasktoday.github.io';
+        document.head.appendChild(dns2);
+
+        var pre1 = document.createElement('link');
+        pre1.rel = 'preconnect';
+        pre1.href = 'https://cdn.jsdelivr.net';
+        pre1.crossOrigin = 'anonymous';
+        document.head.appendChild(pre1);
+        var pre2 = document.createElement('link');
+        pre2.rel = 'preconnect';
+        pre2.href = 'https://sasktoday.github.io';
+        pre2.crossOrigin = 'anonymous';
+        document.head.appendChild(pre2);
+
+        // Preload omitted for staging (script URL has cache buster, so preload would never match and would warn)
+
+        // 3. Nav loader logic
+        console.log('[NAV LOADER] Loader executing (feature flag on)');
+        try {
+            var COMMIT_HASH = 'fa3cfef';
+            var SRI_HASH = 'sha384-H9VOtxIRau815TaIH77jT36qrHwdCFzX2fM+a0Vea9Uhrin+6HxLtNaSbbE/03Ya';
+            var cacheBuster = '?v=' + Date.now();
+
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js' + cacheBuster;
+            if (SRI_HASH) {
+                script.integrity = SRI_HASH;
+                script.crossOrigin = 'anonymous';
+            }
+            script.defer = true;
+            script.onload = function() { console.log('[NAV LOADER] ✅ Script loaded from jsDelivr'); };
+            script.onerror = function(e) {
+                console.warn('[NAV LOADER] jsDelivr failed, trying GitHub Pages...', e);
+                var fallback = document.createElement('script');
+                fallback.src = 'https://sasktoday.github.io/newnav/new_nav.js' + cacheBuster;
+                if (SRI_HASH) { fallback.integrity = SRI_HASH; fallback.crossOrigin = 'anonymous'; }
+                fallback.defer = true;
+                fallback.onerror = function(e2) { console.error('[NAV LOADER] ❌ Both sources failed', e2); };
+                document.head.appendChild(fallback);
+            };
+            document.head.appendChild(script);
+        } catch (err) {
+            console.error('[NAV LOADER] ERROR:', err);
+        }
+    } else {
+        // Flag off: run secondary (city buttons) nav. Requires jQuery and #nav in DOM.
+        if (typeof $ !== 'undefined' && $.fn && $.fn.jquery) {
+            $(document).ready(function() {
+                function addSecondaryNav(matchedCity) {
+                    if (matchedCity === 'battlefordsnewsoptimist') matchedCity = 'the-battlefords';
+                    else if (matchedCity === 'battlefords') matchedCity = 'the-battlefords';
+
+                    var cities = ['Assiniboia', 'The Battlefords', 'Canora', 'Carlyle', 'Estevan', 'Humboldt', 'Kamsack', 'Moose Jaw', 'Outlook', 'Preeceville', 'Prince Albert', 'Regina', 'Saskatoon', 'Unity', 'Weyburn', 'Yorkton'];
+                    var links = [
+                        'https://staging-www2.villagemedia.ca/southwest/assiniboiatimes',
+                        'https://staging-www2.villagemedia.ca/north/battlefordsnewsoptimist',
+                        'https://staging-www2.villagemedia.ca/central/canoracourier',
+                        'https://staging-www2.villagemedia.ca/southeast/carlyleobserver',
+                        'https://staging-www2.villagemedia.ca/southeast/estevanmercury',
+                        'https://staging-www2.villagemedia.ca/north/humboldtjournal',
+                        'https://staging-www2.villagemedia.ca/central/kamsacktimes',
+                        'https://www.moosejawtoday.com/',
+                        'https://staging-www2.villagemedia.ca/north/theoutlook',
+                        'https://staging-www2.villagemedia.ca/central/preecevilleprogress',
+                        'https://staging-www2.villagemedia.ca/north/prince-albert',
+                        'https://staging-www2.villagemedia.ca/regina-today',
+                        'https://staging-www2.villagemedia.ca/saskatoon-today',
+                        'https://staging-www2.villagemedia.ca/north/unitywilkiepressherald',
+                        'https://staging-www2.villagemedia.ca/southeast/weyburnreview',
+                        'https://staging-www2.villagemedia.ca/central/yorktonthisweek'
+                    ];
+                    var currentIndex = -1;
+
+                    if (matchedCity) {
+                        currentIndex = cities.findIndex(function(city) { return city.toLowerCase().replace(/\s+/g, '-') === matchedCity; });
+                    } else {
+                        var currentURL2 = window.location.href;
+                        $.each(links, function(index, link) {
+                            if (currentURL2.startsWith(link)) {
+                                currentIndex = index;
+                                return false;
+                            }
+                        });
+                    }
+
+                    var $container = $('<div id="cityButtonsContainer" class="cityButtonsSection"></div>');
+                    var $buttonContainer = $('<div id="buttonContainer" class="buttonsSection"></div>');
+
+                    if (currentIndex > -1) {
+                        var currentCity = cities.splice(currentIndex, 1)[0];
+                        var currentLink = links.splice(currentIndex, 1)[0];
+                        cities.unshift(currentCity);
+                        links.unshift(currentLink);
+                    }
+
+                    $.each(cities, function(index, city) {
+                        $('<a>', {
+                            text: city,
+                            href: links[index],
+                            class: index === 0 && currentIndex > -1 ? 'cityname-links highlighted' : 'cityname-links'
+                        }).appendTo($buttonContainer);
+                    });
+
+                    $container.append($buttonContainer);
+                    $('#nav').after($container);
+                    $('body').addClass('cities-link-added');
+
+                    if (links.indexOf(window.location.href) !== -1) {
+                        $('.cityname-links').addClass('selected-page');
+                    }
+
+                    $('#buttonContainer').on('wheel', function(e) {
+                        e.preventDefault();
+                        var delta = Math.abs(e.originalEvent.deltaX) > Math.abs(e.originalEvent.deltaY) ? e.originalEvent.deltaX : e.originalEvent.deltaY;
+                        $(this).scrollLeft($(this).scrollLeft() + delta);
+                        checkScroll();
+                    });
+
+                    var $leftButton = $('<a href="#" class="scroll-left" style="opacity:0;"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 498 800" style="width:22px;border-radius:5px;"><rect width="498" height="800" fill="#fff"/><path d="M370.7,568.2c14.2,14.2,14.2,37.2,0,51.4c-7.1,7.1-16.4,10.6-25.7,10.6s-18.6-3.5-25.7-10.7L125.3,425.7c-6.8-6.8-10.7-16.1-10.7-25.7c0-9.6,3.8-18.9,10.7-25.7l193.9-193.9c14.2-14.2,37.2-14.2,51.4,0c14.2,14.2,14.2,37.2,0,51.4L202.5,400L370.7,568.2z"/></svg></a>');
+                    var $rightButton = $('<a href="#" class="scroll-right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 498 800"><rect width="498" height="800" fill="#fff"/><path d="M125.3,568.2c-14.2,14.2-14.2,37.2,0,51.4,7.1,7.1,16.4,10.6,25.7,10.6s18.6-3.5,25.7-10.7l194-193.8c6.8-6.8,10.7-16.1,10.7-25.7s-3.8-18.9-10.7-25.7l-193.9-193.9c-14.2-14.2-37.2-14.2-51.4,0-14.2,14.2-14.2,37.2,0,51.4l168.1,168.2-168.2,168.2Z"/></svg></a>');
+                    $container.append($leftButton).append($rightButton);
+
+                    $leftButton.on('click', function(e) {
+                        e.preventDefault();
+                        $('#buttonContainer').stop().animate({ scrollLeft: $('#buttonContainer').scrollLeft() - 100 }, 200);
+                        checkScroll();
+                    });
+                    $rightButton.on('click', function(e) {
+                        e.preventDefault();
+                        $('#buttonContainer').stop().animate({ scrollLeft: $('#buttonContainer').scrollLeft() + 100 }, 200);
+                        checkScroll();
+                    });
+                }
+
+                function checkScroll() {
+                    var scrollLeft = $('#buttonContainer').scrollLeft();
+                    var scrollWidth = $('#buttonContainer')[0].scrollWidth;
+                    var containerWidth = $('#buttonContainer').outerWidth();
+                    $('.scroll-left').css('opacity', scrollLeft === 0 ? '0' : '1');
+                    $('.scroll-right').css('opacity', scrollLeft + containerWidth + 5 >= scrollWidth ? '0' : '1');
+                }
+
+                function getUrlSlugs(url) {
+                    var parser = document.createElement('a');
+                    parser.href = url;
+                    var pathSegments = parser.pathname.split('/').filter(Boolean);
+                    return pathSegments.slice(0, 2);
+                }
+
+                function checkForWordsInURL(url) {
+                    var words = ['assiniboia', 'the-battlefords', 'canora', 'carlyle', 'estevan', 'humboldt', 'kamsack', 'moose-jaw', 'outlook', 'preeceville', 'prince-albert', 'regina', 'saskatoon', 'unity', 'weyburn', 'yorkton', 'assiniboiatimes', 'battlefordsnewsoptimist', 'canoracourier', 'carlyle-observer', 'estevanmercury', 'humboldtjournal', 'kamsacktimes', 'moosejaw', 'theoutlook', 'preecevilleprogress', 'unitywilkiepressherald', 'weyburnreview', 'yorktonthisweek', 'battlefords'];
+                    var slugs = getUrlSlugs(url);
+                    var match = words.find(function(word) {
+                        return slugs.some(function(slug) {
+                            return slug.toLowerCase() === word.toLowerCase() || slug.toLowerCase().indexOf(word.toLowerCase()) !== -1;
+                        });
+                    });
+                    if (match) addSecondaryNav(match);
+                    else addSecondaryNav();
+                }
+
+                checkForWordsInURL(window.location.href);
+            });
+        }
+    }
+});
+</script>

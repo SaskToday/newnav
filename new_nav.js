@@ -31,14 +31,12 @@ function initNavigationScript() {
 
     // NEXT READ feature flags (easy on/off + positioning override)
     const ENABLE_NEXT_READ = window.NAV_ENABLE_NEXT_READ !== false && window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
-    const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_MOBILE_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_DESKTOP_BOTTOM_OFFSET || 50);
     const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS != null ? window.NAV_NEXT_READ_HIDE_PROGRESS : -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 850);
     const NEXT_READ_DISMISSED_SESSION_KEY = 'nav_next_read_dismissed_session_v1';
     const NEXT_READ_MOBILE_HIDE_TOP_PX = Number(window.NAV_NEXT_READ_MOBILE_HIDE_TOP_PX || 80);
-    const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || `${window.location.origin}/rss`;
     const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
     const NEXT_READ_FEED_CACHE_TTL_MS = Number(window.NAV_NEXT_READ_FEED_CACHE_TTL_MS || 300000);
@@ -516,7 +514,6 @@ function initNavigationScript() {
             #bottom-trending-story-bar .story-link:hover { color: #000; text-decoration: underline; }
             #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
             #bottom-trending-story-bar .close-btn:hover { color: #111827; }
-            #bottom-sticky-ad-sim { position: fixed; left: 0; right: 0; bottom: 0; height: 70px; background: #f3f4f6; border-top: 1px solid #d1d5db; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6b7280; }
             @media (max-width: 767px) {
                 #bottom-trending-story-bar { left: 8px; right: 8px; width: auto; bottom: 100px; padding: 9px 10px; contain: layout style paint; }
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
@@ -1050,38 +1047,17 @@ function initNavigationScript() {
 
     async function initBottomTrendingStoryBar() {
         const existing = document.getElementById('bottom-trending-story-bar');
-        const existingAd = document.getElementById('bottom-sticky-ad-sim');
         const isMobileViewport = window.innerWidth <= 767;
         const currentPath = normalizePath(window.location.pathname);
         const isArticle = isArticlePath(currentPath);
 
         if (!ENABLE_NEXT_READ || !isArticle) {
             if (existing) existing.remove();
-            if (existingAd) existingAd.remove();
             return;
         }
         if (sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) {
             if (existing) existing.remove();
-            if (isMobileViewport && ENABLE_FAKE_BOTTOM_AD_UNIT && !existingAd) {
-                const fakeAd = document.createElement('div');
-                fakeAd.id = 'bottom-sticky-ad-sim';
-                fakeAd.style.height = `${BOTTOM_STICKY_AD_HEIGHT}px`;
-                fakeAd.textContent = 'Sticky Ad Unit (Simulated)';
-                document.body.appendChild(fakeAd);
-            } else if (!isMobileViewport && existingAd) {
-                existingAd.remove();
-            }
             return;
-        }
-
-        if (isMobileViewport && ENABLE_FAKE_BOTTOM_AD_UNIT && !existingAd) {
-            const fakeAd = document.createElement('div');
-            fakeAd.id = 'bottom-sticky-ad-sim';
-            fakeAd.style.height = `${BOTTOM_STICKY_AD_HEIGHT}px`;
-            fakeAd.textContent = 'Sticky Ad Unit (Simulated)';
-            document.body.appendChild(fakeAd);
-        } else if (!isMobileViewport && existingAd) {
-            existingAd.remove();
         }
 
         if (existing) {
@@ -1232,7 +1208,7 @@ function initNavigationScript() {
         const paragraphs = document.querySelectorAll('main p, article p, .entry-content p, .post-content p, p');
         for (const p of paragraphs) {
             if (!p || !p.isConnected) continue;
-            if (p.closest('#village-nav-container, #bottom-trending-story-bar, #bottom-sticky-ad-sim, header, footer, nav')) continue;
+            if (p.closest('#village-nav-container, #bottom-trending-story-bar, header, footer, nav')) continue;
             const text = (p.textContent || '').trim();
             if (text.length < 30) continue;
             const style = window.getComputedStyle(p);
