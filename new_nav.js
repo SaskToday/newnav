@@ -24,7 +24,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-21-next-read-stability-pass';
+    window.navVersion = '2026-02-24-next-read-feed-simplify';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -37,7 +37,7 @@ function initNavigationScript() {
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 850);
     const NEXT_READ_DISMISSED_SESSION_KEY = 'nav_next_read_dismissed_session_v1';
     const NEXT_READ_MOBILE_HIDE_TOP_PX = Number(window.NAV_NEXT_READ_MOBILE_HIDE_TOP_PX || 80);
-    const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || `${window.location.origin}/rss`;
+    const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || `${window.location.origin}/rss/trending`;
     const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
     const NEXT_READ_FEED_CACHE_TTL_MS = Number(window.NAV_NEXT_READ_FEED_CACHE_TTL_MS || 300000);
     const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
@@ -907,26 +907,7 @@ function initNavigationScript() {
     function buildParentRssUrls(path) {
         const primary = buildParentRssUrl(path);
         if (!primary) return [];
-        const urls = [primary];
-
-        // Some community feeds can use non-hyphenated terminal slugs (e.g. weyburnreview).
-        try {
-            const parsed = new URL(primary);
-            const parts = parsed.pathname.split('/').filter(Boolean);
-            if (parts.length >= 3) {
-                const last = parts[parts.length - 1];
-                const compact = last.replace(/-/g, '');
-                if (compact && compact !== last) {
-                    parts[parts.length - 1] = compact;
-                    parsed.pathname = `/${parts.join('/')}`;
-                    urls.push(parsed.toString().replace(/\/+$/, ''));
-                }
-            }
-        } catch (_) {
-            // Keep primary only if URL parsing fails.
-        }
-
-        return Array.from(new Set(urls));
+        return [primary];
     }
 
     function getNextReadVisitedPaths() {
@@ -1089,19 +1070,12 @@ function initNavigationScript() {
             }
         };
 
-        // Prefer contextual community/category feed first (unvisited, then visited).
+        // Primary feed (unvisited only), then fallback to /rss/trending (unvisited only).
         for (const rssUrl of parentRssUrls) {
             nextItem = await selectFromFeed(rssUrl, false);
             if (nextItem) break;
         }
-        if (!nextItem) {
-            for (const rssUrl of parentRssUrls) {
-                nextItem = await selectFromFeed(rssUrl, true);
-                if (nextItem) break;
-            }
-        }
         if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
-        if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, true);
 
         if (!nextItem) {
             if (existing) existing.remove();
