@@ -497,7 +497,7 @@ function initNavigationScript() {
             .external-icon { width: 10px !important; height: 10px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
-            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 280px; max-height: 75vh; overflow: hidden; display: flex; }
+            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 300px; max-height: 75vh; overflow: hidden; display: flex; }
             #village-nav-dropdown-mobile .dropdown-inner { display: flex; flex: 1; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-left { position: relative; flex: 1; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-content { max-height: 75vh; overflow-y: scroll; overflow-x: hidden; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #888 #f1f1f1; -webkit-overflow-scrolling: touch; }
@@ -505,10 +505,12 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 0 8px 8px 0; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
-            #village-nav-dropdown-mobile .dropdown-promo { flex-shrink: 0; width: 100px; padding: 16px 12px; border-left: 1px solid #e5e7eb; background: #fafafa; display: flex; align-items: center; justify-content: center; }
-            #village-nav-dropdown-mobile .dropdown-promo-link { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: #1f1f1f; font-size: 12px; font-weight: 600; text-align: center; min-width: 0; }
+            #village-nav-dropdown-mobile .dropdown-promo { flex-shrink: 0; width: 120px; padding: 12px; border-left: 1px solid #e5e7eb; background: #fafafa; display: flex; align-items: flex-start; justify-content: center; }
+            #village-nav-dropdown-mobile .dropdown-promo-link { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: #1f1f1f; font-size: 11px; text-align: center; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-promo-link:hover { color: #000; }
-            #village-nav-dropdown-mobile .dropdown-promo svg { flex-shrink: 0; }
+            #village-nav-dropdown-mobile .dropdown-promo img { width: 100%; max-width: 100%; height: auto; display: block; border-radius: 4px; }
+            #village-nav-dropdown-mobile .dropdown-promo-line1 { font-weight: 700; }
+            #village-nav-dropdown-mobile .dropdown-promo-line2 { font-weight: 400; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
             #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; transform: translateZ(0); width: auto; bottom: 50px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; will-change: opacity; backface-visibility: hidden; -webkit-backface-visibility: hidden; contain: layout style paint; }
@@ -550,9 +552,9 @@ function initNavigationScript() {
                         </div>
                     </div>
                     <div class="dropdown-promo">
-                        <a href="#" class="dropdown-promo-link" aria-label="CKRM 100 Years">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M600-320h120q17 0 28.5-11.5T760-360v-240q0-17-11.5-28.5T720-640H600q-17 0-28.5 11.5T560-600v240q0 17 11.5 28.5T600-320Zm40-80v-160h40v160h-40Zm-280 80h120q17 0 28.5-11.5T520-360v-240q0-17-11.5-28.5T480-640H360q-17 0-28.5 11.5T320-600v240q0 17 11.5 28.5T360-320Zm40-80v-160h40v160h-40Zm-200 80h80v-320h-80v320ZM80-160v-640h800v640H80Zm80-560v480-480Zm0 480h640v-480H160v480Z"/></svg>
-                            <span>CKRM 100 Years</span>
+                        <a href="#" class="dropdown-promo-link" aria-label="CKRM turns 100. The voice of SK since 1926">
+                            <img src="https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/3800/files/2026/01/ckrm-100-hero-353x200-1.png" alt="CKRM 100 Years" width="120" height="68">
+                            <span><span class="dropdown-promo-line1">CKRM turns 100.</span> <span class="dropdown-promo-line2">The voice of SK since 1926</span></span>
                         </a>
                     </div>
                 </div>
