@@ -558,7 +558,7 @@ function initNavigationScript() {
                     </div>
                     <div class="dropdown-promo">
                         <a href="#" class="dropdown-promo-link" target="_blank" rel="noopener" aria-label="The voice of Saskatchewan turns 100. Explore">
-                            <img src="https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/3800/files/2026/01/ckrm-100-hero-353x200-1.png" alt="CKRM 100 Years" width="90" height="51">
+                            <img src="https://www.vmcdn.ca/f/files/sasktoday/files/ckrm100.png" alt="CKRM 100 Years" width="90" height="51">
                             <span><span class="dropdown-promo-line1">The voice of Saskatchewan turns 100.</span><br><span class="dropdown-promo-line2">Explore ${extIcon}</span></span>
                         </a>
                     </div>
@@ -2545,7 +2545,7 @@ function initNavigationScript() {
                         <h3>CKRM 100</h3>
                         <a href="#" target="_blank" rel="noopener" class="desktop-mega-menu-brand-link" aria-label="The voice of Saskatchewan turns 100. Explore">
                             <div class="desktop-mega-menu-brand-content">
-                                <img src="https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/3800/files/2026/01/ckrm-100-hero-353x200-1.png" alt="CKRM 100 Years" class="brand-logo ckrm-brand-logo">
+                                <img src="https://www.vmcdn.ca/f/files/sasktoday/files/ckrm100.png" alt="CKRM 100 Years" class="brand-logo ckrm-brand-logo">
                                 <div class="desktop-mega-menu-brand-ckrm-text">
                                     <span class="desktop-mega-menu-brand-ckrm-line1">The voice of Saskatchewan turns 100.</span><br>
                                     <span class="desktop-mega-menu-brand-ckrm-line2">Explore ${extIcon}</span>
