@@ -483,7 +483,7 @@ function initNavigationScript() {
             .desktop-mega-menu-brand a:hover { opacity: 0.7; }
             .desktop-mega-menu-brand-content { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-brand-content .brand-logo { width: 150px; height: auto; margin-bottom: 8px; opacity: 0; transition: opacity 0.3s ease-in-out; }
-            .desktop-mega-menu-brand-content .brand-logo.ckrm-brand-logo { width: 113px; align-self: flex-start; }
+            .desktop-mega-menu-brand-content .brand-logo.ckrm-brand-logo { width: 70px; align-self: flex-start; }
             .desktop-mega-menu-brand-content .brand-logo.loaded { opacity: 1; }
             .desktop-mega-menu-brand-content p { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
             .desktop-mega-menu-brand-ckrm-text { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
