@@ -508,9 +508,10 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-promo { flex-shrink: 0; width: 120px; padding: 12px; border-left: 1px solid #e5e7eb; background: #fafafa; display: flex; align-items: flex-start; justify-content: center; }
             #village-nav-dropdown-mobile .dropdown-promo-link { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: #1f1f1f; font-size: 11px; text-align: center; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-promo-link:hover { color: #000; }
-            #village-nav-dropdown-mobile .dropdown-promo img { width: 100%; max-width: 100%; height: auto; display: block; border-radius: 4px; }
+            #village-nav-dropdown-mobile .dropdown-promo img { width: 75%; max-width: 75%; height: auto; display: block; border-radius: 4px; margin: 0 auto; }
             #village-nav-dropdown-mobile .dropdown-promo-line1 { font-weight: 700; }
             #village-nav-dropdown-mobile .dropdown-promo-line2 { font-weight: 400; }
+            #village-nav-dropdown-mobile .dropdown-promo .external-icon { width: 8px !important; height: 8px !important; vertical-align: middle; margin-left: 2px; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
             #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; transform: translateZ(0); width: auto; bottom: 50px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; will-change: opacity; backface-visibility: hidden; -webkit-backface-visibility: hidden; contain: layout style paint; }
@@ -552,9 +553,9 @@ function initNavigationScript() {
                         </div>
                     </div>
                     <div class="dropdown-promo">
-                        <a href="#" class="dropdown-promo-link" aria-label="CKRM turns 100. The voice of SK since 1926">
-                            <img src="https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/3800/files/2026/01/ckrm-100-hero-353x200-1.png" alt="CKRM 100 Years" width="120" height="68">
-                            <span><span class="dropdown-promo-line1">CKRM turns 100.</span> <span class="dropdown-promo-line2">The voice of SK since 1926</span></span>
+                        <a href="#" class="dropdown-promo-link" target="_blank" rel="noopener" aria-label="The voice of Saskatchewan turns 100. Explore the timeline.">
+                            <img src="https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/3800/files/2026/01/ckrm-100-hero-353x200-1.png" alt="CKRM 100 Years" width="90" height="51">
+                            <span><span class="dropdown-promo-line1">The voice of Saskatchewan turns 100.</span> <span class="dropdown-promo-line2">Explore the timeline. ${extIcon}</span></span>
                         </a>
                     </div>
                 </div>
