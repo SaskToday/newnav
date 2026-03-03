@@ -497,12 +497,18 @@ function initNavigationScript() {
             .external-icon { width: 10px !important; height: 10px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
-            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; max-height: 75vh; overflow: hidden; }
+            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 280px; max-height: 75vh; overflow: hidden; display: flex; }
+            #village-nav-dropdown-mobile .dropdown-inner { display: flex; flex: 1; min-width: 0; }
+            #village-nav-dropdown-mobile .dropdown-left { position: relative; flex: 1; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-content { max-height: 75vh; overflow-y: scroll; overflow-x: hidden; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #888 #f1f1f1; -webkit-overflow-scrolling: touch; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar { width: 8px; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 0 8px 8px 0; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
+            #village-nav-dropdown-mobile .dropdown-promo { flex-shrink: 0; width: 100px; padding: 16px 12px; border-left: 1px solid #e5e7eb; background: #fafafa; display: flex; align-items: center; justify-content: center; }
+            #village-nav-dropdown-mobile .dropdown-promo-link { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: #1f1f1f; font-size: 12px; font-weight: 600; text-align: center; min-width: 0; }
+            #village-nav-dropdown-mobile .dropdown-promo-link:hover { color: #000; }
+            #village-nav-dropdown-mobile .dropdown-promo svg { flex-shrink: 0; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
             #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; transform: translateZ(0); width: auto; bottom: 50px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; will-change: opacity; backface-visibility: hidden; -webkit-backface-visibility: hidden; contain: layout style paint; }
@@ -521,8 +527,10 @@ function initNavigationScript() {
         </style>
         <div class="nav-content-wrapper">
             <div id="village-nav-dropdown-mobile" style="display: none;">
-                <div class="dropdown-content">
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="all">All Communities</div>
+                <div class="dropdown-inner">
+                    <div class="dropdown-left">
+                        <div class="dropdown-content">
+                            <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="all">All Communities</div>
                     <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="regina">Regina</div>
                     <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="saskatoon">Saskatoon</div>
                     <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="estevan">Estevan</div>
@@ -539,6 +547,14 @@ function initNavigationScript() {
                     <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="princealbert">Prince Albert</div>
                     <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="unitywilkie">Unity-Wilkie</div>
                     <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;" data-community="weyburn">Weyburn</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-promo">
+                        <a href="#" class="dropdown-promo-link" aria-label="CKRM 100 Years">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M600-320h120q17 0 28.5-11.5T760-360v-240q0-17-11.5-28.5T720-640H600q-17 0-28.5 11.5T560-600v240q0 17 11.5 28.5T600-320Zm40-80v-160h40v160h-40Zm-280 80h120q17 0 28.5-11.5T520-360v-240q0-17-11.5-28.5T480-640H360q-17 0-28.5 11.5T320-600v240q0 17 11.5 28.5T360-320Zm40-80v-160h40v160h-40Zm-200 80h80v-320h-80v320ZM80-160v-640h800v640H80Zm80-560v480-480Zm0 480h640v-480H160v480Z"/></svg>
+                            <span>CKRM 100 Years</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -1948,12 +1964,14 @@ function initNavigationScript() {
             const clientHeight = content.clientHeight;
             const canScrollDown = scrollTop < scrollHeight - clientHeight - 1;
             
-            // Get or create fade overlay
-            let fadeOverlay = dropdown.querySelector('.dropdown-scroll-fade-bottom');
+            // Get or create fade overlay (append to dropdown-left so it only covers the scrollable column)
+            const dropdownLeft = dropdown.querySelector('.dropdown-left');
+            const fadeParent = dropdownLeft || dropdown;
+            let fadeOverlay = fadeParent.querySelector('.dropdown-scroll-fade-bottom');
             if (!fadeOverlay) {
                 fadeOverlay = document.createElement('div');
                 fadeOverlay.className = 'dropdown-scroll-fade-bottom';
-                dropdown.appendChild(fadeOverlay);
+                fadeParent.appendChild(fadeOverlay);
             }
             
             // Show/hide fade based on scroll position
