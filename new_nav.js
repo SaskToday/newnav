@@ -497,7 +497,7 @@ function initNavigationScript() {
             .external-icon { width: 10px !important; height: 10px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
-            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 300px; max-height: 75vh; overflow: hidden; display: flex; }
+            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 280px; max-height: 75vh; overflow: hidden; display: flex; }
             #village-nav-dropdown-mobile .dropdown-inner { display: flex; flex: 1; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-left { position: relative; flex: 1; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-content { max-height: 75vh; overflow-y: scroll; overflow-x: hidden; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #888 #f1f1f1; -webkit-overflow-scrolling: touch; }
@@ -505,11 +505,11 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 0 8px 8px 0; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
-            #village-nav-dropdown-mobile .dropdown-promo { flex-shrink: 0; width: 120px; padding: 12px; border-left: 1px solid #e5e7eb; background: #fafafa; display: flex; align-items: flex-start; justify-content: center; }
+            #village-nav-dropdown-mobile .dropdown-promo { flex-shrink: 0; width: 100px; padding: 12px 12px; border-left: 1px solid #e5e7eb; background: #fafafa; display: flex; align-items: flex-start; justify-content: center; }
             #village-nav-dropdown-mobile .dropdown-promo-link { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: #1f1f1f; font-size: 10px; text-align: center; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-promo-link:hover { color: #000; }
             #village-nav-dropdown-mobile .dropdown-promo img { width: 75%; max-width: 75%; height: auto; display: block; border-radius: 4px; margin: 0 auto; }
-            #village-nav-dropdown-mobile .dropdown-promo-line1 { font-weight: 700; }
+            #village-nav-dropdown-mobile .dropdown-promo-line1 { font-weight: 500; }
             #village-nav-dropdown-mobile .dropdown-promo-line2 { font-weight: 400; }
             #village-nav-dropdown-mobile .dropdown-promo .external-icon { width: 8px !important; height: 8px !important; vertical-align: middle; margin-left: 2px; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
@@ -553,9 +553,9 @@ function initNavigationScript() {
                         </div>
                     </div>
                     <div class="dropdown-promo">
-                        <a href="#" class="dropdown-promo-link" target="_blank" rel="noopener" aria-label="The voice of Saskatchewan turns 100. See the history.">
+                        <a href="#" class="dropdown-promo-link" target="_blank" rel="noopener" aria-label="The voice of Saskatchewan turns 100. Explore">
                             <img src="https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/3800/files/2026/01/ckrm-100-hero-353x200-1.png" alt="CKRM 100 Years" width="90" height="51">
-                            <span><span class="dropdown-promo-line1">The voice of Saskatchewan turns 100.</span><br><span class="dropdown-promo-line2">See the history. ${extIcon}</span></span>
+                            <span><span class="dropdown-promo-line1">The voice of Saskatchewan turns 100.</span><br><span class="dropdown-promo-line2">Explore ${extIcon}</span></span>
                         </a>
                     </div>
                 </div>
