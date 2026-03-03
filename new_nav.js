@@ -506,7 +506,7 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
             #village-nav-dropdown-mobile .dropdown-promo { flex-shrink: 0; width: 120px; padding: 12px; border-left: 1px solid #e5e7eb; background: #fafafa; display: flex; align-items: flex-start; justify-content: center; }
-            #village-nav-dropdown-mobile .dropdown-promo-link { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: #1f1f1f; font-size: 11px; text-align: center; min-width: 0; }
+            #village-nav-dropdown-mobile .dropdown-promo-link { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: #1f1f1f; font-size: 10px; text-align: center; min-width: 0; }
             #village-nav-dropdown-mobile .dropdown-promo-link:hover { color: #000; }
             #village-nav-dropdown-mobile .dropdown-promo img { width: 75%; max-width: 75%; height: auto; display: block; border-radius: 4px; margin: 0 auto; }
             #village-nav-dropdown-mobile .dropdown-promo-line1 { font-weight: 700; }
@@ -553,9 +553,9 @@ function initNavigationScript() {
                         </div>
                     </div>
                     <div class="dropdown-promo">
-                        <a href="#" class="dropdown-promo-link" target="_blank" rel="noopener" aria-label="The voice of Saskatchewan turns 100. Explore the timeline.">
+                        <a href="#" class="dropdown-promo-link" target="_blank" rel="noopener" aria-label="The voice of Saskatchewan turns 100. See the history.">
                             <img src="https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/3800/files/2026/01/ckrm-100-hero-353x200-1.png" alt="CKRM 100 Years" width="90" height="51">
-                            <span><span class="dropdown-promo-line1">The voice of Saskatchewan turns 100.</span> <span class="dropdown-promo-line2">Explore the timeline. ${extIcon}</span></span>
+                            <span><span class="dropdown-promo-line1">The voice of Saskatchewan turns 100.</span><br><span class="dropdown-promo-line2">See the history. ${extIcon}</span></span>
                         </a>
                     </div>
                 </div>
