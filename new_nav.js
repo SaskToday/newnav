@@ -483,8 +483,12 @@ function initNavigationScript() {
             .desktop-mega-menu-brand a:hover { opacity: 0.7; }
             .desktop-mega-menu-brand-content { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-brand-content .brand-logo { width: 150px; height: auto; margin-bottom: 8px; opacity: 0; transition: opacity 0.3s ease-in-out; }
+            .desktop-mega-menu-brand-content .brand-logo.ckrm-brand-logo { width: 113px; }
             .desktop-mega-menu-brand-content .brand-logo.loaded { opacity: 1; }
             .desktop-mega-menu-brand-content p { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
+            .desktop-mega-menu-brand-ckrm-text { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
+            .desktop-mega-menu-brand-ckrm-line1 { font-weight: 500; }
+            .desktop-mega-menu-brand-ckrm-line2 { font-weight: 400; }
             @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
             
             .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; margin-top: 10px; }
@@ -2479,9 +2483,9 @@ function initNavigationScript() {
                     communitiesSection.appendChild(communitiesHeading);
                     
                     const communitiesItems = document.createElement('div');
-                    const numColumns = Math.ceil(links.length / 4); // Limit to 4 items per column
-                    communitiesItems.className = 'desktop-mega-menu-links-items' + (links.length > 4 ? ' multi-column communities-columns' : '');
-                    if (links.length > 4) {
+                    const numColumns = Math.ceil(links.length / 5); // 5 items per column for communities (to accommodate CKRM 100 promo)
+                    communitiesItems.className = 'desktop-mega-menu-links-items' + (links.length > 5 ? ' multi-column communities-columns' : '');
+                    if (links.length > 5) {
                         communitiesItems.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
                     }
                     
@@ -2533,6 +2537,29 @@ function initNavigationScript() {
                     });
                     regionSection.appendChild(regionItems);
                     inner.appendChild(regionSection);
+                    
+                    // CKRM 100 brand section (right side)
+                    const ckrmBrandSection = document.createElement('div');
+                    ckrmBrandSection.className = 'desktop-mega-menu-brand';
+                    ckrmBrandSection.innerHTML = `
+                        <h3>CKRM 100</h3>
+                        <a href="#" target="_blank" rel="noopener" class="desktop-mega-menu-brand-link" aria-label="The voice of Saskatchewan turns 100. Explore">
+                            <div class="desktop-mega-menu-brand-content">
+                                <img src="https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/3800/files/2026/01/ckrm-100-hero-353x200-1.png" alt="CKRM 100 Years" class="brand-logo ckrm-brand-logo">
+                                <div class="desktop-mega-menu-brand-ckrm-text">
+                                    <span class="desktop-mega-menu-brand-ckrm-line1">The voice of Saskatchewan turns 100.</span><br>
+                                    <span class="desktop-mega-menu-brand-ckrm-line2">Explore ${extIcon}</span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    const ckrmLogo = ckrmBrandSection.querySelector('.ckrm-brand-logo');
+                    if (ckrmLogo) {
+                        ckrmLogo.addEventListener('load', () => ckrmLogo.classList.add('loaded'), { once: true });
+                        ckrmLogo.addEventListener('error', () => ckrmLogo.classList.add('loaded'), { once: true });
+                        if (ckrmLogo.complete) ckrmLogo.classList.add('loaded');
+                    }
+                    inner.appendChild(ckrmBrandSection);
                 } else {
                     // Regular categories - sections, optional brand section, and newsletter
                     // Left section - links
