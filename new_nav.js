@@ -75,9 +75,16 @@ function initNavigationScript() {
 
     const COMMUNITY_OVERLAY_DISMISS_KEY = 'vm.nav.community.overlay.dismissed.v1';
     const COMMUNITY_OVERLAY_SEEN_SESSION_KEY = 'vm.nav.community.overlay.seen.session.v1';
+
+    // ADDING A COMMUNITY: Update these 4 places so the community appears everywhere:
+    // 1. COMMUNITY_DISPLAY_NAMES (below) - for overlay/labels
+    // 2. routes.communities - for path resolution and mobile dropdown navigation
+    // 3. routes.communityLinks.communities - drives mobile dropdown, desktop Communities mega menu, search mega menu
+    // 4. Bottom row (in navHTML) - add <div class="bottom-row" id="community-{key}"> with child links
     const COMMUNITY_DISPLAY_NAMES = {
         regina: 'Regina',
         saskatoon: 'Saskatoon',
+        swiftcurrent: 'Swift Current',
         estevan: 'Estevan',
         yorkton: 'Yorkton',
         kamsack: 'Kamsack',
@@ -139,6 +146,7 @@ function initNavigationScript() {
         communities: {
             regina: base + "/regina-today",
             saskatoon: base + "/saskatoon-today",
+            swiftcurrent: base + "/swift-current-today",
             estevan: base + "/southeast/estevanmercury",
             yorkton: base + "/central/yorktonthisweek",
             kamsack: base + "/central/kamsacktimes",
@@ -226,25 +234,27 @@ function initNavigationScript() {
                 { text: "Advertise With Us", url: base + "/other/advertising" }
             ]
         },
+        // Single source for communities - drives: mobile dropdown, desktop Communities mega menu, search mega menu
         communityLinks: {
             communities: [
-                { text: "All Communities", url: base + "/" },
-                { text: "Regina", url: base + "/regina-today" },
-                { text: "Saskatoon", url: base + "/saskatoon-today" },
-                { text: "Estevan", url: base + "/southeast/estevanmercury" },
-                { text: "Yorkton", url: base + "/central/yorktonthisweek" },
-                { text: "Kamsack", url: base + "/central/kamsacktimes" },
-                { text: "The Battlefords", url: base + "/north/battlefordsnewsoptimist" },
-                { text: "Canora", url: base + "/central/canoracourier" },
-                { text: "Preeceville", url: base + "/central/preecevilleprogress" },
-                { text: "Carlyle", url: base + "/southeast/carlyleobserver" },
-                { text: "Humboldt", url: base + "/north/humboldtjournal" },
-                { text: "Moose Jaw", url: "https://moosejawtoday.com", external: true },
-                { text: "Assiniboia", url: base + "/southwest/assiniboiatimes" },
-                { text: "Outlook", url: base + "/north/theoutlook" },
-                { text: "Prince Albert", url: base + "/north/prince-albert" },
-                { text: "Unity-Wilkie", url: base + "/north/unitywilkiepressherald" },
-                { text: "Weyburn", url: base + "/southeast/weyburnreview" }
+                { key: "all", text: "All Communities", url: base + "/" },
+                { key: "regina", text: "Regina", url: base + "/regina-today" },
+                { key: "saskatoon", text: "Saskatoon", url: base + "/saskatoon-today" },
+                { key: "swiftcurrent", text: "Swift Current", url: base + "/swift-current-today" },
+                { key: "estevan", text: "Estevan", url: base + "/southeast/estevanmercury" },
+                { key: "yorkton", text: "Yorkton", url: base + "/central/yorktonthisweek" },
+                { key: "kamsack", text: "Kamsack", url: base + "/central/kamsacktimes" },
+                { key: "thebattlefords", text: "The Battlefords", url: base + "/north/battlefordsnewsoptimist" },
+                { key: "canora", text: "Canora", url: base + "/central/canoracourier" },
+                { key: "preeceville", text: "Preeceville", url: base + "/central/preecevilleprogress" },
+                { key: "carlyle", text: "Carlyle", url: base + "/southeast/carlyleobserver" },
+                { key: "humboldt", text: "Humboldt", url: base + "/north/humboldtjournal" },
+                { key: "moosejaw", text: "Moose Jaw", url: "https://moosejawtoday.com", external: true },
+                { key: "assiniboia", text: "Assiniboia", url: base + "/southwest/assiniboiatimes" },
+                { key: "outlook", text: "Outlook", url: base + "/north/theoutlook" },
+                { key: "princealbert", text: "Prince Albert", url: base + "/north/prince-albert" },
+                { key: "unitywilkie", text: "Unity-Wilkie", url: base + "/north/unitywilkiepressherald" },
+                { key: "weyburn", text: "Weyburn", url: base + "/southeast/weyburnreview" }
             ]
         }
     };
@@ -550,23 +560,11 @@ function initNavigationScript() {
                 <div class="dropdown-inner">
                     <div class="dropdown-left">
                         <div class="dropdown-content">
-                            <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="all">All Communities</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="regina">Regina</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="saskatoon">Saskatoon</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="estevan">Estevan</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="yorkton">Yorkton</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="kamsack">Kamsack</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="thebattlefords">The Battlefords</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="canora">Canora</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="preeceville">Preeceville</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="carlyle">Carlyle</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="humboldt">Humboldt</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="moosejaw">Moose Jaw</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="assiniboia">Assiniboia</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="outlook">Outlook</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="princealbert">Prince Albert</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="unitywilkie">Unity-Wilkie</div>
-                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;" data-community="weyburn">Weyburn</div>
+                            ${routes.communityLinks.communities.map((link, i) => {
+                                const isLast = i === routes.communityLinks.communities.length - 1;
+                                const style = 'padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;' + (isLast ? '' : ' border-bottom: 1px solid #eee;');
+                                return `<div class="dropdown-option" style="${style}" data-community="${link.key}">${link.text}</div>`;
+                            }).join('\n                    ')}
                         </div>
                     </div>
                     ${COMMUNITIES_PROMO && COMMUNITIES_PROMO.enabled ? `
@@ -597,6 +595,7 @@ function initNavigationScript() {
             
             <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
             <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon" class="text-link">Saskatoon Classifieds</a></div></div>
+            <div class="bottom-row" id="community-swiftcurrent"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/swift-current-today" class="text-link">All Swift Current</a><a href="${base}/swift-current-today/swift-current-news" class="text-link">Swift Current News</a></div></div>
             <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/central/yorkton-this-week" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
             <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/southeast/estevan-mercury" class="text-link">Estevan News</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
             <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/north/humboldt-journal" class="text-link">Humboldt News</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
