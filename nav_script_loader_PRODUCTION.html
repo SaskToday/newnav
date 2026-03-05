@@ -15,20 +15,21 @@
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
 <!-- When using SRI, add integrity="sha384-..." to the preload link and update it when you update SRI_HASH below -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@main/new_nav.js" as="script">
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@25f7d25/new_nav.js?v=25f7d25" as="script" crossorigin="anonymous">
 
 <!-- Step 4: Load script with automatic fallback (PRODUCTION/MAIN BRANCH) -->
 <script>
 (function() {
+    const COMMIT_HASH = '25f7d25';
     // Optional SRI: set after generating hash for @main (see SRI_WORKFLOW.md). Leave '' to disable.
     const SRI_HASH = '';
 
     // Try jsDelivr first (primary CDN - loads from @main branch)
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@main/new_nav.js';
+    script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js?v=' + COMMIT_HASH;
+    script.crossOrigin = 'anonymous';  // Required for preload to be used (must match preload credentials mode)
     if (SRI_HASH) {
         script.integrity = SRI_HASH;
-        script.crossOrigin = 'anonymous';
     }
     script.defer = true;
     
@@ -36,10 +37,10 @@
     script.onerror = function() {
         console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback (production)...');
         const fallbackScript = document.createElement('script');
-        fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js';
+        fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js?v=' + COMMIT_HASH;
+        fallbackScript.crossOrigin = 'anonymous';
         if (SRI_HASH) {
             fallbackScript.integrity = SRI_HASH;
-            fallbackScript.crossOrigin = 'anonymous';
         }
         fallbackScript.defer = true;
         fallbackScript.onerror = function() {

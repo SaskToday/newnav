@@ -249,6 +249,19 @@ function initNavigationScript() {
         }
     };
 
+    // Communities promo (mobile dropdown + desktop mega menu). Set enabled: false to hide. Change values to swap promos.
+    const COMMUNITIES_PROMO = {
+        enabled: true,
+        url: 'https://www.620ckrm.com/celebrating-100-years/',
+        imageSrc: 'https://www.vmcdn.ca/f/files/sasktoday/files/ckrm100.png;w=150',
+        alt: 'CKRM 100 Years',
+        title: 'CKRM 100',
+        line1: 'The voice of Saskatchewan turns 100.',
+        line2: 'Explore',
+        logoWidth: 70,
+        ariaLabel: 'The voice of Saskatchewan turns 100. Explore'
+    };
+
     const extIcon = `<svg class="external-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 13V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H11M21 3L11 13M21 3H15M21 3V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const downArrow = `<svg class="desktop-down-arrow" style="width:15px; height:15px; flex-shrink:0;" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
     
@@ -483,12 +496,12 @@ function initNavigationScript() {
             .desktop-mega-menu-brand a:hover { opacity: 0.7; }
             .desktop-mega-menu-brand-content { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-brand-content .brand-logo { width: 150px; height: auto; margin-bottom: 8px; opacity: 0; transition: opacity 0.3s ease-in-out; }
-            .desktop-mega-menu-brand-content .brand-logo.ckrm-brand-logo { width: 70px; align-self: flex-start; }
+            .desktop-mega-menu-brand-content .brand-logo.communities-promo-logo { align-self: flex-start; }
             .desktop-mega-menu-brand-content .brand-logo.loaded { opacity: 1; }
             .desktop-mega-menu-brand-content p { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
-            .desktop-mega-menu-brand-ckrm-text { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
-            .desktop-mega-menu-brand-ckrm-line1 { font-weight: 500; }
-            .desktop-mega-menu-brand-ckrm-line2 { font-weight: 400; }
+            .desktop-mega-menu-brand-promo-text { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
+            .desktop-mega-menu-brand-promo-line1 { font-weight: 500; }
+            .desktop-mega-menu-brand-promo-line2 { font-weight: 400; }
             @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
             
             .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; margin-top: 10px; }
@@ -556,12 +569,14 @@ function initNavigationScript() {
                     <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;" data-community="weyburn">Weyburn</div>
                         </div>
                     </div>
+                    ${COMMUNITIES_PROMO && COMMUNITIES_PROMO.enabled ? `
                     <div class="dropdown-promo">
-                        <a href="#" class="dropdown-promo-link" target="_blank" rel="noopener" aria-label="The voice of Saskatchewan turns 100. Explore">
-                            <img src="https://www.vmcdn.ca/f/files/sasktoday/files/ckrm100.png" alt="CKRM 100 Years" width="90" height="51">
-                            <span><span class="dropdown-promo-line1">The voice of Saskatchewan turns 100.</span><br><span class="dropdown-promo-line2">Explore ${extIcon}</span></span>
+                        <a href="${COMMUNITIES_PROMO.url}" class="dropdown-promo-link" target="_blank" rel="noopener" aria-label="${COMMUNITIES_PROMO.ariaLabel}">
+                            <img src="${COMMUNITIES_PROMO.imageSrc}" alt="${COMMUNITIES_PROMO.alt}" width="90" height="51">
+                            <span><span class="dropdown-promo-line1">${COMMUNITIES_PROMO.line1}</span><br><span class="dropdown-promo-line2">${COMMUNITIES_PROMO.line2} ${extIcon}</span></span>
                         </a>
                     </div>
+                    ` : ''}
                 </div>
             </div>
 
@@ -2538,28 +2553,31 @@ function initNavigationScript() {
                     regionSection.appendChild(regionItems);
                     inner.appendChild(regionSection);
                     
-                    // CKRM 100 brand section (right side)
-                    const ckrmBrandSection = document.createElement('div');
-                    ckrmBrandSection.className = 'desktop-mega-menu-brand';
-                    ckrmBrandSection.innerHTML = `
-                        <h3>CKRM 100</h3>
-                        <a href="#" target="_blank" rel="noopener" class="desktop-mega-menu-brand-link" aria-label="The voice of Saskatchewan turns 100. Explore">
-                            <div class="desktop-mega-menu-brand-content">
-                                <img src="https://www.vmcdn.ca/f/files/sasktoday/files/ckrm100.png" alt="CKRM 100 Years" class="brand-logo ckrm-brand-logo">
-                                <div class="desktop-mega-menu-brand-ckrm-text">
-                                    <span class="desktop-mega-menu-brand-ckrm-line1">The voice of Saskatchewan turns 100.</span><br>
-                                    <span class="desktop-mega-menu-brand-ckrm-line2">Explore ${extIcon}</span>
+                    // Communities promo brand section (right side)
+                    if (COMMUNITIES_PROMO && COMMUNITIES_PROMO.enabled) {
+                        const promoBrandSection = document.createElement('div');
+                        promoBrandSection.className = 'desktop-mega-menu-brand';
+                        const logoStyle = COMMUNITIES_PROMO.logoWidth ? `style="width:${COMMUNITIES_PROMO.logoWidth}px"` : '';
+                        promoBrandSection.innerHTML = `
+                            <h3>${COMMUNITIES_PROMO.title}</h3>
+                            <a href="${COMMUNITIES_PROMO.url}" target="_blank" rel="noopener" class="desktop-mega-menu-brand-link" aria-label="${COMMUNITIES_PROMO.ariaLabel}">
+                                <div class="desktop-mega-menu-brand-content">
+                                    <img src="${COMMUNITIES_PROMO.imageSrc}" alt="${COMMUNITIES_PROMO.alt}" class="brand-logo communities-promo-logo" ${logoStyle}>
+                                    <div class="desktop-mega-menu-brand-promo-text">
+                                        <span class="desktop-mega-menu-brand-promo-line1">${COMMUNITIES_PROMO.line1}</span><br>
+                                        <span class="desktop-mega-menu-brand-promo-line2">${COMMUNITIES_PROMO.line2} ${extIcon}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                    `;
-                    const ckrmLogo = ckrmBrandSection.querySelector('.ckrm-brand-logo');
-                    if (ckrmLogo) {
-                        ckrmLogo.addEventListener('load', () => ckrmLogo.classList.add('loaded'), { once: true });
-                        ckrmLogo.addEventListener('error', () => ckrmLogo.classList.add('loaded'), { once: true });
-                        if (ckrmLogo.complete) ckrmLogo.classList.add('loaded');
+                            </a>
+                        `;
+                        const promoLogo = promoBrandSection.querySelector('.communities-promo-logo');
+                        if (promoLogo) {
+                            promoLogo.addEventListener('load', () => promoLogo.classList.add('loaded'), { once: true });
+                            promoLogo.addEventListener('error', () => promoLogo.classList.add('loaded'), { once: true });
+                            if (promoLogo.complete) promoLogo.classList.add('loaded');
+                        }
+                        inner.appendChild(promoBrandSection);
                     }
-                    inner.appendChild(ckrmBrandSection);
                 } else {
                     // Regular categories - sections, optional brand section, and newsletter
                     // Left section - links
