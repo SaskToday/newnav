@@ -454,18 +454,20 @@ function initNavigationScript() {
                 transform: translateY(-4px);
                 pointer-events: auto;
                 transition: opacity 0.18s ease, transform 0.18s ease;
+                overflow: visible;
             }
             .community-tip-overlay.visible { opacity: 1; transform: translateY(0); }
             .community-tip-overlay::before {
                 content: "";
                 position: absolute;
-                top: -6px;
-                left: 16px;
-                width: 0;
-                height: 0;
-                border-left: 6px solid transparent;
-                border-right: 6px solid transparent;
-                border-bottom: 6px solid rgba(30, 58, 138, 0.9);
+                top: -5px;
+                left: 18px;
+                width: 10px;
+                height: 10px;
+                background: rgba(30, 58, 138, 0.9);
+                transform: rotate(45deg);
+                border-radius: 2px 0 0 0;
+                z-index: -1;
             }
             .community-tip-overlay-close {
                 border: 0;
@@ -1814,7 +1816,8 @@ function initNavigationScript() {
             overlay.classList.remove('visible');
             return;
         }
-        overlay.style.top = `${rect.bottom + 10}px`;
+        const overlayGap = window.innerWidth <= 990 ? 14 : 10;
+        overlay.style.top = `${rect.bottom + overlayGap}px`;
         overlay.style.left = `${rect.left}px`;
         overlay.classList.add('visible');
         if (!communityOverlayShownThisPage) {
