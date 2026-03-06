@@ -491,7 +491,7 @@ function initNavigationScript() {
             .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 60px; }
             .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 40px; grid-template-rows: repeat(5, auto); }
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; white-space: nowrap; }
-            .desktop-mega-menu-links a:hover { color: var(--primary); font-weight: bold; }
+            .desktop-mega-menu-links a:hover { color: #016a1a; }
             .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
@@ -499,7 +499,7 @@ function initNavigationScript() {
             .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 60px; }
             .desktop-mega-menu-newsletters-items.multi-column.communities-columns { column-gap: 60px; }
             .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; white-space: nowrap; }
-            .desktop-mega-menu-newsletters a:hover { color: var(--primary); font-weight: bold; }
+            .desktop-mega-menu-newsletters a:hover { color: #016a1a; }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
             .desktop-mega-menu-brand { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; max-width: 260px; }
             .desktop-mega-menu-brand h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
