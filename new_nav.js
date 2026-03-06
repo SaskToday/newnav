@@ -240,7 +240,7 @@ function initNavigationScript() {
                 { key: "all", text: "All Communities", url: base + "/" },
                 { key: "regina", text: "Regina", url: base + "/regina-today" },
                 { key: "saskatoon", text: "Saskatoon", url: base + "/saskatoon-today" },
-                { key: "swiftcurrent", text: "Swift Current", url: base + "/swift-current-today" },
+                { key: "swiftcurrent", text: "Swift Current", url: base + "/swift-current-today", isNew: true },
                 { key: "estevan", text: "Estevan", url: base + "/southeast/estevanmercury" },
                 { key: "yorkton", text: "Yorkton", url: base + "/central/yorktonthisweek" },
                 { key: "kamsack", text: "Kamsack", url: base + "/central/kamsacktimes" },
@@ -316,6 +316,7 @@ function initNavigationScript() {
             @media (min-width: 991px) {
                 #nav.show-below-new-nav { display: block !important; position: relative; top: 0; margin-top: 0; z-index: 999; width: 100%; }
             }
+            .nav-new-pill { display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 5px; margin-left: 5px; background: #4169E1; color: #fff; border-radius: 3px; vertical-align: middle; line-height: 1.2; white-space: nowrap; }
             .nav-content-wrapper { width: 990px; margin: 0 auto; position: relative; padding: 0 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
             @media (min-width: 768px) and (max-width: 991px) { .nav-content-wrapper { width: 750px; } }
             @media (max-width: 767px) { .nav-content-wrapper { width: 100%; } }
@@ -563,7 +564,8 @@ function initNavigationScript() {
                             ${routes.communityLinks.communities.map((link, i) => {
                                 const isLast = i === routes.communityLinks.communities.length - 1;
                                 const style = 'padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;' + (isLast ? '' : ' border-bottom: 1px solid #eee;');
-                                return `<div class="dropdown-option" style="${style}" data-community="${link.key}">${link.text}</div>`;
+                                const newPill = link.isNew ? ' <span class="nav-new-pill">new</span>' : '';
+                                return `<div class="dropdown-option" style="${style}" data-community="${link.key}">${link.text}${newPill}</div>`;
                             }).join('\n                    ')}
                         </div>
                     </div>
@@ -595,7 +597,7 @@ function initNavigationScript() {
             
             <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
             <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon" class="text-link">Saskatoon Classifieds</a></div></div>
-            <div class="bottom-row" id="community-swiftcurrent"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/swift-current-today" class="text-link">All Swift Current</a><a href="${base}/swift-current-today/swift-current-news" class="text-link">Swift Current News</a></div></div>
+            <div class="bottom-row" id="community-swiftcurrent"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/swift-current-today" class="text-link">All Swift Current <span class="nav-new-pill">new</span></a><a href="${base}/swift-current-today/swift-current-news" class="text-link">Swift Current News <span class="nav-new-pill">new</span></a></div></div>
             <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/central/yorkton-this-week" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
             <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/southeast/estevan-mercury" class="text-link">Estevan News</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
             <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/north/humboldt-journal" class="text-link">Humboldt News</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
@@ -615,7 +617,7 @@ function initNavigationScript() {
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/obituaries" class="text-link">All Obituaries</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="https://moosejawtoday.com/obituaries" target="_blank" rel="noopener" class="text-link">Moose Jaw Obituaries ${extIcon}</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a><a href="${base}/obituaries/in-memoriam" class="text-link">In Memoriam</a><a href="${base}/obituaries/pet-obituaries" class="text-link">Pet Obituaries</a></div></div>
             <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/opinion" class="text-link">All Opinion</a><a href="${base}/north/opinion" class="text-link">North Opinion</a><a href="${base}/central/opinion" class="text-link">Central Opinion</a><a href="${base}/south/opinion" class="text-link">South Opinion</a></div></div>
             <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/crime-cops-court" class="text-link">All Crime</a></div></div>
-            <div class="bottom-row" id="category-default"><div class="bottom-row-inner hide-scrollbar">${routes.communityLinks.communities.filter(link => link.text !== 'All Communities').map(link => link.external ? `<a href="${link.url}" target="_blank" rel="noopener" class="text-link">${link.text} ${extIcon}</a>` : `<a href="${link.url}" class="text-link">${link.text}</a>`).join('')}</div></div>
+            <div class="bottom-row" id="category-default"><div class="bottom-row-inner hide-scrollbar">${routes.communityLinks.communities.filter(link => link.text !== 'All Communities').map(link => { const newPill = link.isNew ? ' <span class="nav-new-pill">new</span>' : ''; return link.external ? `<a href="${link.url}" target="_blank" rel="noopener" class="text-link">${link.text}${newPill} ${extIcon}</a>` : `<a href="${link.url}" class="text-link">${link.text}${newPill}</a>`; }).join('')}</div></div>
         </div>
     </div>`;
 
@@ -2232,12 +2234,13 @@ function initNavigationScript() {
                     a.href = link.url;
                     a.setAttribute('data-text', link.text);
                     a.setAttribute('data-nav-type', 'search_community');
+                    const newPill = link.isNew ? ' <span class="nav-new-pill">new</span>' : '';
                     if (link.external) {
                         a.target = '_blank';
                         a.rel = 'noopener';
-                        a.innerHTML = `${link.text} ${extIcon}`;
+                        a.innerHTML = `${link.text}${newPill} ${extIcon}`;
                     } else {
-                        a.textContent = link.text;
+                        a.innerHTML = link.text + newPill;
                     }
                     communityItems.appendChild(a);
                 });
@@ -2282,6 +2285,8 @@ function initNavigationScript() {
                         document.body.removeChild(element);
                         const iconEl = link.querySelector('.external-icon');
                         if (iconEl) width += (iconEl.offsetWidth || 18) + 6;
+                        const pillEl = link.querySelector('.nav-new-pill');
+                        if (pillEl) width += pillEl.offsetWidth + 5;
                         return { link, width };
                     });
 
@@ -2514,12 +2519,23 @@ function initNavigationScript() {
                             const textSpan = document.createElement('span');
                             textSpan.textContent = link.text;
                             a.appendChild(textSpan);
+                            if (link.isNew) {
+                                const pill = document.createElement('span');
+                                pill.className = 'nav-new-pill';
+                                pill.textContent = 'new';
+                                a.appendChild(pill);
+                            }
                             const iconSvg = document.createElement('span');
                             iconSvg.innerHTML = extIcon;
                             a.appendChild(iconSvg);
                         } else {
-                            const textNode = document.createTextNode(link.text);
-                            a.appendChild(textNode);
+                            a.appendChild(document.createTextNode(link.text));
+                            if (link.isNew) {
+                                const pill = document.createElement('span');
+                                pill.className = 'nav-new-pill';
+                                pill.textContent = 'new';
+                                a.appendChild(pill);
+                            }
                         }
                         communitiesItems.appendChild(a);
                     });
@@ -2791,9 +2807,11 @@ function initNavigationScript() {
                         document.body.removeChild(element);
                         const iconEl = link.querySelector('.external-icon');
                         if (iconEl) width += (iconEl.offsetWidth || 18) + 6;
+                        const pillEl = link.querySelector('.nav-new-pill');
+                        if (pillEl) width += pillEl.offsetWidth + 5;
                         return { link, width };
                     });
-                    
+
                     // Phase 3: Apply all widths in one pass (batch DOM writes)
                     requestAnimationFrame(() => {
                         widthData.forEach(({ link, width }) => {
