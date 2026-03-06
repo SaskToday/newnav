@@ -597,7 +597,7 @@ function initNavigationScript() {
             
             <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
             <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon" class="text-link">Saskatoon Classifieds</a></div></div>
-            <div class="bottom-row" id="community-swiftcurrent"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/swift-current-today" class="text-link">All Swift Current <span class="nav-new-pill">new</span></a><a href="${base}/swift-current-today/swift-current-news" class="text-link">Swift Current News <span class="nav-new-pill">new</span></a></div></div>
+            <div class="bottom-row" id="community-swiftcurrent"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/swift-current-today" class="text-link">All Swift Current</a><a href="${base}/swift-current-today/swift-current-news" class="text-link">Swift Current News</a></div></div>
             <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/central/yorkton-this-week" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
             <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/southeast/estevan-mercury" class="text-link">Estevan News</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
             <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/north/humboldt-journal" class="text-link">Humboldt News</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
@@ -2258,6 +2258,7 @@ function initNavigationScript() {
 
                 // Prevent column shift on hover by reserving bold-text width (and external icon width when present)
                 requestAnimationFrame(() => {
+                    void inner.offsetWidth;
                     const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
                     const measurements = [];
 
@@ -2286,7 +2287,10 @@ function initNavigationScript() {
                         const iconEl = link.querySelector('.external-icon');
                         if (iconEl) width += (iconEl.offsetWidth || 18) + 6;
                         const pillEl = link.querySelector('.nav-new-pill');
-                        if (pillEl) width += pillEl.offsetWidth + 5;
+                        if (pillEl) {
+                            const pw = pillEl.offsetWidth;
+                            width += (pw > 0 ? pw : 28) + 5;
+                        }
                         return { link, width };
                     });
 
@@ -2776,12 +2780,13 @@ function initNavigationScript() {
                 // Calculate min-widths asynchronously after showing menu to prevent layout shift
                 // Optimization: Batch all measurements first, then apply in one pass to reduce layout thrashing
                 requestAnimationFrame(() => {
+                    void inner.offsetWidth;
                     const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
                     const measurements = [];
                     
                     // Phase 1: Collect all measurements (batch DOM reads)
                     allLinks.forEach(link => {
-                        const text = link.getAttribute('data-text') || link.textContent.trim();
+                        const text = link.getAttribute('data-text') || link.textContent.trim().replace(/\s+/g, ' ').trim();
                         if (text) {
                             // Measure the bold text width
                             const temp = document.createElement('span');
@@ -2808,7 +2813,10 @@ function initNavigationScript() {
                         const iconEl = link.querySelector('.external-icon');
                         if (iconEl) width += (iconEl.offsetWidth || 18) + 6;
                         const pillEl = link.querySelector('.nav-new-pill');
-                        if (pillEl) width += pillEl.offsetWidth + 5;
+                        if (pillEl) {
+                            const pw = pillEl.offsetWidth;
+                            width += (pw > 0 ? pw : 28) + 5;
+                        }
                         return { link, width };
                     });
 
