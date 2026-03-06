@@ -460,12 +460,13 @@ function initNavigationScript() {
             .community-tip-overlay::before {
                 content: "";
                 position: absolute;
-                top: -7px;
+                top: -8px;
                 left: 16px;
-                width: 12px;
-                height: 8px;
-                background: rgba(30, 58, 138, 0.9);
-                clip-path: polygon(50% 0, 0 100%, 100% 100%);
+                width: 0;
+                height: 0;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-bottom: 8px solid rgba(30, 58, 138, 0.9);
             }
             .community-tip-overlay-close {
                 border: 0;
