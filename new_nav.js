@@ -483,9 +483,9 @@ function initNavigationScript() {
             .desktop-mega-menu.visible { max-height: 400px; }
             .desktop-mega-menu.search-menu { z-index: 8; }
             #village-nav-container:has(.desktop-mega-menu.search-menu.visible) .bottom-row.active { display: none !important; }
-            .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px 30px 30px; gap: 80px; }
+            .desktop-mega-menu-inner { display: flex; box-sizing: border-box; width: 100%; max-width: 990px; margin: 0 auto; padding: 30px 10px; gap: 60px; }
             @media (min-width: 768px) and (max-width: 991px) { .desktop-mega-menu-inner { width: 750px; } }
-            .desktop-mega-menu-inner.communities-menu { gap: 80px; }
+            .desktop-mega-menu-inner.communities-menu { gap: 60px; }
             .desktop-mega-menu-links { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-links h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
