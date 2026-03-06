@@ -468,6 +468,15 @@ function initNavigationScript() {
                 border-right: 6px solid transparent;
                 border-bottom: 8px solid rgba(30, 58, 138, 0.9);
             }
+            .community-tip-overlay::after {
+                content: "";
+                position: absolute;
+                top: -1px;
+                left: 16px;
+                width: 12px;
+                height: 2px;
+                background: rgba(30, 58, 138, 0.9);
+            }
             .community-tip-overlay-close {
                 border: 0;
                 background: transparent;
@@ -1815,7 +1824,7 @@ function initNavigationScript() {
             overlay.classList.remove('visible');
             return;
         }
-        const overlayGap = window.innerWidth <= 990 ? 14 : 10;
+        const overlayGap = window.innerWidth <= 990 ? 18 : 10;
         overlay.style.top = `${rect.bottom + overlayGap}px`;
         overlay.style.left = `${rect.left}px`;
         overlay.classList.add('visible');
