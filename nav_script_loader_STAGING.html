@@ -1,49 +1,14 @@
-<!-- 
-    NAVIGATION SCRIPT LOADER - STAGING ENVIRONMENT
-    Use this on your STAGING site for testing
-    
-    OPTIMAL PLACEMENT:
-    - Steps 1-3 (resource hints) should be at the TOP of <head> for best performance
-    - Step 4 (script) can be anywhere in <head>, but after hints is best
-    
-    This loads from a specific commit hash for immediate updates.
--->
-
-<!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
-<!-- PLACE THESE AT THE TOP OF <head> FOR BEST PERFORMANCE -->
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="dns-prefetch" href="https://sasktoday.github.io">
-
-<!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
 
-<!-- Step 3: Preload omitted for staging - script URL includes cache buster (?v=...) so it would never match the preload and would trigger a console warning -->
-
-<!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>
-// Immediate execution - no IIFE wrapper to avoid any execution issues
-console.log('[NAV LOADER] Loader script executing at:', new Date().toISOString());
-console.log('[NAV LOADER] Document ready state:', document.readyState);
-console.log('[NAV LOADER] Head exists:', !!document.head);
-console.log('[NAV LOADER] Window object:', typeof window);
-
 try {
-    console.log('[NAV LOADER] Starting script creation');
-    
-    // Use commit hash instead of branch name for immediate updates (jsDelivr caches by branch)
-    // Update this commit hash when you push new changes to staging
-    const COMMIT_HASH = 'd8a9286'; // Latest staging commit - update this when you push
-    
-    // Optional SRI: set after generating hash (see SRI_WORKFLOW.md). Leave '' to disable.
+    const COMMIT_HASH = 'd8a9286';
     const SRI_HASH = '';
-    
-    // Cache-busting for staging: Add timestamp to ensure we see updates immediately
     const cacheBuster = '?v=' + Date.now();
-    console.log('[NAV LOADER] Cache buster:', cacheBuster);
-    console.log('[NAV LOADER] Using commit hash:', COMMIT_HASH);
-    
-    // Try jsDelivr first (primary CDN - loads from specific commit for immediate updates)
+
     const script = document.createElement('script');
     const scriptUrl = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js' + cacheBuster;
     script.src = scriptUrl;
@@ -52,18 +17,8 @@ try {
         script.crossOrigin = 'anonymous';
     }
     script.defer = true;
-    
-    console.log('[NAV LOADER] Created script element');
-    console.log('[NAV LOADER] Script URL:', scriptUrl);
-    console.log('[NAV LOADER] Script element:', script);
-    
-    script.onload = function() {
-        console.log('[NAV LOADER] ✅ Script loaded successfully from jsDelivr');
-    };
-    
-    // Fallback to GitHub Pages if jsDelivr fails
-    script.onerror = function(e) {
-        console.warn('[NAV LOADER] ⚠️ jsDelivr failed, trying GitHub Pages fallback (staging)...', e);
+
+    script.onerror = function() {
         const fallbackScript = document.createElement('script');
         fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js' + cacheBuster;
         if (SRI_HASH) {
@@ -71,39 +26,9 @@ try {
             fallbackScript.crossOrigin = 'anonymous';
         }
         fallbackScript.defer = true;
-        fallbackScript.onload = function() {
-            console.log('[NAV LOADER] ✅ Fallback script loaded successfully');
-        };
-        fallbackScript.onerror = function(e2) {
-            console.error('[NAV LOADER] ❌ Both script sources failed to load. Navigation may not function.', e2);
-        };
-        console.log('[NAV LOADER] Appending fallback script');
         document.head.appendChild(fallbackScript);
     };
-    
-    console.log('[NAV LOADER] Appending script to head');
-    console.log('[NAV LOADER] Head element:', document.head);
+
     document.head.appendChild(script);
-    console.log('[NAV LOADER] ✅ Script appended to head');
-    
-    // Verify it was added
-    setTimeout(function() {
-        const checkScript = document.querySelector('script[src*="new_nav.js"]');
-        console.log('[NAV LOADER] Verification - Script in DOM:', !!checkScript);
-        if (checkScript) {
-            console.log('[NAV LOADER] ✅ Script found in DOM, src:', checkScript.src);
-        } else {
-            console.error('[NAV LOADER] ❌ Script NOT found in DOM after 100ms!');
-        }
-    }, 100);
-    
-} catch (error) {
-    console.error('[NAV LOADER] ❌ ERROR in loader:', error);
-    console.error('[NAV LOADER] Error name:', error.name);
-    console.error('[NAV LOADER] Error message:', error.message);
-    console.error('[NAV LOADER] Error stack:', error.stack);
-}
-
-console.log('[NAV LOADER] Loader script execution completed');
+} catch (error) {}
 </script>
-

@@ -2862,6 +2862,17 @@ function initNavigationScript() {
                 clearTimeout(showTimeout);
                 hide();
             });
+
+            if (isCommunities) {
+                pill.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 990) return;
+                    desktopHoverArmed = true;
+                    currentPill = pill;
+                    clearTimeout(showTimeout);
+                    clearTimeout(hoverTimeout);
+                    show();
+                });
+            }
         });
     }
 }

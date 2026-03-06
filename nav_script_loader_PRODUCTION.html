@@ -1,41 +1,23 @@
-<!-- 
-    NAVIGATION SCRIPT LOADER - PRODUCTION ENVIRONMENT
-    Use this on your PRODUCTION site
-    
-    This loads from the @main branch, which is only updated after testing on staging.
--->
-
-<!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="dns-prefetch" href="https://sasktoday.github.io">
-
-<!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
-
-<!-- Step 3: Preload - Downloads script early (non-blocking) -->
-<!-- When using SRI, add integrity="sha384-..." to the preload link and update it when you update SRI_HASH below -->
 <link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@25f7d25/new_nav.js?v=25f7d25" as="script" crossorigin="anonymous">
 
-<!-- Step 4: Load script with automatic fallback (PRODUCTION/MAIN BRANCH) -->
 <script>
 (function() {
     const COMMIT_HASH = '25f7d25';
-    // Optional SRI: set after generating hash for @main (see SRI_WORKFLOW.md). Leave '' to disable.
     const SRI_HASH = '';
 
-    // Try jsDelivr first (primary CDN - loads from @main branch)
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js?v=' + COMMIT_HASH;
-    script.crossOrigin = 'anonymous';  // Required for preload to be used (must match preload credentials mode)
+    script.crossOrigin = 'anonymous';
     if (SRI_HASH) {
         script.integrity = SRI_HASH;
     }
     script.defer = true;
-    
-    // Fallback to GitHub Pages if jsDelivr fails (from main branch)
+
     script.onerror = function() {
-        console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback (production)...');
         const fallbackScript = document.createElement('script');
         fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js?v=' + COMMIT_HASH;
         fallbackScript.crossOrigin = 'anonymous';
@@ -43,17 +25,9 @@
             fallbackScript.integrity = SRI_HASH;
         }
         fallbackScript.defer = true;
-        fallbackScript.onerror = function() {
-            console.error('Navigation: Both script sources failed to load. Navigation may not function.');
-            // Optional: Track failures in analytics
-            // if (typeof posthog !== 'undefined') {
-            //     posthog.capture('nav_script_load_failed');
-            // }
-        };
         document.head.appendChild(fallbackScript);
     };
-    
+
     document.head.appendChild(script);
 })();
 </script>
-
