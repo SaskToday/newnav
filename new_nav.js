@@ -1314,7 +1314,6 @@ function initNavigationScript() {
     function syncNextReadStackExperimentCard() {
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
-        bar.style.setProperty('--next-read-stack-expanded-height', `${getNextReadStackExpandedShellHeightPx()}px`);
         bar.style.setProperty('--next-read-stack-collapsed-offset', `${BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET}px`);
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.classList.toggle('peek', nextReadStackPeeked);
@@ -1751,6 +1750,7 @@ function initNavigationScript() {
             bar.className = bottomTrendingVisibleState ? 'next-read-stack-experiment visible' : 'next-read-stack-experiment';
             bar.innerHTML = '';
             bar.style.bottom = '0px';
+            bar.style.setProperty('--next-read-stack-expanded-height', `${getNextReadStackExpandedShellHeightPx()}px`);
             bar.setAttribute('aria-label', getNextReadStackTitle());
 
             const handle = document.createElement('div');
