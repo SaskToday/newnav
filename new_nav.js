@@ -559,6 +559,17 @@ function initNavigationScript() {
             #bottom-trending-story-bar .story-link:hover { color: #000; text-decoration: underline; }
             #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
             #bottom-trending-story-bar .close-btn:hover { color: #111827; }
+            #bottom-trending-story-bar.next-read-experiment { display: block; padding: 12px 14px; border-color: #cbd5e1; background: rgba(255,255,255,0.98); }
+            #bottom-trending-story-bar.next-read-experiment .label { display: block; margin-bottom: 6px; }
+            #bottom-trending-story-bar.next-read-experiment .headline { display: block; font-size: 15px; font-weight: 700; line-height: 1.35; color: #111827; margin: 0 0 10px 0; }
+            #bottom-trending-story-bar.next-read-experiment .meta-row { display: flex; align-items: center; gap: 10px; }
+            #bottom-trending-story-bar.next-read-experiment .hint { font-size: 11px; font-weight: 600; color: #475569; white-space: nowrap; }
+            #bottom-trending-story-bar.next-read-experiment .progress-track { flex: 1; height: 4px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+            #bottom-trending-story-bar.next-read-experiment .progress-fill { width: 100%; height: 100%; background: linear-gradient(to right, #94a3b8 0%, #2563eb 100%); transform-origin: left center; transform: scaleX(0); transition: transform 0.12s linear; }
+            #bottom-trending-story-bar.next-read-experiment .skip-link { margin-left: auto; color: #1d4ed8; font-size: 11px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+            #bottom-trending-story-bar.next-read-experiment .skip-link:hover { text-decoration: underline; }
+            #bottom-trending-story-bar.next-read-experiment.is-bottom-ready .hint { color: #1d4ed8; }
+            #bottom-trending-story-bar.next-read-experiment .close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
             #next-read-swipe-preview .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; margin-bottom: 6px; }
@@ -571,6 +582,8 @@ function initNavigationScript() {
             @media (max-width: 767px) {
                 #bottom-trending-story-bar { left: 8px; right: 8px; width: auto; bottom: 100px; padding: 9px 10px; contain: layout style paint; }
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
+                #bottom-trending-story-bar.next-read-experiment { padding: 11px 12px 12px 12px; }
+                #bottom-trending-story-bar.next-read-experiment .headline { font-size: 14px; padding-right: 24px; }
             }
             @media (min-width: 768px) {
                 #next-read-swipe-preview { display: none !important; }
@@ -1150,6 +1163,33 @@ function initNavigationScript() {
         return document.getElementById('bottom-trending-story-bar');
     }
 
+    function isNextReadScrollExperimentActive() {
+        return ENABLE_NEXT_READ_SWIPE && window.innerWidth <= 767;
+    }
+
+    function getNextReadExperimentProgress() {
+        const { showPx } = getNextReadScrollThresholds();
+        const maxScrollable = getMaxScrollableDistance();
+        if (maxScrollable <= showPx) return 1;
+        const currentY = getCurrentScrollTop();
+        return Math.max(0, Math.min(1, (currentY - showPx) / (maxScrollable - showPx)));
+    }
+
+    function syncNextReadExperimentCard() {
+        const bar = getBottomTrendingBarElement();
+        if (!bar || !bar.classList.contains('next-read-experiment') || !nextReadRecommendationItem) return;
+        const progress = getNextReadExperimentProgress();
+        const remaining = getNextReadRemainingScrollDistance();
+        const fill = bar.querySelector('.progress-fill');
+        const hint = bar.querySelector('.hint');
+        if (fill) fill.style.transform = `scaleX(${Math.max(0.05, progress)})`;
+        const readyForBottomContinue = remaining <= NEXT_READ_SWIPE_NEAR_BOTTOM_PX;
+        bar.classList.toggle('is-bottom-ready', readyForBottomContinue);
+        if (hint) {
+            hint.textContent = readyForBottomContinue ? 'Continue scrolling to open' : 'Auto-opens at bottom';
+        }
+    }
+
     function clearNextReadSwipeState({ hidePreview = true } = {}) {
         nextReadSwipeState = 'idle';
         nextReadSwipeTouchId = null;
@@ -1255,6 +1295,7 @@ function initNavigationScript() {
     }
 
     function canStartNextReadSwipeGesture(target) {
+        if (isNextReadScrollExperimentActive()) return false;
         if (!ENABLE_NEXT_READ_SWIPE || window.innerWidth > 767) return false;
         if (!nextReadRecommendationItem) return false;
         if (sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) return false;
@@ -1269,11 +1310,15 @@ function initNavigationScript() {
     function commitNextReadSwipeNavigation() {
         if (!nextReadRecommendationItem) return;
         if (!NEXT_READ_SWIPE_COMMIT_ENABLED) {
-            pinNextReadSwipePreview();
+            if (!isNextReadScrollExperimentActive()) {
+                pinNextReadSwipePreview();
+            }
             return;
         }
         nextReadSwipeState = 'committing';
-        updateNextReadSwipePreviewProgress(NEXT_READ_SWIPE_COMMIT_PULL_PX);
+        if (!isNextReadScrollExperimentActive()) {
+            updateNextReadSwipePreviewProgress(NEXT_READ_SWIPE_COMMIT_PULL_PX);
+        }
         triggerPostHogRecording('nav_next_read_pull_committed', {
             destination_url: nextReadRecommendationItem.link,
             pull_distance: nextReadSwipePullPx
@@ -1377,6 +1422,47 @@ function initNavigationScript() {
         document.addEventListener('touchcancel', finalizeGesture, { passive: true });
     }
 
+    function bindNextReadExperimentScrollHandlers() {
+        if (nextReadExperimentHandlersBound) return;
+        nextReadExperimentHandlersBound = true;
+
+        document.addEventListener('touchstart', (event) => {
+            if (!isNextReadScrollExperimentActive()) return;
+            const bar = getBottomTrendingBarElement();
+            if (!bar || !bar.classList.contains('visible') || !bar.classList.contains('next-read-experiment')) return;
+            if (!nextReadRecommendationItem || sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) return;
+            if (event.target && event.target.closest && event.target.closest('.skip-link, .close-btn')) return;
+            const touch = event.changedTouches && event.changedTouches[0];
+            if (!touch) return;
+            nextReadExperimentTouchId = touch.identifier;
+            nextReadExperimentStartY = touch.clientY;
+            nextReadExperimentScrollStarted = getCurrentScrollTop();
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (event) => {
+            if (nextReadExperimentTouchId === null || nextReadSwipeState === 'committing') return;
+            if (!isNextReadScrollExperimentActive()) return;
+            const touch = getTrackedTouch(event, nextReadExperimentTouchId);
+            if (!touch) return;
+            const deltaY = touch.clientY - nextReadExperimentStartY;
+            if (deltaY <= NEXT_READ_SWIPE_START_PULL_PX) return;
+            if (getCurrentScrollTop() < nextReadExperimentScrollStarted) return;
+            if (getNextReadRemainingScrollDistance() > NEXT_READ_SWIPE_NEAR_BOTTOM_PX) return;
+            nextReadSwipePullPx = deltaY;
+            event.preventDefault();
+            commitNextReadSwipeNavigation();
+        }, { passive: false });
+
+        const clearExperimentTouch = () => {
+            nextReadExperimentTouchId = null;
+            nextReadExperimentStartY = 0;
+            nextReadExperimentScrollStarted = 0;
+        };
+
+        document.addEventListener('touchend', clearExperimentTouch, { passive: true });
+        document.addEventListener('touchcancel', clearExperimentTouch, { passive: true });
+    }
+
     function removeBottomTrendingStoryBar() {
         const existing = getBottomTrendingBarElement();
         if (existing) existing.remove();
@@ -1390,6 +1476,66 @@ function initNavigationScript() {
             bar.id = 'bottom-trending-story-bar';
         }
         bar.style.bottom = `${getBottomTrendingBottomOffset()}px`;
+
+        if (isNextReadScrollExperimentActive()) {
+            bar.className = bottomTrendingVisibleState ? 'next-read-experiment visible' : 'next-read-experiment';
+            bar.innerHTML = '';
+
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = 'NEXT READ';
+
+            const headline = document.createElement('div');
+            headline.className = 'headline';
+            headline.textContent = nextItem.title;
+
+            const metaRow = document.createElement('div');
+            metaRow.className = 'meta-row';
+
+            const hint = document.createElement('span');
+            hint.className = 'hint';
+            hint.textContent = 'Auto-opens at bottom';
+
+            const progressTrack = document.createElement('div');
+            progressTrack.className = 'progress-track';
+
+            const progressFill = document.createElement('div');
+            progressFill.className = 'progress-fill';
+            progressTrack.appendChild(progressFill);
+
+            const skipLink = document.createElement('a');
+            skipLink.className = 'skip-link';
+            skipLink.href = nextItem.link;
+            skipLink.textContent = 'Skip here';
+            skipLink.addEventListener('click', () => {
+                triggerPostHogRecording('nav_next_read_click', { destination_url: nextItem.link, source: 'skip_here' });
+            });
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-btn';
+            closeBtn.type = 'button';
+            closeBtn.setAttribute('aria-label', 'Close next read bar');
+            closeBtn.textContent = '×';
+            closeBtn.addEventListener('click', () => {
+                triggerPostHogRecording('nav_next_read_dismiss');
+                sessionStorage.setItem(NEXT_READ_DISMISSED_SESSION_KEY, '1');
+                removeBottomTrendingStoryBar();
+            });
+
+            metaRow.appendChild(hint);
+            metaRow.appendChild(progressTrack);
+            metaRow.appendChild(skipLink);
+            bar.appendChild(label);
+            bar.appendChild(headline);
+            bar.appendChild(metaRow);
+            bar.appendChild(closeBtn);
+            if (!existing) document.body.appendChild(bar);
+            syncNextReadExperimentCard();
+            bindNextReadExperimentScrollHandlers();
+            return;
+        }
+
+        bar.classList.remove('next-read-experiment', 'is-bottom-ready');
 
         const label = document.createElement('span');
         label.className = 'label';
@@ -1486,6 +1632,10 @@ function initNavigationScript() {
     let nextReadSwipePullStartedTracked = false;
     let nextReadSwipeArmedTracked = false;
     let nextReadSwipeSuppressClickUntil = 0;
+    let nextReadExperimentHandlersBound = false;
+    let nextReadExperimentTouchId = null;
+    let nextReadExperimentStartY = 0;
+    let nextReadExperimentScrollStarted = 0;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
@@ -1666,7 +1816,7 @@ function initNavigationScript() {
     }
 
     function syncNextReadSwipePreview() {
-        if (!ENABLE_NEXT_READ_SWIPE) {
+        if (!ENABLE_NEXT_READ_SWIPE || isNextReadScrollExperimentActive()) {
             clearNextReadSwipeState({ hidePreview: true });
             return;
         }
@@ -1701,6 +1851,7 @@ function initNavigationScript() {
                 applyBottomTrendingBarLayout();
             }
             updateBottomTrendingBarVisibility();
+            syncNextReadExperimentCard();
             syncNextReadSwipePreview();
             bottomTrendingRafNeedsInvalidate = false;
             bottomTrendingRafNeedsLayout = false;
