@@ -1650,6 +1650,7 @@ function initNavigationScript() {
             const currentHeight = shell ? Math.round(shell.getBoundingClientRect().height || 0) : (nextReadStackExpanded ? getNextReadStackExpandedShellHeightPx() : (nextReadStackPeeked ? 0 : 88));
             nextReadStackDragStartHeight = Math.max(0, currentHeight);
             nextReadStackDragDeltaY = 0;
+            nextReadStackDragArmed = false;
         }, { passive: true });
 
         const finishGesture = () => {
@@ -1659,6 +1660,7 @@ function initNavigationScript() {
             nextReadStackDragStartPeeked = false;
             nextReadStackDragStartHeight = 88;
             nextReadStackDragDeltaY = 0;
+            nextReadStackDragArmed = false;
         };
 
         document.addEventListener('touchmove', (event) => {
@@ -1670,13 +1672,27 @@ function initNavigationScript() {
             const touch = getTrackedTouch(event, nextReadStackTouchId);
             if (!touch) return;
             const deltaY = touch.clientY - nextReadStackStartY;
-            event.preventDefault();
             nextReadStackDragDeltaY = deltaY;
+
+            const ARM_THRESHOLD_PX = 8;
+            if (!nextReadStackDragArmed) {
+                if (Math.abs(deltaY) < ARM_THRESHOLD_PX) return;
+                // Direction gating prevents accidental peek flicker while page scrolling.
+                if (nextReadStackDragStartPeeked && deltaY > 0) return;
+                if (nextReadStackDragStartExpanded && deltaY < 0) return;
+                nextReadStackDragArmed = true;
+            }
+
+            event.preventDefault();
             applyNextReadStackDragVisual(deltaY);
         }, { passive: false });
 
         const finalizeGesture = () => {
             if (nextReadStackTouchId === null) return;
+            if (!nextReadStackDragArmed) {
+                finishGesture();
+                return;
+            }
             const startedExpanded = nextReadStackDragStartExpanded;
             const startedPeeked = nextReadStackDragStartPeeked;
             const deltaY = nextReadStackDragDeltaY;
@@ -1714,6 +1730,7 @@ function initNavigationScript() {
         nextReadStackDragStartPeeked = false;
         nextReadStackDragStartHeight = 88;
         nextReadStackDragDeltaY = 0;
+        nextReadStackDragArmed = false;
         clearNextReadSwipeState({ hidePreview: true });
     }
 
@@ -1950,6 +1967,7 @@ function initNavigationScript() {
     let nextReadStackDragStartPeeked = false;
     let nextReadStackDragStartHeight = 88;
     let nextReadStackDragDeltaY = 0;
+    let nextReadStackDragArmed = false;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
