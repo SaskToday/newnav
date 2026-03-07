@@ -1278,7 +1278,12 @@ function initNavigationScript() {
         }
     }
 
+    /* Set window.NAV_STACK_DEBUG = true before this script runs (e.g. in loader or prior script), then reload, to log stack state/sync and visibility changes. */
+    const NAV_STACK_DEBUG = typeof window !== 'undefined' && window.NAV_STACK_DEBUG === true;
     function setNextReadStackState({ expanded = false, peeked = false } = {}) {
+        if (NAV_STACK_DEBUG) {
+            console.log('[NAV STACK DBG] setNextReadStackState', { expanded: !!expanded, peeked: !!peeked, stack: new Error().stack });
+        }
         nextReadStackExpanded = !!expanded;
         nextReadStackPeeked = !!peeked;
         if (nextReadStackExpanded) nextReadStackPeeked = false;
@@ -1314,10 +1319,15 @@ function initNavigationScript() {
     function syncNextReadStackExperimentCard() {
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
+        const hadExpanded = bar.classList.contains('expanded');
+        const hadPeek = bar.classList.contains('peek');
         bar.style.setProperty('--next-read-stack-collapsed-offset', `${BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET}px`);
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.classList.toggle('peek', nextReadStackPeeked);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
+        if (NAV_STACK_DEBUG && (hadExpanded !== nextReadStackExpanded || hadPeek !== nextReadStackPeeked)) {
+            console.log('[NAV STACK DBG] syncNextReadStackExperimentCard changed classes', { hadExpanded, hadPeek, nowExpanded: nextReadStackExpanded, nowPeeked: nextReadStackPeeked });
+        }
     }
 
     function getNextReadStackExpandedShellHeightPx() {
@@ -1334,6 +1344,7 @@ function initNavigationScript() {
     }
 
     function applyNextReadStackDragVisual(deltaY) {
+        if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] applyNextReadStackDragVisual', { deltaY });
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         const shell = bar.querySelector('.stack-preview-shell');
@@ -1639,6 +1650,7 @@ function initNavigationScript() {
             const bar = getBottomTrendingBarElement();
             if (!bar || !bar.classList.contains('visible') || !bar.classList.contains('next-read-stack-experiment')) return;
             if (!event.target || !bar.contains(event.target)) return;
+            if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] stack touchstart (touch on bar)', { clientY: event.changedTouches && event.changedTouches[0] && event.changedTouches[0].clientY });
             const touch = event.changedTouches && event.changedTouches[0];
             if (!touch) return;
             nextReadStackTouchId = touch.identifier;
@@ -1713,6 +1725,7 @@ function initNavigationScript() {
             if (Math.abs(deltaY) < 10) {
                 nextState = { expanded: startedExpanded, peeked: startedPeeked };
             }
+            if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] finalizeGesture result', { nextState, deltaY, finalHeight });
             setNextReadStackState(nextState);
             finishGesture();
         };
@@ -1746,6 +1759,7 @@ function initNavigationScript() {
         bar.style.bottom = `${getBottomTrendingBottomOffset()}px`;
 
         if (isNextReadStackExperimentActive()) {
+            if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] renderBottomTrendingStoryBar (stack path)');
             const stackItems = nextReadRecommendationItems.slice(0, NEXT_READ_STACK_MAX_ITEMS);
             bar.className = bottomTrendingVisibleState ? 'next-read-stack-experiment visible' : 'next-read-stack-experiment';
             bar.innerHTML = '';
@@ -1896,6 +1910,7 @@ function initNavigationScript() {
     }
 
     async function initBottomTrendingStoryBar() {
+        if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] initBottomTrendingStoryBar called');
         const existing = getBottomTrendingBarElement();
         const currentPath = normalizePath(window.location.pathname);
         const isArticle = isArticlePath(currentPath);
@@ -1919,6 +1934,13 @@ function initNavigationScript() {
         if (!nextItem) {
             removeBottomTrendingStoryBar();
             console.warn('[NAV DEBUG] NEXT READ: no eligible article found', nextReadRecommendationFailedFeeds);
+            return;
+        }
+
+        if (existing && existing.classList.contains('next-read-stack-experiment')) {
+            existing.style.bottom = '0px';
+            existing.style.setProperty('--next-read-stack-expanded-height', `${getNextReadStackExpandedShellHeightPx()}px`);
+            scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
             return;
         }
 
@@ -2137,6 +2159,7 @@ function initNavigationScript() {
         const currentY = getCurrentScrollTop();
         const isMobileViewport = window.innerWidth <= 767;
 
+        const prevVisible = bottomTrendingVisibleState;
         if (isMobileViewport) {
             // Mobile latch to avoid slow-scroll threshold chattering/jitter.
             if (!bottomTrendingVisibleState && currentY >= showPx) {
@@ -2151,7 +2174,9 @@ function initNavigationScript() {
                 bottomTrendingVisibleState = false;
             }
         }
-
+        if (NAV_STACK_DEBUG && prevVisible !== bottomTrendingVisibleState) {
+            console.log('[NAV STACK DBG] updateBottomTrendingBarVisibility visible changed', { prevVisible, now: bottomTrendingVisibleState, currentY, showPx, hidePx });
+        }
         bar.classList.toggle('visible', bottomTrendingVisibleState);
     }
 
