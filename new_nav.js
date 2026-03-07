@@ -33,7 +33,7 @@ function initNavigationScript() {
     const ENABLE_NEXT_READ = window.NAV_ENABLE_NEXT_READ !== false && window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_MOBILE_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_DESKTOP_BOTTOM_OFFSET || 50);
-    const BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_STACK_MOBILE_BOTTOM_OFFSET || 50);
+    const BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_STACK_MOBILE_BOTTOM_OFFSET || 0);
     const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS != null ? window.NAV_NEXT_READ_HIDE_PROGRESS : -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 850);
     const NEXT_READ_DISMISSED_SESSION_KEY = 'nav_next_read_dismissed_session_v1';
@@ -574,20 +574,22 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-experiment .skip-link:hover { text-decoration: underline; }
             #bottom-trending-story-bar.next-read-experiment.is-bottom-ready .hint { color: #1d4ed8; }
             #bottom-trending-story-bar.next-read-experiment .close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment { display: block; padding: 10px 12px 12px 12px; bottom: 50px; border: 1px solid #cbd5e1; border-radius: 14px; background: rgba(255,255,255,0.98); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; }
-            #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(0); pointer-events: auto; }
+            #bottom-trending-story-bar.next-read-stack-experiment { display: block; padding: 10px 12px 12px 12px; bottom: 0; border: 1px solid #cbd5e1; border-radius: 14px 14px 0 0; background: rgba(255,255,255,0.98); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; }
+            #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(var(--next-read-stack-collapsed-offset, 0px)); pointer-events: auto; }
+            #bottom-trending-story-bar.next-read-stack-experiment.visible.expanded { transform: translateY(0); }
+            #bottom-trending-story-bar.next-read-stack-experiment.is-dragging { transition: none; }
             #bottom-trending-story-bar.next-read-stack-experiment > * + * { margin-left: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { width: 100%; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { display: block; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 15px; font-weight: 700; line-height: 1.35; color: #111827; margin: 0 0 10px 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.14s ease-out; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.2s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.98) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: block; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link.secondary { opacity: 0.84; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { color: #830d16; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
-            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: max(220px, calc(100vh - 50px - 96px)); min-height: max(220px, calc(100vh - 50px - 96px)); }
+            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: max(220px, calc(100vh - 96px)); min-height: max(220px, calc(100vh - 96px)); }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
@@ -603,7 +605,7 @@ function initNavigationScript() {
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
                 #bottom-trending-story-bar.next-read-experiment { padding: 11px 12px 12px 12px; }
                 #bottom-trending-story-bar.next-read-experiment .headline { font-size: 14px; padding-right: 24px; }
-                #bottom-trending-story-bar.next-read-stack-experiment { bottom: 50px; padding: 10px 12px 12px 12px; }
+                #bottom-trending-story-bar.next-read-stack-experiment { bottom: 0; padding: 10px 12px 12px 12px; }
                 #bottom-trending-story-bar.next-read-stack-experiment .stack-title { font-size: 14px; }
             }
             @media (min-width: 768px) {
@@ -1278,6 +1280,13 @@ function initNavigationScript() {
         nextReadStackExpanded = !!expanded;
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
+        bar.classList.remove('is-dragging');
+        bar.style.removeProperty('transform');
+        const shell = bar.querySelector('.stack-preview-shell');
+        if (shell) {
+            shell.style.removeProperty('max-height');
+            shell.style.removeProperty('min-height');
+        }
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
     }
@@ -1285,8 +1294,35 @@ function initNavigationScript() {
     function syncNextReadStackExperimentCard() {
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
+        bar.style.setProperty('--next-read-stack-collapsed-offset', `${BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET}px`);
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
+    }
+
+    function getNextReadStackExpandedShellHeightPx() {
+        return Math.max(220, window.innerHeight - 96);
+    }
+
+    function getNextReadStackCollapsedOffsetPx() {
+        return Math.max(0, BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET);
+    }
+
+    function applyNextReadStackDragVisual(translateY) {
+        const bar = getBottomTrendingBarElement();
+        if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
+        const shell = bar.querySelector('.stack-preview-shell');
+        const collapsedOffset = getNextReadStackCollapsedOffsetPx();
+        const clampedY = Math.max(0, Math.min(translateY, collapsedOffset));
+        const progress = collapsedOffset > 0 ? (1 - (clampedY / collapsedOffset)) : 1;
+        const expandedHeight = getNextReadStackExpandedShellHeightPx();
+        const collapsedHeight = 88;
+        const shellHeight = Math.round(collapsedHeight + ((expandedHeight - collapsedHeight) * progress));
+        bar.classList.add('is-dragging');
+        bar.style.transform = `translateY(${clampedY}px)`;
+        if (shell) {
+            shell.style.maxHeight = `${shellHeight}px`;
+            shell.style.minHeight = `${shellHeight}px`;
+        }
     }
 
     function clearNextReadSwipeState({ hidePreview = true } = {}) {
@@ -1570,16 +1606,20 @@ function initNavigationScript() {
             if (!isNextReadStackExperimentActive()) return;
             const bar = getBottomTrendingBarElement();
             if (!bar || !bar.classList.contains('visible') || !bar.classList.contains('next-read-stack-experiment')) return;
-            if (!event.target || !event.target.closest || !event.target.closest('.pull-handle, .stack-header, .stack-preview-shell')) return;
+            if (!event.target || !bar.contains(event.target)) return;
             const touch = event.changedTouches && event.changedTouches[0];
             if (!touch) return;
             nextReadStackTouchId = touch.identifier;
             nextReadStackStartY = touch.clientY;
+            nextReadStackDragStartExpanded = nextReadStackExpanded;
+            nextReadStackDragDeltaY = 0;
         }, { passive: true });
 
         const finishGesture = () => {
             nextReadStackTouchId = null;
             nextReadStackStartY = 0;
+            nextReadStackDragStartExpanded = false;
+            nextReadStackDragDeltaY = 0;
         };
 
         document.addEventListener('touchmove', (event) => {
@@ -1592,17 +1632,39 @@ function initNavigationScript() {
             if (!touch) return;
             const deltaY = touch.clientY - nextReadStackStartY;
             event.preventDefault();
-            if (Math.abs(deltaY) < 12) return;
-            if (deltaY < 0 && !nextReadStackExpanded) {
-                setNextReadStackExpanded(true);
-            } else if (deltaY > 0 && nextReadStackExpanded) {
-                setNextReadStackExpanded(false);
+            nextReadStackDragDeltaY = deltaY;
+            const collapsedOffset = getNextReadStackCollapsedOffsetPx();
+            let translateY;
+            if (nextReadStackDragStartExpanded) {
+                // Expanded -> drag downward toward collapsed.
+                translateY = Math.max(0, Math.min(deltaY, collapsedOffset));
+            } else {
+                // Collapsed -> drag upward toward expanded.
+                translateY = Math.max(0, Math.min(collapsedOffset, collapsedOffset + deltaY));
             }
-            finishGesture();
+            applyNextReadStackDragVisual(translateY);
         }, { passive: false });
 
-        document.addEventListener('touchend', finishGesture, { passive: true });
-        document.addEventListener('touchcancel', finishGesture, { passive: true });
+        const finalizeGesture = () => {
+            if (nextReadStackTouchId === null) return;
+            const startedExpanded = nextReadStackDragStartExpanded;
+            const deltaY = nextReadStackDragDeltaY;
+            const collapsedOffset = getNextReadStackCollapsedOffsetPx();
+            const snapThreshold = Math.max(18, Math.round(collapsedOffset * 0.35));
+            let shouldExpand = startedExpanded;
+            if (startedExpanded) {
+                // If pulled down enough, collapse; otherwise snap back expanded.
+                shouldExpand = !(deltaY >= snapThreshold);
+            } else {
+                // If pulled up enough, expand; otherwise snap back collapsed.
+                shouldExpand = deltaY <= -snapThreshold;
+            }
+            setNextReadStackExpanded(shouldExpand);
+            finishGesture();
+        };
+
+        document.addEventListener('touchend', finalizeGesture, { passive: true });
+        document.addEventListener('touchcancel', finalizeGesture, { passive: true });
     }
 
     function removeBottomTrendingStoryBar() {
@@ -1611,6 +1673,8 @@ function initNavigationScript() {
         nextReadStackExpanded = false;
         nextReadStackTouchId = null;
         nextReadStackStartY = 0;
+        nextReadStackDragStartExpanded = false;
+        nextReadStackDragDeltaY = 0;
         clearNextReadSwipeState({ hidePreview: true });
     }
 
@@ -1626,6 +1690,7 @@ function initNavigationScript() {
             const stackItems = nextReadRecommendationItems.slice(0, NEXT_READ_STACK_MAX_ITEMS);
             bar.className = bottomTrendingVisibleState ? 'next-read-stack-experiment visible' : 'next-read-stack-experiment';
             bar.innerHTML = '';
+            bar.style.bottom = '0px';
             bar.setAttribute('aria-label', getNextReadStackTitle());
 
             const handle = document.createElement('div');
@@ -1841,6 +1906,8 @@ function initNavigationScript() {
     let nextReadStackExpanded = false;
     let nextReadStackTouchId = null;
     let nextReadStackStartY = 0;
+    let nextReadStackDragStartExpanded = false;
+    let nextReadStackDragDeltaY = 0;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
