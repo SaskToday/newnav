@@ -1318,17 +1318,16 @@ function initNavigationScript() {
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         const shell = bar.querySelector('.stack-preview-shell');
         const fade = bar.querySelector('.stack-preview-fade');
-        const dragTravel = getNextReadStackDragTravelPx();
-        const distance = startedExpanded ? Math.max(0, deltaY) : Math.max(0, -deltaY);
-        const clampedDistance = Math.min(distance, dragTravel);
-        const progress = startedExpanded
-            ? (1 - (clampedDistance / dragTravel))
-            : (clampedDistance / dragTravel);
         const expandedHeight = getNextReadStackExpandedShellHeightPx();
         const collapsedHeight = 88;
-        const shellHeight = Math.round(collapsedHeight + ((expandedHeight - collapsedHeight) * progress));
+        const dragDistance = startedExpanded ? Math.max(0, deltaY) : Math.max(0, -deltaY);
+        const shellHeight = startedExpanded
+            ? Math.round(Math.max(collapsedHeight, expandedHeight - dragDistance))
+            : Math.round(Math.min(expandedHeight, collapsedHeight + dragDistance));
+        const totalRange = Math.max(1, expandedHeight - collapsedHeight);
+        const progress = (shellHeight - collapsedHeight) / totalRange;
         bar.classList.add('is-dragging');
-        bar.style.transform = startedExpanded ? `translateY(${Math.min(24, clampedDistance * 0.22)}px)` : 'translateY(0px)';
+        bar.style.transform = 'translateY(0px)';
         if (shell) {
             shell.style.maxHeight = `${shellHeight}px`;
             shell.style.minHeight = `${shellHeight}px`;
