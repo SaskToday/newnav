@@ -574,22 +574,24 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-experiment .skip-link:hover { text-decoration: underline; }
             #bottom-trending-story-bar.next-read-experiment.is-bottom-ready .hint { color: #1d4ed8; }
             #bottom-trending-story-bar.next-read-experiment .close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment { display: block; padding: 10px 12px 12px 12px; bottom: 0; border: 1px solid #cbd5e1; border-radius: 14px 14px 0 0; background: rgba(255,255,255,0.98); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; }
+            #bottom-trending-story-bar.next-read-stack-experiment { display: block; padding: 10px 12px 12px 12px; bottom: 0; border: 1px solid #cbd5e1; border-radius: 14px 14px 0 0; background: rgba(255,255,255,0.94); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; }
             #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(var(--next-read-stack-collapsed-offset, 0px)); pointer-events: auto; }
             #bottom-trending-story-bar.next-read-stack-experiment.visible.expanded { transform: translateY(0); }
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging { transition: none; }
             #bottom-trending-story-bar.next-read-stack-experiment > * + * { margin-left: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { width: 20px; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 auto 10px auto; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { display: block; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 15px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 13px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.98) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.78) 55%, rgba(255,255,255,0.94) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: block; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link.secondary { opacity: 0.84; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { color: #830d16; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: var(--next-read-stack-expanded-height, 220px); min-height: var(--next-read-stack-expanded-height, 220px); }
+            #bottom-trending-story-bar.next-read-stack-experiment.peek .stack-preview-shell { max-height: 0; min-height: 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment.peek .stack-preview-fade { opacity: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
@@ -606,7 +608,7 @@ function initNavigationScript() {
                 #bottom-trending-story-bar.next-read-experiment { padding: 11px 12px 12px 12px; }
                 #bottom-trending-story-bar.next-read-experiment .headline { font-size: 14px; padding-right: 24px; }
                 #bottom-trending-story-bar.next-read-stack-experiment { bottom: 0; padding: 10px 12px 12px 12px; }
-                #bottom-trending-story-bar.next-read-stack-experiment .stack-title { font-size: 14px; }
+                #bottom-trending-story-bar.next-read-stack-experiment .stack-title { font-size: 12px; }
             }
             @media (min-width: 768px) {
                 #next-read-swipe-preview { display: none !important; }
@@ -1276,8 +1278,10 @@ function initNavigationScript() {
         }
     }
 
-    function setNextReadStackExpanded(expanded) {
+    function setNextReadStackState({ expanded = false, peeked = false } = {}) {
         nextReadStackExpanded = !!expanded;
+        nextReadStackPeeked = !!peeked;
+        if (nextReadStackExpanded) nextReadStackPeeked = false;
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         const shell = bar.querySelector('.stack-preview-shell');
@@ -1288,10 +1292,11 @@ function initNavigationScript() {
         const fade = bar.querySelector('.stack-preview-fade');
         if (fade) fade.style.removeProperty('opacity');
         bar.classList.toggle('expanded', nextReadStackExpanded);
+        bar.classList.toggle('peek', nextReadStackPeeked);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
         if (shell) {
             const currentHeight = Math.max(88, Math.round(shell.getBoundingClientRect().height || 88));
-            const targetHeight = nextReadStackExpanded ? expandedHeight : 88;
+            const targetHeight = nextReadStackExpanded ? expandedHeight : (nextReadStackPeeked ? 0 : 88);
             shell.style.maxHeight = `${currentHeight}px`;
             shell.style.minHeight = `${currentHeight}px`;
             void shell.offsetHeight;
@@ -1312,6 +1317,7 @@ function initNavigationScript() {
         bar.style.setProperty('--next-read-stack-expanded-height', `${getNextReadStackExpandedShellHeightPx()}px`);
         bar.style.setProperty('--next-read-stack-collapsed-offset', `${BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET}px`);
         bar.classList.toggle('expanded', nextReadStackExpanded);
+        bar.classList.toggle('peek', nextReadStackPeeked);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
     }
 
@@ -1328,31 +1334,27 @@ function initNavigationScript() {
         return Math.max(0, BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET);
     }
 
-    function getNextReadStackDragTravelPx() {
-        return Math.max(120, Math.round(window.innerHeight * 0.2));
-    }
-
-    function applyNextReadStackDragVisual(startedExpanded, deltaY) {
+    function applyNextReadStackDragVisual(deltaY) {
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         const shell = bar.querySelector('.stack-preview-shell');
         const fade = bar.querySelector('.stack-preview-fade');
         const expandedHeight = getNextReadStackExpandedShellHeightPx();
-        const collapsedHeight = 88;
-        const dragDistance = startedExpanded ? Math.max(0, deltaY) : Math.max(0, -deltaY);
-        const shellHeight = startedExpanded
-            ? Math.round(Math.max(collapsedHeight, expandedHeight - dragDistance))
-            : Math.round(Math.min(expandedHeight, collapsedHeight + dragDistance));
-        const totalRange = Math.max(1, expandedHeight - collapsedHeight);
-        const progress = (shellHeight - collapsedHeight) / totalRange;
+        const dragStartHeight = nextReadStackDragStartHeight;
+        const shellHeight = Math.round(Math.max(0, Math.min(expandedHeight, dragStartHeight - deltaY)));
+        const totalRange = Math.max(1, expandedHeight - 88);
+        const progress = Math.max(0, Math.min(1, (shellHeight - 88) / totalRange));
+        const peekProgress = Math.max(0, Math.min(1, shellHeight / 88));
         bar.classList.add('is-dragging');
+        bar.classList.remove('peek');
         bar.style.transform = 'translateY(0px)';
         if (shell) {
             shell.style.maxHeight = `${shellHeight}px`;
             shell.style.minHeight = `${shellHeight}px`;
         }
         if (fade) {
-            fade.style.opacity = `${Math.max(0, Math.min(1, 1 - progress))}`;
+            const fadeOpacity = shellHeight <= 88 ? peekProgress : Math.max(0, Math.min(1, 1 - progress));
+            fade.style.opacity = `${fadeOpacity}`;
         }
     }
 
@@ -1643,6 +1645,10 @@ function initNavigationScript() {
             nextReadStackTouchId = touch.identifier;
             nextReadStackStartY = touch.clientY;
             nextReadStackDragStartExpanded = nextReadStackExpanded;
+            nextReadStackDragStartPeeked = nextReadStackPeeked;
+            const shell = bar.querySelector('.stack-preview-shell');
+            const currentHeight = shell ? Math.round(shell.getBoundingClientRect().height || 0) : (nextReadStackExpanded ? getNextReadStackExpandedShellHeightPx() : (nextReadStackPeeked ? 0 : 88));
+            nextReadStackDragStartHeight = Math.max(0, currentHeight);
             nextReadStackDragDeltaY = 0;
         }, { passive: true });
 
@@ -1650,6 +1656,8 @@ function initNavigationScript() {
             nextReadStackTouchId = null;
             nextReadStackStartY = 0;
             nextReadStackDragStartExpanded = false;
+            nextReadStackDragStartPeeked = false;
+            nextReadStackDragStartHeight = 88;
             nextReadStackDragDeltaY = 0;
         };
 
@@ -1664,24 +1672,30 @@ function initNavigationScript() {
             const deltaY = touch.clientY - nextReadStackStartY;
             event.preventDefault();
             nextReadStackDragDeltaY = deltaY;
-            applyNextReadStackDragVisual(nextReadStackDragStartExpanded, deltaY);
+            applyNextReadStackDragVisual(deltaY);
         }, { passive: false });
 
         const finalizeGesture = () => {
             if (nextReadStackTouchId === null) return;
             const startedExpanded = nextReadStackDragStartExpanded;
+            const startedPeeked = nextReadStackDragStartPeeked;
             const deltaY = nextReadStackDragDeltaY;
-            const dragTravel = getNextReadStackDragTravelPx();
-            const snapThreshold = Math.max(22, Math.round(dragTravel * 0.34));
-            let shouldExpand = startedExpanded;
-            if (startedExpanded) {
-                // If pulled down enough, collapse; otherwise snap back expanded.
-                shouldExpand = !(deltaY >= snapThreshold);
+            const expandedHeight = getNextReadStackExpandedShellHeightPx();
+            const finalHeight = Math.max(0, Math.min(expandedHeight, nextReadStackDragStartHeight - deltaY));
+            const peekMid = 44;
+            const expandedMid = (88 + expandedHeight) / 2;
+            let nextState = { expanded: false, peeked: false };
+            if (finalHeight <= peekMid) {
+                nextState = { expanded: false, peeked: true };
+            } else if (finalHeight >= expandedMid) {
+                nextState = { expanded: true, peeked: false };
             } else {
-                // If pulled up enough, expand; otherwise snap back collapsed.
-                shouldExpand = deltaY <= -snapThreshold;
+                nextState = { expanded: false, peeked: false };
             }
-            setNextReadStackExpanded(shouldExpand);
+            if (Math.abs(deltaY) < 10) {
+                nextState = { expanded: startedExpanded, peeked: startedPeeked };
+            }
+            setNextReadStackState(nextState);
             finishGesture();
         };
 
@@ -1693,9 +1707,12 @@ function initNavigationScript() {
         const existing = getBottomTrendingBarElement();
         if (existing) existing.remove();
         nextReadStackExpanded = false;
+        nextReadStackPeeked = false;
         nextReadStackTouchId = null;
         nextReadStackStartY = 0;
         nextReadStackDragStartExpanded = false;
+        nextReadStackDragStartPeeked = false;
+        nextReadStackDragStartHeight = 88;
         nextReadStackDragDeltaY = 0;
         clearNextReadSwipeState({ hidePreview: true });
     }
@@ -1757,7 +1774,7 @@ function initNavigationScript() {
             bar.appendChild(header);
             bar.appendChild(previewShell);
             if (!existing) document.body.appendChild(bar);
-            setNextReadStackExpanded(nextReadStackExpanded);
+            setNextReadStackState({ expanded: nextReadStackExpanded, peeked: nextReadStackPeeked });
             syncNextReadStackExperimentCard();
             bindNextReadStackGestureHandlers();
             return;
@@ -1926,9 +1943,12 @@ function initNavigationScript() {
     let nextReadExperimentScrollStarted = 0;
     let nextReadStackGestureHandlersBound = false;
     let nextReadStackExpanded = false;
+    let nextReadStackPeeked = false;
     let nextReadStackTouchId = null;
     let nextReadStackStartY = 0;
     let nextReadStackDragStartExpanded = false;
+    let nextReadStackDragStartPeeked = false;
+    let nextReadStackDragStartHeight = 88;
     let nextReadStackDragDeltaY = 0;
 
     function invalidateBottomTrendingCaches() {
