@@ -574,20 +574,20 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-experiment .skip-link:hover { text-decoration: underline; }
             #bottom-trending-story-bar.next-read-experiment.is-bottom-ready .hint { color: #1d4ed8; }
             #bottom-trending-story-bar.next-read-experiment .close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment { padding: 10px 12px 12px 12px; bottom: 50px; border: 1px solid #cbd5e1; border-radius: 14px 14px 0 0; background: rgba(255,255,255,0.98); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; transform: translateY(calc(100% + 56px)); transition: transform 0.24s ease, bottom 0.18s ease, opacity 0.18s ease; will-change: transform; }
-            #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(0); }
-            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { display: block; width: auto; height: 5px; border-radius: 999px; background: #cbd5e1; margin: -10px -12px 12px -12px; }
+            #bottom-trending-story-bar.next-read-stack-experiment { display: block; padding: 10px 12px 12px 12px; bottom: 50px; border: 1px solid #cbd5e1; border-radius: 14px; background: rgba(255,255,255,0.98); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; }
+            #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(0); pointer-events: auto; }
+            #bottom-trending-story-bar.next-read-stack-experiment > * + * { margin-left: 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { width: 100%; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { display: block; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 15px; font-weight: 700; line-height: 1.35; color: #111827; margin: 0 0 10px 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; overflow: hidden; transition: max-height 0.18s ease; overscroll-behavior: contain; touch-action: none; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.14s ease-out; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.98) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: block; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link.secondary { opacity: 0.84; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { color: #830d16; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
-            #bottom-trending-story-bar.next-read-stack-experiment.expanded { bottom: 0 !important; }
-            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: calc(100vh - 96px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: max(220px, calc(100vh - 50px - 96px)); min-height: max(220px, calc(100vh - 50px - 96px)); }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
@@ -1251,11 +1251,6 @@ function initNavigationScript() {
         return categoryName ? `Today's key ${categoryName} reads` : `Today's key reads`;
     }
 
-    function getNextReadStackScrollShell() {
-        const bar = getBottomTrendingBarElement();
-        return bar ? bar.querySelector('.stack-preview-shell') : null;
-    }
-
     function getNextReadExperimentProgress() {
         const { showPx } = getNextReadScrollThresholds();
         const maxScrollable = getMaxScrollableDistance();
@@ -1285,11 +1280,6 @@ function initNavigationScript() {
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
-        bar.style.bottom = `${nextReadStackExpanded ? 0 : getBottomTrendingBottomOffset()}px`;
-        if (!nextReadStackExpanded) {
-            const shell = getNextReadStackScrollShell();
-            if (shell) shell.scrollTop = 0;
-        }
     }
 
     function syncNextReadStackExperimentCard() {
@@ -1297,7 +1287,6 @@ function initNavigationScript() {
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
-        bar.style.bottom = `${nextReadStackExpanded ? 0 : getBottomTrendingBottomOffset()}px`;
     }
 
     function clearNextReadSwipeState({ hidePreview = true } = {}) {
@@ -1581,62 +1570,35 @@ function initNavigationScript() {
             if (!isNextReadStackExperimentActive()) return;
             const bar = getBottomTrendingBarElement();
             if (!bar || !bar.classList.contains('visible') || !bar.classList.contains('next-read-stack-experiment')) return;
-            if (!event.target || !event.target.closest) return;
+            if (!event.target || !event.target.closest || !event.target.closest('.pull-handle, .stack-header, .stack-preview-shell')) return;
             const touch = event.changedTouches && event.changedTouches[0];
             if (!touch) return;
-            if (event.target.closest('.pull-handle, .stack-header')) {
-                nextReadStackTouchId = touch.identifier;
-                nextReadStackStartY = touch.clientY;
-                nextReadStackScrollTouchId = null;
-                return;
-            }
-            if (nextReadStackExpanded && event.target.closest('.stack-preview-shell')) {
-                const shell = getNextReadStackScrollShell();
-                if (!shell) return;
-                nextReadStackScrollTouchId = touch.identifier;
-                nextReadStackScrollLastY = touch.clientY;
-            }
+            nextReadStackTouchId = touch.identifier;
+            nextReadStackStartY = touch.clientY;
         }, { passive: true });
 
         const finishGesture = () => {
             nextReadStackTouchId = null;
             nextReadStackStartY = 0;
-            nextReadStackScrollTouchId = null;
-            nextReadStackScrollLastY = 0;
         };
 
         document.addEventListener('touchmove', (event) => {
+            if (nextReadStackTouchId === null) return;
             if (!isNextReadStackExperimentActive()) {
                 finishGesture();
                 return;
             }
-            if (nextReadStackTouchId !== null) {
-                const touch = getTrackedTouch(event, nextReadStackTouchId);
-                if (!touch) return;
-                const deltaY = touch.clientY - nextReadStackStartY;
-                if (Math.abs(deltaY) < NEXT_READ_SWIPE_PREVIEW_SETTLE_PX) return;
-                event.preventDefault();
-                if (deltaY < 0 && !nextReadStackExpanded) {
-                    setNextReadStackExpanded(true);
-                } else if (deltaY > 0 && nextReadStackExpanded) {
-                    setNextReadStackExpanded(false);
-                }
-                finishGesture();
-                return;
+            const touch = getTrackedTouch(event, nextReadStackTouchId);
+            if (!touch) return;
+            const deltaY = touch.clientY - nextReadStackStartY;
+            event.preventDefault();
+            if (Math.abs(deltaY) < 12) return;
+            if (deltaY < 0 && !nextReadStackExpanded) {
+                setNextReadStackExpanded(true);
+            } else if (deltaY > 0 && nextReadStackExpanded) {
+                setNextReadStackExpanded(false);
             }
-            if (nextReadStackScrollTouchId !== null) {
-                const touch = getTrackedTouch(event, nextReadStackScrollTouchId);
-                if (!touch) return;
-                const shell = getNextReadStackScrollShell();
-                if (!shell) {
-                    finishGesture();
-                    return;
-                }
-                const deltaY = touch.clientY - nextReadStackScrollLastY;
-                nextReadStackScrollLastY = touch.clientY;
-                shell.scrollTop -= deltaY;
-                event.preventDefault();
-            }
+            finishGesture();
         }, { passive: false });
 
         document.addEventListener('touchend', finishGesture, { passive: true });
@@ -1649,8 +1611,6 @@ function initNavigationScript() {
         nextReadStackExpanded = false;
         nextReadStackTouchId = null;
         nextReadStackStartY = 0;
-        nextReadStackScrollTouchId = null;
-        nextReadStackScrollLastY = 0;
         clearNextReadSwipeState({ hidePreview: true });
     }
 
@@ -1881,8 +1841,6 @@ function initNavigationScript() {
     let nextReadStackExpanded = false;
     let nextReadStackTouchId = null;
     let nextReadStackStartY = 0;
-    let nextReadStackScrollTouchId = null;
-    let nextReadStackScrollLastY = 0;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
