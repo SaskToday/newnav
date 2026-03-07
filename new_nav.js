@@ -42,6 +42,13 @@ function initNavigationScript() {
     const NEXT_READ_FEED_CACHE_TTL_MS = Number(window.NAV_NEXT_READ_FEED_CACHE_TTL_MS || 300000);
     const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
     const NEXT_READ_FEED_CACHE_PREFIX = 'nav_next_read_feed_cache_v1:';
+    const ENABLE_NEXT_READ_SWIPE = ENABLE_NEXT_READ && window.NAV_NEXT_READ_SWIPE_ENABLED !== false;
+    const NEXT_READ_SWIPE_PREVIEW_VIEWPORTS = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_VIEWPORTS || 1.25);
+    const NEXT_READ_SWIPE_START_PULL_PX = Number(window.NAV_NEXT_READ_SWIPE_START_PULL_PX || 12);
+    const NEXT_READ_SWIPE_PREVIEW_SETTLE_PX = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_SETTLE_PX || 32);
+    const NEXT_READ_SWIPE_COMMIT_PULL_PX = Number(window.NAV_NEXT_READ_SWIPE_COMMIT_PULL_PX || 76);
+    const NEXT_READ_SWIPE_NEAR_BOTTOM_PX = Number(window.NAV_NEXT_READ_SWIPE_NEAR_BOTTOM_PX || 24);
+    const NEXT_READ_SWIPE_COMMIT_ENABLED = window.NAV_NEXT_READ_SWIPE_COMMIT_ENABLED !== false;
     const nextReadFeedMemoryCache = new Map();
 
     // PostHog session recording helper
@@ -552,9 +559,21 @@ function initNavigationScript() {
             #bottom-trending-story-bar .story-link:hover { color: #000; text-decoration: underline; }
             #bottom-trending-story-bar .close-btn { margin-left: auto; border: 0; background: transparent; color: #6b7280; cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; }
             #bottom-trending-story-bar .close-btn:hover { color: #111827; }
+            #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
+            #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
+            #next-read-swipe-preview .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; margin-bottom: 6px; }
+            #next-read-swipe-preview .headline { font-size: 15px; font-weight: 700; line-height: 1.35; color: #111827; margin: 0 0 10px 0; }
+            #next-read-swipe-preview .hint-row { display: flex; align-items: center; gap: 10px; }
+            #next-read-swipe-preview .hint { font-size: 11px; font-weight: 600; color: #475569; white-space: nowrap; }
+            #next-read-swipe-preview .progress-track { flex: 1; height: 4px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+            #next-read-swipe-preview .progress-fill { width: 100%; height: 100%; background: linear-gradient(to right, #94a3b8 0%, #2563eb 100%); transform-origin: left center; transform: scaleX(0); transition: transform 0.12s linear; }
+            #next-read-swipe-preview.is-armed .hint { color: #1d4ed8; }
             @media (max-width: 767px) {
                 #bottom-trending-story-bar { left: 8px; right: 8px; width: auto; bottom: 100px; padding: 9px 10px; contain: layout style paint; }
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
+            }
+            @media (min-width: 768px) {
+                #next-read-swipe-preview { display: none !important; }
             }
         </style>
         <div class="nav-content-wrapper">
@@ -1066,68 +1085,311 @@ function initNavigationScript() {
         return null;
     }
 
-    async function initBottomTrendingStoryBar() {
-        const existing = document.getElementById('bottom-trending-story-bar');
-        const isMobileViewport = window.innerWidth <= 767;
-        const currentPath = normalizePath(window.location.pathname);
-        const isArticle = isArticlePath(currentPath);
-
-        if (!ENABLE_NEXT_READ || !isArticle) {
-            if (existing) existing.remove();
-            return;
-        }
-        if (sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) {
-            if (existing) existing.remove();
-            return;
+    async function getNextReadRecommendation(currentPath) {
+        const normalizedPath = normalizePath(currentPath || window.location.pathname);
+        if (!ENABLE_NEXT_READ || !isArticlePath(normalizedPath)) {
+            nextReadRecommendationPath = normalizedPath;
+            nextReadRecommendationItem = null;
+            nextReadRecommendationFailedFeeds = [];
+            nextReadRecommendationPromise = null;
+            nextReadRecommendationResolved = true;
+            return null;
         }
 
-        if (existing) {
-            existing.style.bottom = `${getBottomTrendingBottomOffset()}px`;
-        } else {
-            addNextReadVisitedPath(currentPath);
+        if (nextReadRecommendationPath === normalizedPath && nextReadRecommendationResolved) {
+            return nextReadRecommendationItem;
+        }
+        if (nextReadRecommendationPath === normalizedPath && nextReadRecommendationPromise) {
+            return nextReadRecommendationPromise;
         }
 
         const visitedSet = new Set(getNextReadVisitedPaths());
-        const parentRssUrls = buildParentRssUrls(currentPath);
-        let nextItem = null;
+        const parentRssUrls = buildParentRssUrls(normalizedPath);
         const failedFeeds = [];
 
-        const selectFromFeed = async (rssUrl, includeVisited) => {
-            if (!rssUrl) return null;
-            try {
-                const items = await fetchRssItems(rssUrl);
-                const picked = pickNextReadItem(items, currentPath, visitedSet, includeVisited);
-                return picked;
-            } catch (error) {
-                console.warn('[NAV DEBUG] NEXT READ RSS source failed:', rssUrl, error);
-                failedFeeds.push({
-                    rssUrl,
-                    includeVisited,
-                    name: (error != null && error.name) ? error.name : 'Error',
-                    message: (error != null && error.message) ? error.message : String(error)
-                });
-                return null;
+        const loadRecommendation = (async () => {
+            let nextItem = null;
+            const selectFromFeed = async (rssUrl, includeVisited) => {
+                if (!rssUrl) return null;
+                try {
+                    const items = await fetchRssItems(rssUrl);
+                    return pickNextReadItem(items, normalizedPath, visitedSet, includeVisited);
+                } catch (error) {
+                    console.warn('[NAV DEBUG] NEXT READ RSS source failed:', rssUrl, error);
+                    failedFeeds.push({
+                        rssUrl,
+                        includeVisited,
+                        name: (error != null && error.name) ? error.name : 'Error',
+                        message: (error != null && error.message) ? error.message : String(error)
+                    });
+                    return null;
+                }
+            };
+
+            for (const rssUrl of parentRssUrls) {
+                nextItem = await selectFromFeed(rssUrl, false);
+                if (nextItem) break;
             }
-        };
+            if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
 
-        // Primary feed (unvisited only), then fallback to /rss/trending (unvisited only).
-        for (const rssUrl of parentRssUrls) {
-            nextItem = await selectFromFeed(rssUrl, false);
-            if (nextItem) break;
+            nextReadRecommendationPath = normalizedPath;
+            nextReadRecommendationItem = nextItem;
+            nextReadRecommendationFailedFeeds = failedFeeds;
+            nextReadRecommendationPromise = null;
+            nextReadRecommendationResolved = true;
+            return nextItem;
+        })();
+
+        nextReadRecommendationPath = normalizedPath;
+        nextReadRecommendationPromise = loadRecommendation;
+        nextReadRecommendationResolved = false;
+        return loadRecommendation;
+    }
+
+    function getBottomTrendingBarElement() {
+        return document.getElementById('bottom-trending-story-bar');
+    }
+
+    function clearNextReadSwipeState({ hidePreview = true } = {}) {
+        nextReadSwipeState = 'idle';
+        nextReadSwipeTouchId = null;
+        nextReadSwipeStartY = 0;
+        nextReadSwipePullPx = 0;
+        nextReadSwipePullStartedTracked = false;
+        nextReadSwipeArmedTracked = false;
+        if (hidePreview) {
+            nextReadSwipePreviewPinned = false;
+            hideNextReadSwipePreview();
         }
-        if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
+    }
 
-        if (!nextItem) {
-            if (existing) existing.remove();
-            console.warn('[NAV DEBUG] NEXT READ: no eligible article found', failedFeeds);
+    function ensureNextReadSwipePreview() {
+        if (nextReadSwipePreviewEl && nextReadSwipePreviewEl.isConnected) return nextReadSwipePreviewEl;
+        const preview = document.createElement('div');
+        preview.id = 'next-read-swipe-preview';
+        preview.innerHTML = `
+            <div class="eyebrow">NEXT READ</div>
+            <div class="headline"></div>
+            <div class="hint-row">
+                <span class="hint">Keep pulling</span>
+                <div class="progress-track"><div class="progress-fill"></div></div>
+            </div>
+        `;
+        preview.addEventListener('click', () => {
+            if (!nextReadRecommendationItem) return;
+            if (Date.now() < nextReadSwipeSuppressClickUntil) return;
+            triggerPostHogRecording('nav_next_read_click', { destination_url: nextReadRecommendationItem.link, source: 'swipe_preview' });
+            window.location.href = nextReadRecommendationItem.link;
+        });
+        document.body.appendChild(preview);
+        nextReadSwipePreviewEl = preview;
+        return preview;
+    }
+
+    function hideNextReadSwipePreview() {
+        if (!nextReadSwipePreviewEl) return;
+        nextReadSwipePreviewEl.classList.remove('visible', 'is-armed');
+        nextReadSwipePreviewEl.style.transform = 'translateY(26px) scale(0.985)';
+        const fill = nextReadSwipePreviewEl.querySelector('.progress-fill');
+        if (fill) fill.style.transform = 'scaleX(0)';
+    }
+
+    function updateNextReadSwipePreviewLayout() {
+        if (!nextReadSwipePreviewEl || window.innerWidth > 767) {
+            if (nextReadSwipePreviewEl) nextReadSwipePreviewEl.classList.remove('visible', 'is-armed');
             return;
         }
+        const bar = getBottomTrendingBarElement();
+        const barHeight = bar ? bar.offsetHeight : 52;
+        nextReadSwipePreviewEl.style.bottom = `${getBottomTrendingBottomOffset() + barHeight + 12}px`;
+    }
 
+    function updateNextReadSwipePreviewContent(nextItem) {
+        if (!nextItem) return;
+        const preview = ensureNextReadSwipePreview();
+        const headline = preview.querySelector('.headline');
+        if (headline) headline.textContent = nextItem.title;
+        updateNextReadSwipePreviewLayout();
+    }
+
+    function updateNextReadSwipePreviewProgress(pullPx) {
+        if (!nextReadRecommendationItem || window.innerWidth > 767) return;
+        const preview = ensureNextReadSwipePreview();
+        const clampedPull = Math.max(0, Math.min(pullPx, NEXT_READ_SWIPE_COMMIT_PULL_PX));
+        const progress = Math.min(1, clampedPull / NEXT_READ_SWIPE_COMMIT_PULL_PX);
+        const translateY = Math.round((1 - progress) * 26);
+        const scale = 0.985 + (progress * 0.015);
+        const hint = preview.querySelector('.hint');
+        const fill = preview.querySelector('.progress-fill');
+        preview.classList.add('visible');
+        preview.classList.toggle('is-armed', progress >= 1);
+        preview.style.transform = `translateY(${translateY}px) scale(${scale})`;
+        if (hint) hint.textContent = progress >= 1 ? 'Release to open' : (nextReadSwipePreviewPinned ? 'Pull again to open' : 'Keep pulling');
+        if (fill) fill.style.transform = `scaleX(${Math.max(0.06, progress)})`;
+        updateNextReadSwipePreviewLayout();
+        if (!nextReadSwipePreviewShown) {
+            nextReadSwipePreviewShown = true;
+            triggerPostHogRecording('nav_next_read_preview_shown', { destination_url: nextReadRecommendationItem.link });
+        }
+    }
+
+    function pinNextReadSwipePreview() {
+        nextReadSwipePreviewPinned = true;
+        updateNextReadSwipePreviewProgress(NEXT_READ_SWIPE_PREVIEW_SETTLE_PX);
+        const preview = ensureNextReadSwipePreview();
+        const hint = preview.querySelector('.hint');
+        if (hint) hint.textContent = 'Pull again to open';
+    }
+
+    function getNextReadRemainingScrollDistance() {
+        return Math.max(0, getMaxScrollableDistance() - getCurrentScrollTop());
+    }
+
+    function getNextReadSwipeActivationThreshold() {
+        const maxScrollable = getMaxScrollableDistance();
+        return Math.max(0, maxScrollable - Math.round(window.innerHeight * NEXT_READ_SWIPE_PREVIEW_VIEWPORTS));
+    }
+
+    function isNextReadSwipeEndZoneActive() {
+        return window.innerWidth <= 767 && getCurrentScrollTop() >= getNextReadSwipeActivationThreshold();
+    }
+
+    function canStartNextReadSwipeGesture(target) {
+        if (!ENABLE_NEXT_READ_SWIPE || window.innerWidth > 767) return false;
+        if (!nextReadRecommendationItem) return false;
+        if (sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) return false;
+        if (!isNextReadSwipeEndZoneActive()) return false;
+        if (getNextReadRemainingScrollDistance() > NEXT_READ_SWIPE_NEAR_BOTTOM_PX) return false;
+        if (!target || !target.closest || !target.closest('#bottom-trending-story-bar, #next-read-swipe-preview')) return false;
+        if (target.closest('.close-btn')) return false;
+        const bar = getBottomTrendingBarElement();
+        return !!(bar && bar.classList.contains('visible'));
+    }
+
+    function commitNextReadSwipeNavigation() {
+        if (!nextReadRecommendationItem) return;
+        if (!NEXT_READ_SWIPE_COMMIT_ENABLED) {
+            pinNextReadSwipePreview();
+            return;
+        }
+        nextReadSwipeState = 'committing';
+        updateNextReadSwipePreviewProgress(NEXT_READ_SWIPE_COMMIT_PULL_PX);
+        triggerPostHogRecording('nav_next_read_pull_committed', {
+            destination_url: nextReadRecommendationItem.link,
+            pull_distance: nextReadSwipePullPx
+        });
+        window.setTimeout(() => {
+            window.location.href = nextReadRecommendationItem.link;
+        }, 120);
+    }
+
+    function getTrackedTouch(event, touchId) {
+        const touchLists = [event.touches, event.changedTouches];
+        for (const list of touchLists) {
+            if (!list) continue;
+            for (let i = 0; i < list.length; i += 1) {
+                if (list[i].identifier === touchId) return list[i];
+            }
+        }
+        return null;
+    }
+
+    function bindNextReadSwipeGestureHandlers() {
+        if (nextReadSwipeGestureHandlersBound) return;
+        nextReadSwipeGestureHandlersBound = true;
+
+        document.addEventListener('touchstart', (event) => {
+            if (!canStartNextReadSwipeGesture(event.target)) return;
+            const touch = event.changedTouches && event.changedTouches[0];
+            if (!touch) return;
+            nextReadSwipeTouchId = touch.identifier;
+            nextReadSwipeSuppressClickUntil = Date.now() + 400;
+            nextReadSwipeStartY = touch.clientY;
+            nextReadSwipePullPx = 0;
+            nextReadSwipePullStartedTracked = false;
+            nextReadSwipeArmedTracked = false;
+            nextReadSwipeState = nextReadSwipePreviewPinned ? 'previewing' : 'idle';
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (event) => {
+            if (nextReadSwipeTouchId === null) return;
+            const touch = getTrackedTouch(event, nextReadSwipeTouchId);
+            if (!touch) return;
+            const deltaY = touch.clientY - nextReadSwipeStartY;
+            if (deltaY <= 0) return;
+            if (!nextReadRecommendationItem || (!nextReadSwipePreviewPinned && !isNextReadSwipeEndZoneActive())) return;
+
+            const pullPx = Math.max(0, deltaY - NEXT_READ_SWIPE_START_PULL_PX);
+            if (pullPx <= 0) return;
+
+            event.preventDefault();
+            nextReadSwipePullPx = pullPx;
+            if (!nextReadSwipePullStartedTracked) {
+                nextReadSwipePullStartedTracked = true;
+                triggerPostHogRecording('nav_next_read_pull_started', {
+                    destination_url: nextReadRecommendationItem.link,
+                    preview_pinned: nextReadSwipePreviewPinned
+                });
+            }
+            updateNextReadSwipePreviewProgress(pullPx);
+            if (pullPx >= NEXT_READ_SWIPE_COMMIT_PULL_PX) {
+                nextReadSwipeState = 'armed';
+                if (!nextReadSwipeArmedTracked) {
+                    nextReadSwipeArmedTracked = true;
+                    triggerPostHogRecording('nav_next_read_pull_armed', {
+                        destination_url: nextReadRecommendationItem.link,
+                        pull_distance: pullPx
+                    });
+                }
+            } else {
+                nextReadSwipeState = 'previewing';
+            }
+        }, { passive: false });
+
+        const finalizeGesture = () => {
+            if (nextReadSwipeTouchId === null) return;
+            const didStart = nextReadSwipePullStartedTracked;
+            const pullPx = nextReadSwipePullPx;
+            nextReadSwipeTouchId = null;
+            nextReadSwipeStartY = 0;
+
+            if (nextReadSwipeState === 'armed' || pullPx >= NEXT_READ_SWIPE_COMMIT_PULL_PX) {
+                commitNextReadSwipeNavigation();
+                return;
+            }
+            if (pullPx >= NEXT_READ_SWIPE_PREVIEW_SETTLE_PX) {
+                nextReadSwipeState = 'previewing';
+                pinNextReadSwipePreview();
+                nextReadSwipePullPx = 0;
+                return;
+            }
+            if (didStart) {
+                nextReadSwipeState = 'cancelled';
+                triggerPostHogRecording('nav_next_read_pull_cancelled', {
+                    destination_url: nextReadRecommendationItem ? nextReadRecommendationItem.link : '',
+                    pull_distance: pullPx
+                });
+            }
+            clearNextReadSwipeState({ hidePreview: true });
+        };
+
+        document.addEventListener('touchend', finalizeGesture, { passive: true });
+        document.addEventListener('touchcancel', finalizeGesture, { passive: true });
+    }
+
+    function removeBottomTrendingStoryBar() {
+        const existing = getBottomTrendingBarElement();
+        if (existing) existing.remove();
+        clearNextReadSwipeState({ hidePreview: true });
+    }
+
+    function renderBottomTrendingStoryBar(nextItem) {
+        const existing = getBottomTrendingBarElement();
         const bar = existing || document.createElement('div');
         if (!existing) {
             bar.id = 'bottom-trending-story-bar';
-            bar.style.bottom = `${getBottomTrendingBottomOffset()}px`;
         }
+        bar.style.bottom = `${getBottomTrendingBottomOffset()}px`;
 
         const label = document.createElement('span');
         label.className = 'label';
@@ -1149,16 +1411,48 @@ function initNavigationScript() {
         closeBtn.addEventListener('click', () => {
             triggerPostHogRecording('nav_next_read_dismiss');
             sessionStorage.setItem(NEXT_READ_DISMISSED_SESSION_KEY, '1');
-            bar.remove();
+            removeBottomTrendingStoryBar();
         });
 
         bar.innerHTML = '';
         bar.appendChild(label);
         bar.appendChild(storyLink);
         bar.appendChild(closeBtn);
-        if (!existing) {
-            document.body.appendChild(bar);
+        if (!existing) document.body.appendChild(bar);
+
+        nextReadSwipePreviewShown = false;
+        updateNextReadSwipePreviewContent(nextItem);
+        bindNextReadSwipeGestureHandlers();
+    }
+
+    async function initBottomTrendingStoryBar() {
+        const existing = getBottomTrendingBarElement();
+        const currentPath = normalizePath(window.location.pathname);
+        const isArticle = isArticlePath(currentPath);
+
+        if (!ENABLE_NEXT_READ || !isArticle) {
+            removeBottomTrendingStoryBar();
+            return;
         }
+        if (sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) {
+            removeBottomTrendingStoryBar();
+            return;
+        }
+
+        if (existing) {
+            existing.style.bottom = `${getBottomTrendingBottomOffset()}px`;
+        } else {
+            addNextReadVisitedPath(currentPath);
+        }
+
+        const nextItem = await getNextReadRecommendation(currentPath);
+        if (!nextItem) {
+            removeBottomTrendingStoryBar();
+            console.warn('[NAV DEBUG] NEXT READ: no eligible article found', nextReadRecommendationFailedFeeds);
+            return;
+        }
+
+        renderBottomTrendingStoryBar(nextItem);
         scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
         bindBottomTrendingBarVisibilityHandlers();
     }
@@ -1176,6 +1470,22 @@ function initNavigationScript() {
     let bottomTrendingHideThresholdCache = null;
     let bottomTrendingThresholdViewportWidth = null;
     let bottomTrendingLastViewportWidth = window.innerWidth;
+    let nextReadRecommendationPath = '';
+    let nextReadRecommendationItem = null;
+    let nextReadRecommendationFailedFeeds = [];
+    let nextReadRecommendationPromise = null;
+    let nextReadRecommendationResolved = false;
+    let nextReadSwipePreviewEl = null;
+    let nextReadSwipeGestureHandlersBound = false;
+    let nextReadSwipeState = 'idle';
+    let nextReadSwipeTouchId = null;
+    let nextReadSwipeStartY = 0;
+    let nextReadSwipePullPx = 0;
+    let nextReadSwipePreviewPinned = false;
+    let nextReadSwipePreviewShown = false;
+    let nextReadSwipePullStartedTracked = false;
+    let nextReadSwipeArmedTracked = false;
+    let nextReadSwipeSuppressClickUntil = 0;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
@@ -1355,6 +1665,29 @@ function initNavigationScript() {
         bar.classList.toggle('visible', bottomTrendingVisibleState);
     }
 
+    function syncNextReadSwipePreview() {
+        if (!ENABLE_NEXT_READ_SWIPE) {
+            clearNextReadSwipeState({ hidePreview: true });
+            return;
+        }
+
+        const bar = getBottomTrendingBarElement();
+        if (!bar || !nextReadRecommendationItem || window.innerWidth > 767) {
+            clearNextReadSwipeState({ hidePreview: true });
+            return;
+        }
+
+        updateNextReadSwipePreviewLayout();
+
+        const shouldKeepPreview =
+            bar.classList.contains('visible') &&
+            (nextReadSwipePreviewPinned || (nextReadSwipeTouchId !== null && isNextReadSwipeEndZoneActive()));
+
+        if (!shouldKeepPreview && nextReadSwipeTouchId === null) {
+            clearNextReadSwipeState({ hidePreview: true });
+        }
+    }
+
     function scheduleBottomTrendingFrameUpdate({ invalidateCaches = false, updateLayout = false } = {}) {
         if (invalidateCaches) bottomTrendingRafNeedsInvalidate = true;
         if (updateLayout) bottomTrendingRafNeedsLayout = true;
@@ -1368,6 +1701,7 @@ function initNavigationScript() {
                 applyBottomTrendingBarLayout();
             }
             updateBottomTrendingBarVisibility();
+            syncNextReadSwipePreview();
             bottomTrendingRafNeedsInvalidate = false;
             bottomTrendingRafNeedsLayout = false;
         });
