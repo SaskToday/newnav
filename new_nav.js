@@ -33,6 +33,7 @@ function initNavigationScript() {
     const ENABLE_NEXT_READ = window.NAV_ENABLE_NEXT_READ !== false && window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_MOBILE_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_DESKTOP_BOTTOM_OFFSET || 50);
+    const BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_STACK_MOBILE_BOTTOM_OFFSET || 50);
     const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS != null ? window.NAV_NEXT_READ_HIDE_PROGRESS : -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 850);
     const NEXT_READ_DISMISSED_SESSION_KEY = 'nav_next_read_dismissed_session_v1';
@@ -43,6 +44,9 @@ function initNavigationScript() {
     const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
     const NEXT_READ_FEED_CACHE_PREFIX = 'nav_next_read_feed_cache_v1:';
     const ENABLE_NEXT_READ_SWIPE = ENABLE_NEXT_READ && window.NAV_NEXT_READ_SWIPE_ENABLED !== false;
+    const NEXT_READ_EXPERIMENT_VARIANT = String(window.NAV_NEXT_READ_EXPERIMENT_VARIANT || 'swipe').toLowerCase();
+    const NEXT_READ_STACK_PREVIEW_VISIBLE_COUNT = 2;
+    const NEXT_READ_STACK_MAX_ITEMS = 5;
     const NEXT_READ_SWIPE_PREVIEW_VIEWPORTS = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_VIEWPORTS || 1.25);
     const NEXT_READ_SWIPE_START_PULL_PX = Number(window.NAV_NEXT_READ_SWIPE_START_PULL_PX || 12);
     const NEXT_READ_SWIPE_PREVIEW_SETTLE_PX = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_SETTLE_PX || 32);
@@ -570,6 +574,19 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-experiment .skip-link:hover { text-decoration: underline; }
             #bottom-trending-story-bar.next-read-experiment.is-bottom-ready .hint { color: #1d4ed8; }
             #bottom-trending-story-bar.next-read-experiment .close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment { padding: 10px 12px 12px 12px; bottom: 50px; border: 1px solid #cbd5e1; border-radius: 14px; background: rgba(255,255,255,0.98); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; }
+            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { width: 42px; height: 4px; border-radius: 999px; background: #cbd5e1; margin: 0 auto 10px auto; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-header { display: block; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 15px; font-weight: 700; line-height: 1.35; color: #111827; margin: 0 0 10px 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; overflow: hidden; transition: max-height 0.2s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.98) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: block; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-link.secondary { opacity: 0.84; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { color: #830d16; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
+            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: 320px; }
+            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
             #next-read-swipe-preview .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; margin-bottom: 6px; }
@@ -584,6 +601,8 @@ function initNavigationScript() {
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
                 #bottom-trending-story-bar.next-read-experiment { padding: 11px 12px 12px 12px; }
                 #bottom-trending-story-bar.next-read-experiment .headline { font-size: 14px; padding-right: 24px; }
+                #bottom-trending-story-bar.next-read-stack-experiment { bottom: 50px; padding: 10px 12px 12px 12px; }
+                #bottom-trending-story-bar.next-read-stack-experiment .stack-title { font-size: 14px; }
             }
             @media (min-width: 768px) {
                 #next-read-swipe-preview { display: none !important; }
@@ -1012,28 +1031,28 @@ function initNavigationScript() {
         return `${NEXT_READ_FEED_CACHE_PREFIX}${rssUrl}`;
     }
 
-    function getCachedNextReadFeedItems(rssUrl) {
+    function getCachedNextReadFeedData(rssUrl) {
         const now = Date.now();
         const memory = nextReadFeedMemoryCache.get(rssUrl);
         if (memory && (now - memory.timestamp) < NEXT_READ_FEED_CACHE_TTL_MS) {
-            return memory.items;
+            return memory.data;
         }
 
         try {
             const raw = sessionStorage.getItem(getNextReadFeedCacheKey(rssUrl));
             if (!raw) return null;
             const parsed = JSON.parse(raw);
-            if (!parsed || !Array.isArray(parsed.items) || typeof parsed.timestamp !== 'number') return null;
+            if (!parsed || !parsed.data || !Array.isArray(parsed.data.items) || typeof parsed.timestamp !== 'number') return null;
             if ((now - parsed.timestamp) >= NEXT_READ_FEED_CACHE_TTL_MS) return null;
-            nextReadFeedMemoryCache.set(rssUrl, { timestamp: parsed.timestamp, items: parsed.items });
-            return parsed.items;
+            nextReadFeedMemoryCache.set(rssUrl, { timestamp: parsed.timestamp, data: parsed.data });
+            return parsed.data;
         } catch (_) {
             return null;
         }
     }
 
-    function cacheNextReadFeedItems(rssUrl, items) {
-        const payload = { timestamp: Date.now(), items };
+    function cacheNextReadFeedData(rssUrl, data) {
+        const payload = { timestamp: Date.now(), data };
         nextReadFeedMemoryCache.set(rssUrl, payload);
         try {
             sessionStorage.setItem(getNextReadFeedCacheKey(rssUrl), JSON.stringify(payload));
@@ -1042,9 +1061,17 @@ function initNavigationScript() {
         }
     }
 
-    async function fetchRssItems(rssUrl) {
-        const cachedItems = getCachedNextReadFeedItems(rssUrl);
-        if (cachedItems) return cachedItems;
+    function extractCategoryNameFromChannelTitle(title) {
+        const raw = String(title || '').trim();
+        if (!raw) return '';
+        const colonIndex = raw.indexOf(':');
+        const category = colonIndex >= 0 ? raw.slice(colonIndex + 1).trim() : raw;
+        return category;
+    }
+
+    async function fetchRssFeedData(rssUrl) {
+        const cachedData = getCachedNextReadFeedData(rssUrl);
+        if (cachedData) return cachedData;
 
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), NEXT_READ_FEED_TIMEOUT_MS);
@@ -1061,6 +1088,10 @@ function initNavigationScript() {
         const parseError = xml.querySelector('parsererror');
         if (parseError) throw new Error('RSS parse error');
 
+        const channelTitle = (() => {
+            const channelTitleEl = xml.querySelector('channel > title');
+            return channelTitleEl != null && channelTitleEl.textContent ? channelTitleEl.textContent.trim() : '';
+        })();
         const items = [];
         const itemNodes = xml.querySelectorAll('item');
         itemNodes.forEach(item => {
@@ -1079,8 +1110,9 @@ function initNavigationScript() {
                 // Ignore malformed links.
             }
         });
-        cacheNextReadFeedItems(rssUrl, items);
-        return items;
+        const data = { items, categoryName: extractCategoryNameFromChannelTitle(channelTitle) };
+        cacheNextReadFeedData(rssUrl, data);
+        return data;
     }
 
     function pickNextReadItem(items, currentPath, visitedSet, includeVisited) {
@@ -1098,11 +1130,27 @@ function initNavigationScript() {
         return null;
     }
 
+    function appendNextReadItems(targetItems, sourceItems, currentPath, visitedSet, includeVisited, limit) {
+        const seenPaths = new Set(targetItems.map(item => item.path));
+        for (const item of sourceItems) {
+            if (targetItems.length >= limit) break;
+            if (!item || !item.path || !item.link || !item.title) continue;
+            if (seenPaths.has(item.path)) continue;
+            if (!isArticlePath(item.path)) continue;
+            if (item.path === currentPath) continue;
+            if (!includeVisited && visitedSet.has(item.path)) continue;
+            seenPaths.add(item.path);
+            targetItems.push(item);
+        }
+    }
+
     async function getNextReadRecommendation(currentPath) {
         const normalizedPath = normalizePath(currentPath || window.location.pathname);
         if (!ENABLE_NEXT_READ || !isArticlePath(normalizedPath)) {
             nextReadRecommendationPath = normalizedPath;
             nextReadRecommendationItem = null;
+            nextReadRecommendationItems = [];
+            nextReadRecommendationCategoryName = '';
             nextReadRecommendationFailedFeeds = [];
             nextReadRecommendationPromise = null;
             nextReadRecommendationResolved = true;
@@ -1122,10 +1170,17 @@ function initNavigationScript() {
 
         const loadRecommendation = (async () => {
             let nextItem = null;
-            const selectFromFeed = async (rssUrl, includeVisited) => {
+            let recommendationItems = [];
+            let recommendationCategoryName = '';
+            const collectFromFeed = async (rssUrl, includeVisited) => {
                 if (!rssUrl) return null;
                 try {
-                    const items = await fetchRssItems(rssUrl);
+                    const feedData = await fetchRssFeedData(rssUrl);
+                    if (!recommendationCategoryName && feedData && feedData.categoryName) {
+                        recommendationCategoryName = feedData.categoryName;
+                    }
+                    const items = (feedData && Array.isArray(feedData.items)) ? feedData.items : [];
+                    appendNextReadItems(recommendationItems, items, normalizedPath, visitedSet, includeVisited, NEXT_READ_STACK_MAX_ITEMS);
                     return pickNextReadItem(items, normalizedPath, visitedSet, includeVisited);
                 } catch (error) {
                     console.warn('[NAV DEBUG] NEXT READ RSS source failed:', rssUrl, error);
@@ -1140,13 +1195,27 @@ function initNavigationScript() {
             };
 
             for (const rssUrl of parentRssUrls) {
-                nextItem = await selectFromFeed(rssUrl, false);
+                nextItem = await collectFromFeed(rssUrl, false);
                 if (nextItem) break;
             }
-            if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
+            if (!nextItem) nextItem = await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
+            if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
+                for (const rssUrl of parentRssUrls) {
+                    await collectFromFeed(rssUrl, true);
+                    if (recommendationItems.length >= NEXT_READ_STACK_MAX_ITEMS) break;
+                }
+            }
+            if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
+                await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, true);
+            }
+            if (!nextItem && recommendationItems.length > 0) {
+                nextItem = recommendationItems[0];
+            }
 
             nextReadRecommendationPath = normalizedPath;
             nextReadRecommendationItem = nextItem;
+            nextReadRecommendationItems = recommendationItems;
+            nextReadRecommendationCategoryName = recommendationCategoryName;
             nextReadRecommendationFailedFeeds = failedFeeds;
             nextReadRecommendationPromise = null;
             nextReadRecommendationResolved = true;
@@ -1163,8 +1232,21 @@ function initNavigationScript() {
         return document.getElementById('bottom-trending-story-bar');
     }
 
+    function isNextReadSwipeExperimentActive() {
+        return ENABLE_NEXT_READ_SWIPE && window.innerWidth <= 767 && NEXT_READ_EXPERIMENT_VARIANT === 'swipe';
+    }
+
+    function isNextReadStackExperimentActive() {
+        return ENABLE_NEXT_READ_SWIPE && window.innerWidth <= 767 && NEXT_READ_EXPERIMENT_VARIANT === 'stack';
+    }
+
     function isNextReadScrollExperimentActive() {
-        return ENABLE_NEXT_READ_SWIPE && window.innerWidth <= 767;
+        return isNextReadSwipeExperimentActive();
+    }
+
+    function getNextReadStackTitle() {
+        const categoryName = String(nextReadRecommendationCategoryName || '').trim();
+        return categoryName ? `Today's key ${categoryName} reads` : `Today's key reads`;
     }
 
     function getNextReadExperimentProgress() {
@@ -1188,6 +1270,21 @@ function initNavigationScript() {
         if (hint) {
             hint.textContent = readyForBottomContinue ? 'Continue scrolling to open' : 'Auto-opens at bottom';
         }
+    }
+
+    function setNextReadStackExpanded(expanded) {
+        nextReadStackExpanded = !!expanded;
+        const bar = getBottomTrendingBarElement();
+        if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
+        bar.classList.toggle('expanded', nextReadStackExpanded);
+        bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
+    }
+
+    function syncNextReadStackExperimentCard() {
+        const bar = getBottomTrendingBarElement();
+        if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
+        bar.classList.toggle('expanded', nextReadStackExpanded);
+        bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
     }
 
     function clearNextReadSwipeState({ hidePreview = true } = {}) {
@@ -1463,9 +1560,55 @@ function initNavigationScript() {
         document.addEventListener('touchcancel', clearExperimentTouch, { passive: true });
     }
 
+    function bindNextReadStackGestureHandlers() {
+        if (nextReadStackGestureHandlersBound) return;
+        nextReadStackGestureHandlersBound = true;
+
+        document.addEventListener('touchstart', (event) => {
+            if (!isNextReadStackExperimentActive()) return;
+            const bar = getBottomTrendingBarElement();
+            if (!bar || !bar.classList.contains('visible') || !bar.classList.contains('next-read-stack-experiment')) return;
+            if (!event.target || !event.target.closest || !event.target.closest('.pull-handle, .stack-header, .stack-preview-shell')) return;
+            const touch = event.changedTouches && event.changedTouches[0];
+            if (!touch) return;
+            nextReadStackTouchId = touch.identifier;
+            nextReadStackStartY = touch.clientY;
+        }, { passive: true });
+
+        const finishGesture = () => {
+            nextReadStackTouchId = null;
+            nextReadStackStartY = 0;
+        };
+
+        document.addEventListener('touchmove', (event) => {
+            if (nextReadStackTouchId === null) return;
+            if (!isNextReadStackExperimentActive()) {
+                finishGesture();
+                return;
+            }
+            const touch = getTrackedTouch(event, nextReadStackTouchId);
+            if (!touch) return;
+            const deltaY = touch.clientY - nextReadStackStartY;
+            if (Math.abs(deltaY) < NEXT_READ_SWIPE_PREVIEW_SETTLE_PX) return;
+            event.preventDefault();
+            if (deltaY < 0 && !nextReadStackExpanded) {
+                setNextReadStackExpanded(true);
+            } else if (deltaY > 0 && nextReadStackExpanded) {
+                setNextReadStackExpanded(false);
+            }
+            finishGesture();
+        }, { passive: false });
+
+        document.addEventListener('touchend', finishGesture, { passive: true });
+        document.addEventListener('touchcancel', finishGesture, { passive: true });
+    }
+
     function removeBottomTrendingStoryBar() {
         const existing = getBottomTrendingBarElement();
         if (existing) existing.remove();
+        nextReadStackExpanded = false;
+        nextReadStackTouchId = null;
+        nextReadStackStartY = 0;
         clearNextReadSwipeState({ hidePreview: true });
     }
 
@@ -1476,6 +1619,60 @@ function initNavigationScript() {
             bar.id = 'bottom-trending-story-bar';
         }
         bar.style.bottom = `${getBottomTrendingBottomOffset()}px`;
+
+        if (isNextReadStackExperimentActive()) {
+            const stackItems = nextReadRecommendationItems.slice(0, NEXT_READ_STACK_MAX_ITEMS);
+            bar.className = bottomTrendingVisibleState ? 'next-read-stack-experiment visible' : 'next-read-stack-experiment';
+            bar.innerHTML = '';
+            bar.setAttribute('aria-label', getNextReadStackTitle());
+
+            const handle = document.createElement('div');
+            handle.className = 'pull-handle';
+            handle.setAttribute('aria-hidden', 'true');
+
+            const header = document.createElement('div');
+            header.className = 'stack-header';
+
+            const title = document.createElement('div');
+            title.className = 'stack-title';
+            title.textContent = getNextReadStackTitle();
+
+            const previewShell = document.createElement('div');
+            previewShell.className = 'stack-preview-shell';
+
+            const links = document.createElement('div');
+            links.className = 'stack-links';
+            stackItems.forEach((item, index) => {
+                const link = document.createElement('a');
+                link.className = `stack-link${index > 0 && index < NEXT_READ_STACK_PREVIEW_VISIBLE_COUNT ? ' secondary' : ''}`;
+                link.href = item.link;
+                const itemIndex = document.createElement('span');
+                itemIndex.className = 'stack-link-index';
+                itemIndex.textContent = String(index + 1);
+                link.appendChild(itemIndex);
+                link.appendChild(document.createTextNode(item.title));
+                link.addEventListener('click', () => {
+                    triggerPostHogRecording('nav_next_read_click', { destination_url: item.link, source: 'stack_list', position: index + 1 });
+                });
+                links.appendChild(link);
+            });
+
+            const fade = document.createElement('div');
+            fade.className = 'stack-preview-fade';
+            fade.setAttribute('aria-hidden', 'true');
+
+            previewShell.appendChild(links);
+            previewShell.appendChild(fade);
+            header.appendChild(title);
+            bar.appendChild(handle);
+            bar.appendChild(header);
+            bar.appendChild(previewShell);
+            if (!existing) document.body.appendChild(bar);
+            setNextReadStackExpanded(nextReadStackExpanded);
+            syncNextReadStackExperimentCard();
+            bindNextReadStackGestureHandlers();
+            return;
+        }
 
         if (isNextReadScrollExperimentActive()) {
             bar.className = bottomTrendingVisibleState ? 'next-read-experiment visible' : 'next-read-experiment';
@@ -1535,7 +1732,7 @@ function initNavigationScript() {
             return;
         }
 
-        bar.classList.remove('next-read-experiment', 'is-bottom-ready');
+        bar.className = bottomTrendingVisibleState ? 'visible' : '';
 
         const label = document.createElement('span');
         label.className = 'label';
@@ -1618,6 +1815,8 @@ function initNavigationScript() {
     let bottomTrendingLastViewportWidth = window.innerWidth;
     let nextReadRecommendationPath = '';
     let nextReadRecommendationItem = null;
+    let nextReadRecommendationItems = [];
+    let nextReadRecommendationCategoryName = '';
     let nextReadRecommendationFailedFeeds = [];
     let nextReadRecommendationPromise = null;
     let nextReadRecommendationResolved = false;
@@ -1636,6 +1835,10 @@ function initNavigationScript() {
     let nextReadExperimentTouchId = null;
     let nextReadExperimentStartY = 0;
     let nextReadExperimentScrollStarted = 0;
+    let nextReadStackGestureHandlersBound = false;
+    let nextReadStackExpanded = false;
+    let nextReadStackTouchId = null;
+    let nextReadStackStartY = 0;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
@@ -1645,9 +1848,12 @@ function initNavigationScript() {
     }
 
     function getBottomTrendingBottomOffset() {
-        return window.innerWidth <= 767
-            ? BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET
-            : BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET;
+        if (window.innerWidth <= 767) {
+            return isNextReadStackExperimentActive()
+                ? BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET
+                : BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET;
+        }
+        return BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET;
     }
 
     function getWindowScrollTop() {
@@ -1816,7 +2022,7 @@ function initNavigationScript() {
     }
 
     function syncNextReadSwipePreview() {
-        if (!ENABLE_NEXT_READ_SWIPE || isNextReadScrollExperimentActive()) {
+        if (!ENABLE_NEXT_READ_SWIPE || !isNextReadSwipeExperimentActive()) {
             clearNextReadSwipeState({ hidePreview: true });
             return;
         }
@@ -1852,6 +2058,7 @@ function initNavigationScript() {
             }
             updateBottomTrendingBarVisibility();
             syncNextReadExperimentCard();
+            syncNextReadStackExperimentCard();
             syncNextReadSwipePreview();
             bottomTrendingRafNeedsInvalidate = false;
             bottomTrendingRafNeedsLayout = false;
