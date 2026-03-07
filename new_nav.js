@@ -578,6 +578,8 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(var(--next-read-stack-collapsed-offset, 0px)); pointer-events: auto; }
             #bottom-trending-story-bar.next-read-stack-experiment.visible.expanded { transform: translateY(0); }
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging { transition: none; }
+            #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-shell,
+            #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-fade { transition: none; }
             #bottom-trending-story-bar.next-read-stack-experiment > * + * { margin-left: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { width: 20px; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 auto 10px auto; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { display: block; }
@@ -1349,7 +1351,7 @@ function initNavigationScript() {
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         const shell = bar.querySelector('.stack-preview-shell');
         const fade = bar.querySelector('.stack-preview-fade');
-        const expandedHeight = getNextReadStackExpandedShellHeightPx();
+        const expandedHeight = nextReadStackCachedExpandedHeightPx >= 88 ? nextReadStackCachedExpandedHeightPx : getNextReadStackExpandedShellHeightPx();
         const dragStartHeight = nextReadStackDragStartHeight;
         const shellHeight = Math.round(Math.max(0, Math.min(expandedHeight, dragStartHeight - deltaY)));
         const totalRange = Math.max(1, expandedHeight - 88);
@@ -1674,6 +1676,7 @@ function initNavigationScript() {
             nextReadStackDragStartHeight = 88;
             nextReadStackDragDeltaY = 0;
             nextReadStackDragArmed = false;
+            nextReadStackCachedExpandedHeightPx = -1;
         };
 
         document.addEventListener('touchmove', (event) => {
@@ -1695,6 +1698,7 @@ function initNavigationScript() {
                 if (nextReadStackDragStartExpanded && deltaY < 0) return;
                 if (nextReadStackDragStartPeeked && !nextReadStackTouchFromGrabRegion) return;
                 nextReadStackDragArmed = true;
+                nextReadStackCachedExpandedHeightPx = getNextReadStackExpandedShellHeightPx();
             }
 
             event.preventDefault();
@@ -1747,6 +1751,7 @@ function initNavigationScript() {
         nextReadStackDragStartHeight = 88;
         nextReadStackDragDeltaY = 0;
         nextReadStackDragArmed = false;
+        nextReadStackCachedExpandedHeightPx = -1;
         clearNextReadSwipeState({ hidePreview: true });
     }
 
@@ -1995,6 +2000,7 @@ function initNavigationScript() {
     let nextReadStackDragStartHeight = 88;
     let nextReadStackDragDeltaY = 0;
     let nextReadStackDragArmed = false;
+    let nextReadStackCachedExpandedHeightPx = -1;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
