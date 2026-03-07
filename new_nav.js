@@ -582,14 +582,14 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { width: 100%; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { display: block; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 15px; font-weight: 700; line-height: 1.35; color: #111827; margin: 0 0 10px 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.2s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.98) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: block; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link.secondary { opacity: 0.84; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { color: #830d16; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
-            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: max(220px, calc(100vh - 96px)); min-height: max(220px, calc(100vh - 96px)); }
+            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: var(--next-read-stack-expanded-height, 220px); min-height: var(--next-read-stack-expanded-height, 220px); }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
@@ -1280,29 +1280,48 @@ function initNavigationScript() {
         nextReadStackExpanded = !!expanded;
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
+        const shell = bar.querySelector('.stack-preview-shell');
+        const expandedHeight = getNextReadStackExpandedShellHeightPx();
+        bar.style.setProperty('--next-read-stack-expanded-height', `${expandedHeight}px`);
         bar.classList.remove('is-dragging');
         bar.style.removeProperty('transform');
-        const shell = bar.querySelector('.stack-preview-shell');
-        if (shell) {
-            shell.style.removeProperty('max-height');
-            shell.style.removeProperty('min-height');
-        }
         const fade = bar.querySelector('.stack-preview-fade');
         if (fade) fade.style.removeProperty('opacity');
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
+        if (shell) {
+            const currentHeight = Math.max(88, Math.round(shell.getBoundingClientRect().height || 88));
+            const targetHeight = nextReadStackExpanded ? expandedHeight : 88;
+            shell.style.maxHeight = `${currentHeight}px`;
+            shell.style.minHeight = `${currentHeight}px`;
+            void shell.offsetHeight;
+            shell.style.maxHeight = `${targetHeight}px`;
+            shell.style.minHeight = `${targetHeight}px`;
+            const cleanup = () => {
+                shell.style.removeProperty('max-height');
+                shell.style.removeProperty('min-height');
+            };
+            shell.addEventListener('transitionend', cleanup, { once: true });
+            window.setTimeout(cleanup, 240);
+        }
     }
 
     function syncNextReadStackExperimentCard() {
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
+        bar.style.setProperty('--next-read-stack-expanded-height', `${getNextReadStackExpandedShellHeightPx()}px`);
         bar.style.setProperty('--next-read-stack-collapsed-offset', `${BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET}px`);
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
     }
 
     function getNextReadStackExpandedShellHeightPx() {
-        return Math.max(220, window.innerHeight - 96);
+        const bar = getBottomTrendingBarElement();
+        const links = bar ? bar.querySelector('.stack-links') : null;
+        const linksHeight = links ? Math.ceil(links.scrollHeight) : 0;
+        const contentHeight = Math.max(88, linksHeight);
+        const maxViewportHeight = Math.max(160, window.innerHeight - 96);
+        return Math.min(contentHeight, maxViewportHeight);
     }
 
     function getNextReadStackCollapsedOffsetPx() {
