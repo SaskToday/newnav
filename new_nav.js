@@ -44,7 +44,7 @@ function initNavigationScript() {
     const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
     const NEXT_READ_FEED_CACHE_PREFIX = 'nav_next_read_feed_cache_v1:';
     const ENABLE_NEXT_READ_SWIPE = ENABLE_NEXT_READ && window.NAV_NEXT_READ_SWIPE_ENABLED !== false;
-    const NEXT_READ_EXPERIMENT_VARIANT = String(window.NAV_NEXT_READ_EXPERIMENT_VARIANT || 'swipe').toLowerCase();
+    const NEXT_READ_EXPERIMENT_VARIANT = String(window.NAV_NEXT_READ_EXPERIMENT_VARIANT || 'stack').toLowerCase();
     const NEXT_READ_STACK_PREVIEW_VISIBLE_COUNT = 2;
     const NEXT_READ_STACK_MAX_ITEMS = 5;
     const NEXT_READ_SWIPE_PREVIEW_VIEWPORTS = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_VIEWPORTS || 1.25);
