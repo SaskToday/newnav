@@ -1287,6 +1287,8 @@ function initNavigationScript() {
             shell.style.removeProperty('max-height');
             shell.style.removeProperty('min-height');
         }
+        const fade = bar.querySelector('.stack-preview-fade');
+        if (fade) fade.style.removeProperty('opacity');
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
     }
@@ -1307,21 +1309,32 @@ function initNavigationScript() {
         return Math.max(0, BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET);
     }
 
-    function applyNextReadStackDragVisual(translateY) {
+    function getNextReadStackDragTravelPx() {
+        return Math.max(120, Math.round(window.innerHeight * 0.2));
+    }
+
+    function applyNextReadStackDragVisual(startedExpanded, deltaY) {
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         const shell = bar.querySelector('.stack-preview-shell');
-        const collapsedOffset = getNextReadStackCollapsedOffsetPx();
-        const clampedY = Math.max(0, Math.min(translateY, collapsedOffset));
-        const progress = collapsedOffset > 0 ? (1 - (clampedY / collapsedOffset)) : 1;
+        const fade = bar.querySelector('.stack-preview-fade');
+        const dragTravel = getNextReadStackDragTravelPx();
+        const distance = startedExpanded ? Math.max(0, deltaY) : Math.max(0, -deltaY);
+        const clampedDistance = Math.min(distance, dragTravel);
+        const progress = startedExpanded
+            ? (1 - (clampedDistance / dragTravel))
+            : (clampedDistance / dragTravel);
         const expandedHeight = getNextReadStackExpandedShellHeightPx();
         const collapsedHeight = 88;
         const shellHeight = Math.round(collapsedHeight + ((expandedHeight - collapsedHeight) * progress));
         bar.classList.add('is-dragging');
-        bar.style.transform = `translateY(${clampedY}px)`;
+        bar.style.transform = startedExpanded ? `translateY(${Math.min(24, clampedDistance * 0.22)}px)` : 'translateY(0px)';
         if (shell) {
             shell.style.maxHeight = `${shellHeight}px`;
             shell.style.minHeight = `${shellHeight}px`;
+        }
+        if (fade) {
+            fade.style.opacity = `${Math.max(0, Math.min(1, 1 - progress))}`;
         }
     }
 
@@ -1633,24 +1646,15 @@ function initNavigationScript() {
             const deltaY = touch.clientY - nextReadStackStartY;
             event.preventDefault();
             nextReadStackDragDeltaY = deltaY;
-            const collapsedOffset = getNextReadStackCollapsedOffsetPx();
-            let translateY;
-            if (nextReadStackDragStartExpanded) {
-                // Expanded -> drag downward toward collapsed.
-                translateY = Math.max(0, Math.min(deltaY, collapsedOffset));
-            } else {
-                // Collapsed -> drag upward toward expanded.
-                translateY = Math.max(0, Math.min(collapsedOffset, collapsedOffset + deltaY));
-            }
-            applyNextReadStackDragVisual(translateY);
+            applyNextReadStackDragVisual(nextReadStackDragStartExpanded, deltaY);
         }, { passive: false });
 
         const finalizeGesture = () => {
             if (nextReadStackTouchId === null) return;
             const startedExpanded = nextReadStackDragStartExpanded;
             const deltaY = nextReadStackDragDeltaY;
-            const collapsedOffset = getNextReadStackCollapsedOffsetPx();
-            const snapThreshold = Math.max(18, Math.round(collapsedOffset * 0.35));
+            const dragTravel = getNextReadStackDragTravelPx();
+            const snapThreshold = Math.max(22, Math.round(dragTravel * 0.34));
             let shouldExpand = startedExpanded;
             if (startedExpanded) {
                 // If pulled down enough, collapse; otherwise snap back expanded.
