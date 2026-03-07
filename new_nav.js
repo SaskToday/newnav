@@ -1646,6 +1646,7 @@ function initNavigationScript() {
             nextReadStackStartY = touch.clientY;
             nextReadStackDragStartExpanded = nextReadStackExpanded;
             nextReadStackDragStartPeeked = nextReadStackPeeked;
+            nextReadStackTouchFromGrabRegion = !!(event.target && event.target.closest && event.target.closest('.pull-handle, .stack-header'));
             const shell = bar.querySelector('.stack-preview-shell');
             const currentHeight = shell ? Math.round(shell.getBoundingClientRect().height || 0) : (nextReadStackExpanded ? getNextReadStackExpandedShellHeightPx() : (nextReadStackPeeked ? 0 : 88));
             nextReadStackDragStartHeight = Math.max(0, currentHeight);
@@ -1658,6 +1659,7 @@ function initNavigationScript() {
             nextReadStackStartY = 0;
             nextReadStackDragStartExpanded = false;
             nextReadStackDragStartPeeked = false;
+            nextReadStackTouchFromGrabRegion = false;
             nextReadStackDragStartHeight = 88;
             nextReadStackDragDeltaY = 0;
             nextReadStackDragArmed = false;
@@ -1674,12 +1676,13 @@ function initNavigationScript() {
             const deltaY = touch.clientY - nextReadStackStartY;
             nextReadStackDragDeltaY = deltaY;
 
-            const ARM_THRESHOLD_PX = 8;
+            const ARM_THRESHOLD_PX = nextReadStackDragStartPeeked ? 20 : 8;
             if (!nextReadStackDragArmed) {
                 if (Math.abs(deltaY) < ARM_THRESHOLD_PX) return;
                 // Direction gating prevents accidental peek flicker while page scrolling.
                 if (nextReadStackDragStartPeeked && deltaY > 0) return;
                 if (nextReadStackDragStartExpanded && deltaY < 0) return;
+                if (nextReadStackDragStartPeeked && !nextReadStackTouchFromGrabRegion) return;
                 nextReadStackDragArmed = true;
             }
 
@@ -1728,6 +1731,7 @@ function initNavigationScript() {
         nextReadStackStartY = 0;
         nextReadStackDragStartExpanded = false;
         nextReadStackDragStartPeeked = false;
+        nextReadStackTouchFromGrabRegion = false;
         nextReadStackDragStartHeight = 88;
         nextReadStackDragDeltaY = 0;
         nextReadStackDragArmed = false;
@@ -1965,6 +1969,7 @@ function initNavigationScript() {
     let nextReadStackStartY = 0;
     let nextReadStackDragStartExpanded = false;
     let nextReadStackDragStartPeeked = false;
+    let nextReadStackTouchFromGrabRegion = false;
     let nextReadStackDragStartHeight = 88;
     let nextReadStackDragDeltaY = 0;
     let nextReadStackDragArmed = false;
