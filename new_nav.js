@@ -48,6 +48,7 @@ function initNavigationScript() {
     const NEXT_READ_EXPERIMENT_VARIANT = String(window.NAV_NEXT_READ_EXPERIMENT_VARIANT || 'stack').toLowerCase();
     const NEXT_READ_STACK_PREVIEW_VISIBLE_COUNT = 2;
     const NEXT_READ_STACK_MAX_ITEMS = 5;
+    const NEXT_READ_STACK_COLLAPSED_HEIGHT = 83;
     const NEXT_READ_SWIPE_PREVIEW_VIEWPORTS = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_VIEWPORTS || 1.25);
     const NEXT_READ_SWIPE_START_PULL_PX = Number(window.NAV_NEXT_READ_SWIPE_START_PULL_PX || 12);
     const NEXT_READ_SWIPE_PREVIEW_SETTLE_PX = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_SETTLE_PX || 32);
@@ -587,7 +588,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { position: relative; display: block; cursor: pointer; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header::before { content: ""; position: absolute; top: -20px; bottom: -20px; left: 0; right: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 13px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 83px; min-height: 83px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: block; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
@@ -600,6 +601,11 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded { padding-bottom: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { padding-bottom: env(safe-area-inset-bottom, 0); }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter { display: none; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
+            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-newsletter { display: block; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-text { font-size: 13px; color: #475569; margin: 0 0 8px 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-input { width: 100%; max-width: 280px; box-sizing: border-box; padding: 10px 12px; font-size: 14px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-btn { padding: 10px 20px; font-size: 14px; font-weight: 700; color: #fff; background: #830d16; border: 0; border-radius: 8px; cursor: pointer; }
             #next-read-stack-ad-slot { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 50px; z-index: 1001; background: #fff; box-sizing: border-box; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
@@ -1308,8 +1314,8 @@ function initNavigationScript() {
         bar.classList.toggle('peek', nextReadStackPeeked);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
         if (shell) {
-            const currentHeight = Math.max(88, Math.round(shell.getBoundingClientRect().height || 88));
-            const targetHeight = nextReadStackExpanded ? expandedHeight : (nextReadStackPeeked ? 0 : 88);
+            const currentHeight = Math.max(NEXT_READ_STACK_COLLAPSED_HEIGHT, Math.round(shell.getBoundingClientRect().height || NEXT_READ_STACK_COLLAPSED_HEIGHT));
+            const targetHeight = nextReadStackExpanded ? expandedHeight : (nextReadStackPeeked ? 0 : NEXT_READ_STACK_COLLAPSED_HEIGHT);
             shell.style.maxHeight = `${currentHeight}px`;
             shell.style.minHeight = `${currentHeight}px`;
             void shell.offsetHeight;
@@ -1342,7 +1348,7 @@ function initNavigationScript() {
         const bar = getBottomTrendingBarElement();
         const links = bar ? bar.querySelector('.stack-links') : null;
         const linksHeight = links ? Math.ceil(links.scrollHeight) : 0;
-        const contentHeight = Math.max(88, linksHeight);
+        const contentHeight = Math.max(NEXT_READ_STACK_COLLAPSED_HEIGHT, linksHeight);
         const maxViewportHeight = Math.max(160, window.innerHeight - NEXT_READ_STACK_AD_UNIT_HEIGHT - 56);
         return Math.min(contentHeight, maxViewportHeight);
     }
@@ -1357,12 +1363,12 @@ function initNavigationScript() {
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
         const shell = bar.querySelector('.stack-preview-shell');
         const fade = bar.querySelector('.stack-preview-fade');
-        const expandedHeight = nextReadStackCachedExpandedHeightPx >= 88 ? nextReadStackCachedExpandedHeightPx : getNextReadStackExpandedShellHeightPx();
+        const expandedHeight = nextReadStackCachedExpandedHeightPx >= NEXT_READ_STACK_COLLAPSED_HEIGHT ? nextReadStackCachedExpandedHeightPx : getNextReadStackExpandedShellHeightPx();
         const dragStartHeight = nextReadStackDragStartHeight;
         const shellHeight = Math.round(Math.max(0, Math.min(expandedHeight, dragStartHeight - deltaY)));
-        const totalRange = Math.max(1, expandedHeight - 88);
-        const progress = Math.max(0, Math.min(1, (shellHeight - 88) / totalRange));
-        const peekProgress = Math.max(0, Math.min(1, shellHeight / 88));
+        const totalRange = Math.max(1, expandedHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT);
+        const progress = Math.max(0, Math.min(1, (shellHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT) / totalRange));
+        const peekProgress = Math.max(0, Math.min(1, shellHeight / NEXT_READ_STACK_COLLAPSED_HEIGHT));
         bar.classList.add('is-dragging');
         bar.classList.remove('peek');
         bar.style.transform = 'translateY(0px)';
@@ -1371,7 +1377,7 @@ function initNavigationScript() {
             shell.style.minHeight = `${shellHeight}px`;
         }
         if (fade) {
-            const fadeOpacity = shellHeight <= 88 ? peekProgress : Math.max(0, Math.min(1, 1 - progress));
+            const fadeOpacity = shellHeight <= NEXT_READ_STACK_COLLAPSED_HEIGHT ? peekProgress : Math.max(0, Math.min(1, 1 - progress));
             fade.style.opacity = `${fadeOpacity}`;
         }
     }
@@ -1668,7 +1674,7 @@ function initNavigationScript() {
             nextReadStackTouchFromGrabRegion = !!(event.target && event.target.closest && event.target.closest('.pull-handle, .stack-header'));
             nextReadStackTouchFromHandle = nextReadStackTouchFromGrabRegion;
             const shell = bar.querySelector('.stack-preview-shell');
-            const currentHeight = shell ? Math.round(shell.getBoundingClientRect().height || 0) : (nextReadStackExpanded ? getNextReadStackExpandedShellHeightPx() : (nextReadStackPeeked ? 0 : 88));
+            const currentHeight = shell ? Math.round(shell.getBoundingClientRect().height || 0) : (nextReadStackExpanded ? getNextReadStackExpandedShellHeightPx() : (nextReadStackPeeked ? 0 : NEXT_READ_STACK_COLLAPSED_HEIGHT));
             nextReadStackDragStartHeight = Math.max(0, currentHeight);
             nextReadStackDragDeltaY = 0;
             nextReadStackDragArmed = false;
@@ -1681,7 +1687,7 @@ function initNavigationScript() {
             nextReadStackDragStartPeeked = false;
             nextReadStackTouchFromGrabRegion = false;
             nextReadStackTouchFromHandle = false;
-            nextReadStackDragStartHeight = 88;
+            nextReadStackDragStartHeight = NEXT_READ_STACK_COLLAPSED_HEIGHT;
             nextReadStackDragDeltaY = 0;
             nextReadStackDragArmed = false;
             nextReadStackCachedExpandedHeightPx = -1;
@@ -1733,7 +1739,7 @@ function initNavigationScript() {
             const expandedHeight = getNextReadStackExpandedShellHeightPx();
             const finalHeight = Math.max(0, Math.min(expandedHeight, nextReadStackDragStartHeight - deltaY));
             const peekMid = 44;
-            const expandedMid = (88 + expandedHeight) / 2;
+            const expandedMid = (NEXT_READ_STACK_COLLAPSED_HEIGHT + expandedHeight) / 2;
             let nextState = { expanded: false, peeked: false };
             if (finalHeight <= peekMid) {
                 nextState = { expanded: false, peeked: true };
@@ -1782,7 +1788,7 @@ function initNavigationScript() {
         nextReadStackDragStartPeeked = false;
         nextReadStackTouchFromGrabRegion = false;
         nextReadStackTouchFromHandle = false;
-        nextReadStackDragStartHeight = 88;
+        nextReadStackDragStartHeight = NEXT_READ_STACK_COLLAPSED_HEIGHT;
         nextReadStackDragDeltaY = 0;
         nextReadStackDragArmed = false;
         nextReadStackCachedExpandedHeightPx = -1;
@@ -1856,12 +1862,31 @@ function initNavigationScript() {
             fade.className = 'stack-preview-fade';
             fade.setAttribute('aria-hidden', 'true');
 
+            const newsletter = document.createElement('div');
+            newsletter.className = 'stack-newsletter';
+            const newsletterText = document.createElement('p');
+            newsletterText.className = 'stack-newsletter-text';
+            newsletterText.textContent = 'Get the top stories in your inbox.';
+            const newsletterInput = document.createElement('input');
+            newsletterInput.className = 'stack-newsletter-input';
+            newsletterInput.type = 'email';
+            newsletterInput.placeholder = 'Your email';
+            newsletterInput.setAttribute('aria-label', 'Email for newsletter');
+            const newsletterBtn = document.createElement('button');
+            newsletterBtn.className = 'stack-newsletter-btn';
+            newsletterBtn.type = 'button';
+            newsletterBtn.textContent = 'Sign up';
+            newsletter.appendChild(newsletterText);
+            newsletter.appendChild(newsletterInput);
+            newsletter.appendChild(newsletterBtn);
+
             previewShell.appendChild(links);
             previewShell.appendChild(fade);
             header.appendChild(title);
             bar.appendChild(handle);
             bar.appendChild(header);
             bar.appendChild(previewShell);
+            bar.appendChild(newsletter);
             ensureNextReadStackAdSlot();
             if (!existing) document.body.appendChild(bar);
             setNextReadStackState({ expanded: nextReadStackExpanded, peeked: nextReadStackPeeked });
@@ -2050,7 +2075,7 @@ function initNavigationScript() {
     let nextReadStackTouchFromGrabRegion = false;
     let nextReadStackTouchFromHandle = false;
     let nextReadStackHandledTapAt = 0;
-    let nextReadStackDragStartHeight = 88;
+    let nextReadStackDragStartHeight = NEXT_READ_STACK_COLLAPSED_HEIGHT;
     let nextReadStackDragDeltaY = 0;
     let nextReadStackDragArmed = false;
     let nextReadStackCachedExpandedHeightPx = -1;
