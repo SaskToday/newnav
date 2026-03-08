@@ -49,7 +49,7 @@ function initNavigationScript() {
     const NEXT_READ_STACK_PREVIEW_VISIBLE_COUNT = 2;
     const NEXT_READ_STACK_MAX_ITEMS = 5;
     const NEXT_READ_STACK_COLLAPSED_HEIGHT = 83;
-    const NEXT_READ_STACK_EXPAND_FROM_COLLAPSED_GAIN = 2;
+    const NEXT_READ_STACK_EXPAND_SNAP_RATIO = 0.35;
     const NEXT_READ_SWIPE_PREVIEW_VIEWPORTS = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_VIEWPORTS || 1.25);
     const NEXT_READ_SWIPE_START_PULL_PX = Number(window.NAV_NEXT_READ_SWIPE_START_PULL_PX || 12);
     const NEXT_READ_SWIPE_PREVIEW_SETTLE_PX = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_SETTLE_PX || 32);
@@ -1361,13 +1361,6 @@ function initNavigationScript() {
         return Math.max(0, BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET);
     }
 
-    function getNextReadStackEffectiveDeltaY(deltaY, dragStartHeight) {
-        if (dragStartHeight <= NEXT_READ_STACK_COLLAPSED_HEIGHT && deltaY < 0) {
-            return deltaY * NEXT_READ_STACK_EXPAND_FROM_COLLAPSED_GAIN;
-        }
-        return deltaY;
-    }
-
     function applyNextReadStackDragVisual(deltaY) {
         if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] applyNextReadStackDragVisual', { deltaY });
         const bar = getBottomTrendingBarElement();
@@ -1376,8 +1369,7 @@ function initNavigationScript() {
         const fade = bar.querySelector('.stack-preview-fade');
         const expandedHeight = nextReadStackCachedExpandedHeightPx >= NEXT_READ_STACK_COLLAPSED_HEIGHT ? nextReadStackCachedExpandedHeightPx : getNextReadStackExpandedShellHeightPx();
         const dragStartHeight = nextReadStackDragStartHeight;
-        const effectiveDeltaY = getNextReadStackEffectiveDeltaY(deltaY, dragStartHeight);
-        const shellHeight = Math.round(Math.max(0, Math.min(expandedHeight, dragStartHeight - effectiveDeltaY)));
+        const shellHeight = Math.round(Math.max(0, Math.min(expandedHeight, dragStartHeight - deltaY)));
         const totalRange = Math.max(1, expandedHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT);
         const progress = Math.max(0, Math.min(1, (shellHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT) / totalRange));
         const peekProgress = Math.max(0, Math.min(1, shellHeight / NEXT_READ_STACK_COLLAPSED_HEIGHT));
@@ -1749,10 +1741,9 @@ function initNavigationScript() {
             const startedPeeked = nextReadStackDragStartPeeked;
             const deltaY = nextReadStackDragDeltaY;
             const expandedHeight = getNextReadStackExpandedShellHeightPx();
-            const effectiveDeltaY = getNextReadStackEffectiveDeltaY(deltaY, nextReadStackDragStartHeight);
-            const finalHeight = Math.max(0, Math.min(expandedHeight, nextReadStackDragStartHeight - effectiveDeltaY));
+            const finalHeight = Math.max(0, Math.min(expandedHeight, nextReadStackDragStartHeight - deltaY));
             const peekMid = 44;
-            const expandedMid = (NEXT_READ_STACK_COLLAPSED_HEIGHT + expandedHeight) / 2;
+            const expandedMid = NEXT_READ_STACK_COLLAPSED_HEIGHT + (expandedHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT) * NEXT_READ_STACK_EXPAND_SNAP_RATIO;
             let nextState = { expanded: false, peeked: false };
             if (finalHeight <= peekMid) {
                 nextState = { expanded: false, peeked: true };
