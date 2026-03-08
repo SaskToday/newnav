@@ -1664,7 +1664,7 @@ function initNavigationScript() {
             nextReadStackDragStartExpanded = nextReadStackExpanded;
             nextReadStackDragStartPeeked = nextReadStackPeeked;
             nextReadStackTouchFromGrabRegion = !!(event.target && event.target.closest && event.target.closest('.pull-handle, .stack-header'));
-            nextReadStackTouchFromHandle = !!(event.target && event.target.closest && event.target.closest('.pull-handle'));
+            nextReadStackTouchFromHandle = nextReadStackTouchFromGrabRegion;
             const shell = bar.querySelector('.stack-preview-shell');
             const currentHeight = shell ? Math.round(shell.getBoundingClientRect().height || 0) : (nextReadStackExpanded ? getNextReadStackExpandedShellHeightPx() : (nextReadStackPeeked ? 0 : 88));
             nextReadStackDragStartHeight = Math.max(0, currentHeight);
