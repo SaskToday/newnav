@@ -582,9 +582,10 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-shell,
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-fade { transition: none; }
             #bottom-trending-story-bar.next-read-stack-experiment > * + * { margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { width: 100%; padding: 20px 0 12px 0; box-sizing: border-box; cursor: pointer; }
-            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle::after { content: ""; display: block; width: 40px; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 auto; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-header { display: block; width: 100%; min-height: 44px; box-sizing: border-box; cursor: pointer; }
+            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { position: relative; width: 40px; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 auto 10px auto; cursor: pointer; }
+            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle::before { content: ""; position: absolute; top: -24px; bottom: -24px; left: 50%; width: 100vw; margin-left: -50vw; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-header { position: relative; display: block; cursor: pointer; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-header::before { content: ""; position: absolute; top: -20px; bottom: -20px; left: 0; right: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 13px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
