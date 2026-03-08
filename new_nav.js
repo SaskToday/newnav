@@ -601,8 +601,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded { padding-bottom: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { padding-bottom: env(safe-area-inset-bottom, 0); }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter { display: none; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
-            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-newsletter { display: block; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-text { font-size: 13px; color: #475569; margin: 0 0 8px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-input { width: 100%; max-width: 280px; box-sizing: border-box; padding: 10px 12px; font-size: 14px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-btn { padding: 10px 20px; font-size: 14px; font-weight: 700; color: #fff; background: #830d16; border: 0; border-radius: 8px; cursor: pointer; }
@@ -1352,8 +1351,8 @@ function initNavigationScript() {
         const bar = getBottomTrendingBarElement();
         const links = bar ? bar.querySelector('.stack-links') : null;
         const linksHeight = links ? Math.ceil(links.scrollHeight) : 0;
-        const contentHeight = Math.max(NEXT_READ_STACK_COLLAPSED_HEIGHT, linksHeight);
-        const maxViewportHeight = Math.max(160, window.innerHeight - NEXT_READ_STACK_AD_UNIT_HEIGHT - 56 - NEXT_READ_STACK_NEWSLETTER_ESTIMATED_HEIGHT);
+        const contentHeight = Math.max(NEXT_READ_STACK_COLLAPSED_HEIGHT, linksHeight + NEXT_READ_STACK_NEWSLETTER_ESTIMATED_HEIGHT);
+        const maxViewportHeight = Math.max(160, window.innerHeight - NEXT_READ_STACK_AD_UNIT_HEIGHT - 56);
         return Math.min(contentHeight, maxViewportHeight);
     }
 
@@ -1376,11 +1375,6 @@ function initNavigationScript() {
         bar.classList.add('is-dragging');
         bar.classList.remove('peek');
         bar.style.transform = 'translateY(0px)';
-        if (shellHeight > NEXT_READ_STACK_COLLAPSED_HEIGHT) {
-            bar.classList.add('expanded');
-        } else {
-            bar.classList.remove('expanded');
-        }
         if (shell) {
             shell.style.maxHeight = `${shellHeight}px`;
             shell.style.minHeight = `${shellHeight}px`;
@@ -1895,11 +1889,11 @@ function initNavigationScript() {
 
             previewShell.appendChild(links);
             previewShell.appendChild(fade);
+            previewShell.appendChild(newsletter);
             header.appendChild(title);
             bar.appendChild(handle);
             bar.appendChild(header);
             bar.appendChild(previewShell);
-            bar.appendChild(newsletter);
             ensureNextReadStackAdSlot();
             if (!existing) document.body.appendChild(bar);
             setNextReadStackState({ expanded: nextReadStackExpanded, peeked: nextReadStackPeeked });
