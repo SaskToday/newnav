@@ -34,7 +34,7 @@ function initNavigationScript() {
     const BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_MOBILE_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_DESKTOP_BOTTOM_OFFSET || 50);
     const NEXT_READ_STACK_AD_UNIT_HEIGHT = 50;
-    const BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_STACK_MOBILE_BOTTOM_OFFSET ?? 0);
+    const BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_STACK_MOBILE_BOTTOM_OFFSET ?? NEXT_READ_STACK_AD_UNIT_HEIGHT);
     const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS != null ? window.NAV_NEXT_READ_HIDE_PROGRESS : -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 850);
     const NEXT_READ_DISMISSED_SESSION_KEY = 'nav_next_read_dismissed_session_v1';
@@ -575,7 +575,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-experiment .skip-link:hover { text-decoration: underline; }
             #bottom-trending-story-bar.next-read-experiment.is-bottom-ready .hint { color: #1d4ed8; }
             #bottom-trending-story-bar.next-read-experiment .close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment { display: block; left: 0; right: 0; width: 100%; padding: 10px 12px 0 12px; bottom: 0; border: 1px solid rgba(255,255,255,0.4); border-radius: 14px 14px 0 0; background: rgba(255,255,255,0.55); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; box-sizing: border-box; }
+            #bottom-trending-story-bar.next-read-stack-experiment { display: block; left: 0; right: 0; width: 100%; padding: 10px 12px 0 12px; bottom: 0; border: 1px solid rgba(255,255,255,0.4); border-radius: 14px 14px 0 0; background: rgba(255,255,255,0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; box-sizing: border-box; }
             #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(var(--next-read-stack-collapsed-offset, 0px)); pointer-events: auto; }
             #bottom-trending-story-bar.next-read-stack-experiment.visible.expanded { transform: translateY(0); }
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging { transition: none; }
@@ -586,7 +586,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { display: block; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 13px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 88px; min-height: 88px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.78) 55%, rgba(255,255,255,0.94) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.72) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: block; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
@@ -598,7 +598,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded { padding-bottom: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { padding-bottom: env(safe-area-inset-bottom, 0); }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-ad-slot { height: 50px; min-height: 50px; flex-shrink: 0; background: rgba(0,0,0,0.06); margin: 0; padding: 0; box-sizing: border-box; }
+            #next-read-stack-ad-slot { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 50px; z-index: 999; background: rgba(0,0,0,0.06); box-sizing: border-box; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
             #next-read-swipe-preview .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; margin-bottom: 6px; }
@@ -613,7 +613,7 @@ function initNavigationScript() {
                 #bottom-trending-story-bar .story-link { font-size: 12px; }
                 #bottom-trending-story-bar.next-read-experiment { padding: 11px 12px 12px 12px; }
                 #bottom-trending-story-bar.next-read-experiment .headline { font-size: 14px; padding-right: 24px; }
-                #bottom-trending-story-bar.next-read-stack-experiment { bottom: 0; left: 0; right: 0; width: 100%; padding: 10px 12px 0 12px; }
+                #bottom-trending-story-bar.next-read-stack-experiment { bottom: 50px; left: 0; right: 0; width: 100%; padding: 10px 12px 0 12px; }
                 #bottom-trending-story-bar.next-read-stack-experiment .stack-title { font-size: 12px; }
             }
             @media (min-width: 768px) {
@@ -1341,7 +1341,7 @@ function initNavigationScript() {
         const links = bar ? bar.querySelector('.stack-links') : null;
         const linksHeight = links ? Math.ceil(links.scrollHeight) : 0;
         const contentHeight = Math.max(88, linksHeight);
-        const maxViewportHeight = Math.max(160, window.innerHeight - NEXT_READ_STACK_AD_UNIT_HEIGHT - NEXT_READ_STACK_AD_UNIT_HEIGHT - 56);
+        const maxViewportHeight = Math.max(160, window.innerHeight - NEXT_READ_STACK_AD_UNIT_HEIGHT - 56);
         return Math.min(contentHeight, maxViewportHeight);
     }
 
@@ -1745,6 +1745,7 @@ function initNavigationScript() {
     function removeBottomTrendingStoryBar() {
         const existing = getBottomTrendingBarElement();
         if (existing) existing.remove();
+        removeNextReadStackAdSlot();
         nextReadStackExpanded = false;
         nextReadStackPeeked = false;
         nextReadStackTouchId = null;
@@ -1757,6 +1758,21 @@ function initNavigationScript() {
         nextReadStackDragArmed = false;
         nextReadStackCachedExpandedHeightPx = -1;
         clearNextReadSwipeState({ hidePreview: true });
+    }
+
+    function ensureNextReadStackAdSlot() {
+        if (!isNextReadStackExperimentActive()) return;
+        let slot = document.getElementById('next-read-stack-ad-slot');
+        if (!slot) {
+            slot = document.createElement('div');
+            slot.id = 'next-read-stack-ad-slot';
+            document.body.appendChild(slot);
+        }
+    }
+
+    function removeNextReadStackAdSlot() {
+        const slot = document.getElementById('next-read-stack-ad-slot');
+        if (slot && slot.parentNode) slot.remove();
     }
 
     function renderBottomTrendingStoryBar(nextItem) {
@@ -1811,18 +1827,13 @@ function initNavigationScript() {
             fade.className = 'stack-preview-fade';
             fade.setAttribute('aria-hidden', 'true');
 
-            const adSlot = document.createElement('div');
-            adSlot.id = 'next-read-stack-ad-slot';
-            adSlot.className = 'stack-ad-slot';
-            adSlot.setAttribute('aria-hidden', 'true');
-
             previewShell.appendChild(links);
             previewShell.appendChild(fade);
             header.appendChild(title);
             bar.appendChild(handle);
             bar.appendChild(header);
             bar.appendChild(previewShell);
-            bar.appendChild(adSlot);
+            ensureNextReadStackAdSlot();
             if (!existing) document.body.appendChild(bar);
             setNextReadStackState({ expanded: nextReadStackExpanded, peeked: nextReadStackPeeked });
             syncNextReadStackExperimentCard();
@@ -1953,6 +1964,7 @@ function initNavigationScript() {
         }
 
         if (existing && existing.classList.contains('next-read-stack-experiment')) {
+            ensureNextReadStackAdSlot();
             existing.style.bottom = `${getBottomTrendingBottomOffset()}px`;
             existing.style.setProperty('--next-read-stack-expanded-height', `${getNextReadStackExpandedShellHeightPx()}px`);
             scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
