@@ -50,6 +50,7 @@ function initNavigationScript() {
     const NEXT_READ_STACK_MAX_ITEMS = 5;
     const NEXT_READ_STACK_COLLAPSED_HEIGHT = 83;
     const NEXT_READ_STACK_EXPAND_SNAP_RATIO = 0.25;
+    const NEXT_READ_STACK_COLLAPSE_SNAP_RATIO = 0.75;
     const NEXT_READ_SWIPE_PREVIEW_VIEWPORTS = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_VIEWPORTS || 1.25);
     const NEXT_READ_SWIPE_START_PULL_PX = Number(window.NAV_NEXT_READ_SWIPE_START_PULL_PX || 12);
     const NEXT_READ_SWIPE_PREVIEW_SETTLE_PX = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_SETTLE_PX || 32);
@@ -1743,14 +1744,18 @@ function initNavigationScript() {
             const expandedHeight = getNextReadStackExpandedShellHeightPx();
             const finalHeight = Math.max(0, Math.min(expandedHeight, nextReadStackDragStartHeight - deltaY));
             const peekMid = 44;
-            const expandedMid = NEXT_READ_STACK_COLLAPSED_HEIGHT + (expandedHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT) * NEXT_READ_STACK_EXPAND_SNAP_RATIO;
+            const range = expandedHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT;
+            const expandThreshold = NEXT_READ_STACK_COLLAPSED_HEIGHT + range * NEXT_READ_STACK_EXPAND_SNAP_RATIO;
+            const collapseThreshold = NEXT_READ_STACK_COLLAPSED_HEIGHT + range * NEXT_READ_STACK_COLLAPSE_SNAP_RATIO;
             let nextState = { expanded: false, peeked: false };
             if (finalHeight <= peekMid) {
                 nextState = { expanded: false, peeked: true };
-            } else if (finalHeight >= expandedMid) {
+            } else if (finalHeight > collapseThreshold) {
                 nextState = { expanded: true, peeked: false };
-            } else {
+            } else if (finalHeight < expandThreshold) {
                 nextState = { expanded: false, peeked: false };
+            } else {
+                nextState = deltaY < 0 ? { expanded: true, peeked: false } : { expanded: false, peeked: false };
             }
             if (Math.abs(deltaY) < 10) {
                 nextState = { expanded: startedExpanded, peeked: startedPeeked };
