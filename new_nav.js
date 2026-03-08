@@ -606,7 +606,9 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-text { font-size: 13px; color: #475569; margin: 0 0 8px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-input { width: 100%; max-width: 280px; box-sizing: border-box; padding: 10px 12px; font-size: 14px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-btn { padding: 10px 20px; font-size: 14px; font-weight: 700; color: #fff; background: #830d16; border: 0; border-radius: 8px; cursor: pointer; }
-            #next-read-stack-ad-slot { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 50px; z-index: 1001; background: #fff; box-sizing: border-box; }
+            #next-read-stack-ad-slot { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 50px; z-index: 1001; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-top: 1px solid #cbd5e1; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
+            #next-read-stack-ad-slot::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, transparent, transparent 6px, rgba(255,255,255,0.4) 6px, rgba(255,255,255,0.4) 12px); pointer-events: none; }
+            #next-read-stack-ad-slot .stack-ad-placeholder { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #94a3b8; text-transform: uppercase; position: relative; z-index: 1; }
             #next-read-swipe-preview { position: fixed; left: 8px; right: 8px; bottom: 156px; z-index: 999; background: rgba(255,255,255,0.98); border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 8px 24px rgba(15,23,42,0.16); padding: 12px 14px; opacity: 0; pointer-events: none; transform: translateY(26px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; }
             #next-read-swipe-preview.visible { opacity: 1; pointer-events: auto; }
             #next-read-swipe-preview .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; margin-bottom: 6px; }
@@ -1801,6 +1803,10 @@ function initNavigationScript() {
         if (!slot) {
             slot = document.createElement('div');
             slot.id = 'next-read-stack-ad-slot';
+            const placeholder = document.createElement('span');
+            placeholder.className = 'stack-ad-placeholder';
+            placeholder.textContent = 'Ad';
+            slot.appendChild(placeholder);
             document.body.appendChild(slot);
         }
     }
