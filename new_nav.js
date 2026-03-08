@@ -1268,7 +1268,8 @@ function initNavigationScript() {
 
     function getNextReadStackTitle() {
         const categoryName = String(nextReadRecommendationCategoryName || '').trim();
-        return categoryName ? `Today's key ${categoryName} reads` : `Today's key reads`;
+        const formatted = categoryName ? categoryName.charAt(0).toUpperCase() + categoryName.slice(1).toLowerCase() : '';
+        return formatted ? `Newest ${formatted} Reads` : 'Newest Reads';
     }
 
     function getNextReadExperimentProgress() {
@@ -1346,12 +1347,13 @@ function initNavigationScript() {
         }
     }
 
+    const NEXT_READ_STACK_NEWSLETTER_ESTIMATED_HEIGHT = 140;
     function getNextReadStackExpandedShellHeightPx() {
         const bar = getBottomTrendingBarElement();
         const links = bar ? bar.querySelector('.stack-links') : null;
         const linksHeight = links ? Math.ceil(links.scrollHeight) : 0;
         const contentHeight = Math.max(NEXT_READ_STACK_COLLAPSED_HEIGHT, linksHeight);
-        const maxViewportHeight = Math.max(160, window.innerHeight - NEXT_READ_STACK_AD_UNIT_HEIGHT - 56);
+        const maxViewportHeight = Math.max(160, window.innerHeight - NEXT_READ_STACK_AD_UNIT_HEIGHT - 56 - NEXT_READ_STACK_NEWSLETTER_ESTIMATED_HEIGHT);
         return Math.min(contentHeight, maxViewportHeight);
     }
 
@@ -1374,6 +1376,11 @@ function initNavigationScript() {
         bar.classList.add('is-dragging');
         bar.classList.remove('peek');
         bar.style.transform = 'translateY(0px)';
+        if (shellHeight > NEXT_READ_STACK_COLLAPSED_HEIGHT) {
+            bar.classList.add('expanded');
+        } else {
+            bar.classList.remove('expanded');
+        }
         if (shell) {
             shell.style.maxHeight = `${shellHeight}px`;
             shell.style.minHeight = `${shellHeight}px`;
