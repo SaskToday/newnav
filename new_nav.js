@@ -578,20 +578,20 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-experiment .skip-link:hover { text-decoration: underline; }
             #bottom-trending-story-bar.next-read-experiment.is-bottom-ready .hint { color: #1d4ed8; }
             #bottom-trending-story-bar.next-read-experiment .close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment { display: block; left: 0; right: 0; width: 100%; padding: 10px 12px 0 12px; bottom: 0; border: 1px solid rgba(255,255,255,0.4); border-radius: 28px 28px 0 0; background: #fff; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; box-sizing: border-box; }
+            #bottom-trending-story-bar.next-read-stack-experiment { display: block; left: 0; right: 0; width: 100%; padding: 10px 12px 0 12px; bottom: 0; border: 1px solid rgba(255,255,255,0.4); border-radius: 28px 28px 0 0; background: var(--pill-bg); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; box-sizing: border-box; }
             #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(var(--next-read-stack-collapsed-offset, 0px)); pointer-events: auto; }
             #bottom-trending-story-bar.next-read-stack-experiment.visible.expanded { transform: translateY(0); }
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging { transition: none; }
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-shell,
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-fade { transition: none; }
             #bottom-trending-story-bar.next-read-stack-experiment > * + * { margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { position: relative; width: 40px; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 auto 10px auto; cursor: pointer; }
+            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { position: relative; width: 40px; height: 3px; border-radius: 999px; background: #64748b; margin: 0 auto 10px auto; cursor: pointer; }
             #bottom-trending-story-bar.next-read-stack-experiment .pull-handle::before { content: ""; position: absolute; top: -24px; bottom: -24px; left: 50%; width: 100vw; margin-left: -50vw; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { position: relative; display: block; cursor: pointer; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header::before { content: ""; position: absolute; top: -20px; bottom: -20px; left: 0; right: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 13px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 83px; min-height: 83px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(241,243,245,0.6) 50%, var(--pill-bg) 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: flex; align-items: flex-start; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
@@ -1270,7 +1270,7 @@ function initNavigationScript() {
     function getNextReadStackTitle() {
         const categoryName = String(nextReadRecommendationCategoryName || '').trim();
         const formatted = categoryName ? categoryName.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : '';
-        return formatted ? `Newest ${formatted} Reads` : 'Newest Reads';
+        return formatted ? `New in ${formatted}` : 'New in';
     }
 
     function getNextReadExperimentProgress() {
