@@ -1728,11 +1728,17 @@ function initNavigationScript() {
             if (nextReadStackTouchId === null) return;
             if (!nextReadStackDragArmed) {
                 if (nextReadStackTouchFromHandle) {
-                    nextReadStackHandledTapAt = Date.now();
-                    if (nextReadStackExpanded) {
-                        setNextReadStackState({ expanded: false, peeked: true });
+                    if (nextReadStackPeeked && nextReadStackDragDeltaY > 10) {
+                        /* Swipe down from peek: do nothing (already minimized). */
                     } else {
-                        setNextReadStackState({ expanded: true, peeked: false });
+                        nextReadStackHandledTapAt = Date.now();
+                        if (nextReadStackPeeked) {
+                            setNextReadStackState({ expanded: false, peeked: false });
+                        } else if (nextReadStackExpanded) {
+                            setNextReadStackState({ expanded: false, peeked: true });
+                        } else {
+                            setNextReadStackState({ expanded: true, peeked: false });
+                        }
                     }
                 }
                 finishGesture();
@@ -1777,7 +1783,9 @@ function initNavigationScript() {
             if (Date.now() - nextReadStackHandledTapAt < 400) return;
             e.preventDefault();
             e.stopPropagation();
-            if (nextReadStackExpanded) {
+            if (nextReadStackPeeked) {
+                setNextReadStackState({ expanded: false, peeked: false });
+            } else if (nextReadStackExpanded) {
                 setNextReadStackState({ expanded: false, peeked: true });
             } else {
                 setNextReadStackState({ expanded: true, peeked: false });
