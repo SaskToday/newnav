@@ -585,7 +585,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-shell,
             #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-fade { transition: none; }
             #bottom-trending-story-bar.next-read-stack-experiment > * + * { margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { position: relative; width: 40px; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 auto 10px auto; cursor: pointer; }
+            #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { position: relative; width: 40px; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 auto 16px auto; cursor: pointer; }
             #bottom-trending-story-bar.next-read-stack-experiment .pull-handle::before { content: ""; position: absolute; top: -24px; bottom: -24px; left: 50%; width: 100vw; margin-left: -50vw; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { position: relative; display: block; cursor: pointer; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header::before { content: ""; position: absolute; top: -20px; bottom: -20px; left: 0; right: 0; }
@@ -593,10 +593,10 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 83px; min-height: 83px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: flex; align-items: flex-start; color: #111827; text-decoration: none; font-size: 14px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: flex; align-items: flex-start; color: #111827; text-decoration: none; font-size: 16px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link.secondary { opacity: 0.84; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { flex-shrink: 0; color: #830d16; font-size: 14px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { flex-shrink: 0; color: #830d16; font-size: 16px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: var(--next-read-stack-expanded-height, 220px); min-height: var(--next-read-stack-expanded-height, 220px); }
             #bottom-trending-story-bar.next-read-stack-experiment.peek .stack-preview-shell { max-height: 0; min-height: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.peek .stack-preview-fade { opacity: 0; }
