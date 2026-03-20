@@ -52,6 +52,7 @@ function initNavigationScript() {
     const NEXT_READ_STACK_EXPAND_SNAP_RATIO = 0.25;
     const NEXT_READ_STACK_COLLAPSE_SNAP_RATIO = 0.75;
     const NEXT_READ_STACK_EDITOR_MSG = window.NAV_NEXT_READ_STACK_EDITOR_MESSAGE || null;
+    const NEXT_READ_STACK_DARK_MODE = window.NAV_NEXT_READ_STACK_DARK_MODE === true;
     const NEXT_READ_SWIPE_PREVIEW_VIEWPORTS = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_VIEWPORTS || 1.25);
     const NEXT_READ_SWIPE_START_PULL_PX = Number(window.NAV_NEXT_READ_SWIPE_START_PULL_PX || 12);
     const NEXT_READ_SWIPE_PREVIEW_SETTLE_PX = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_SETTLE_PX || 32);
@@ -610,6 +611,24 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-row { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-input { flex: 1; min-width: 0; box-sizing: border-box; padding: 10px 12px; font-size: 14px; border: 1px solid #cbd5e1; border-radius: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-btn { flex-shrink: 0; padding: 10px 20px; font-size: 14px; font-weight: 700; color: #fff; background: #830d16; border: 0; border-radius: 8px; cursor: pointer; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark { background: #111111; border-color: rgba(255,255,255,0.1); box-shadow: 0 10px 28px rgba(0,0,0,0.5); }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .pull-handle { background: #555; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-title { color: #ef4444; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-link { color: #e5e7eb; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-link:hover { color: #6ee7b7; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-link.secondary { opacity: 0.7; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-link-index { color: #ef4444; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-editor-msg { border-bottom-color: #2a2a2a; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-editor-dot { border-color: #111111; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-editor-name { color: #f3f4f6; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-editor-title { color: #9ca3af; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-editor-body { color: #d1d5db; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-editor-body a { color: #ef4444; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-newsletter { border-top-color: #2a2a2a; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-newsletter-text { color: #9ca3af; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-newsletter-input { background: #1a1a1a; border-color: #333; color: #e5e7eb; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-newsletter-input::placeholder { color: #6b7280; }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-newsletter-btn { background: #ef4444; }
             #next-read-stack-ad-slot { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 50px; z-index: 1001; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-top: 1px solid #cbd5e1; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
             #next-read-stack-ad-slot::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, transparent, transparent 6px, rgba(255,255,255,0.4) 6px, rgba(255,255,255,0.4) 12px); pointer-events: none; }
             #next-read-stack-ad-slot .stack-ad-placeholder { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #94a3b8; text-transform: uppercase; position: relative; z-index: 1; }
@@ -1837,7 +1856,7 @@ function initNavigationScript() {
         if (isNextReadStackExperimentActive()) {
             if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] renderBottomTrendingStoryBar (stack path)');
             const stackItems = nextReadRecommendationItems.slice(0, NEXT_READ_STACK_MAX_ITEMS);
-            bar.className = 'next-read-stack-experiment';
+            bar.className = 'next-read-stack-experiment' + (NEXT_READ_STACK_DARK_MODE ? ' stack-dark' : '');
             bar.innerHTML = '';
             bar.style.bottom = `${getBottomTrendingBottomOffset()}px`;
             bar.setAttribute('aria-label', getNextReadStackTitle());
