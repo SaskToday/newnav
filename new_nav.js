@@ -630,9 +630,9 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-newsletter-input { background: #1a1a1a; border-color: #333; color: #e5e7eb; }
             #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-newsletter-input::placeholder { color: #6b7280; }
             #bottom-trending-story-bar.next-read-stack-experiment.stack-dark .stack-newsletter-btn { background: #ef4444; }
-            #bottom-trending-story-bar.next-read-stack-experiment.stack-frosted { background: hsl(0deg 0% 100% / 0.5); }
-            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark.stack-frosted { background: hsl(0deg 0% 7% / 0.5); }
-            #bottom-trending-story-bar.next-read-stack-experiment.stack-yellow.stack-frosted { background: hsl(45deg 96% 56% / 0.5); }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-frosted { background: hsl(0deg 0% 100% / 0.75); }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-dark.stack-frosted { background: hsl(0deg 0% 7% / 0.75); }
+            #bottom-trending-story-bar.next-read-stack-experiment.stack-yellow.stack-frosted { background: hsl(45deg 96% 56% / 0.75); }
             #bottom-trending-story-bar.next-read-stack-experiment.stack-frosted .stack-backdrop { position: absolute; inset: 0; -webkit-backdrop-filter: blur(20px) saturate(1.4); backdrop-filter: blur(20px) saturate(1.4); pointer-events: none; z-index: 0; border-radius: inherit; }
             #bottom-trending-story-bar.next-read-stack-experiment.stack-frosted > *:not(.stack-backdrop) { position: relative; z-index: 1; }
             #bottom-trending-story-bar.next-read-stack-experiment.stack-yellow { background: #fbbf24; border-color: rgba(0,0,0,0.1); box-shadow: 0 10px 28px rgba(120,80,0,0.2); }
