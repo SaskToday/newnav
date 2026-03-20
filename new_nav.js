@@ -51,6 +51,7 @@ function initNavigationScript() {
     const NEXT_READ_STACK_COLLAPSED_HEIGHT = 83;
     const NEXT_READ_STACK_EXPAND_SNAP_RATIO = 0.25;
     const NEXT_READ_STACK_COLLAPSE_SNAP_RATIO = 0.75;
+    const NEXT_READ_STACK_EDITOR_MSG = window.NAV_NEXT_READ_STACK_EDITOR_MESSAGE || null;
     const NEXT_READ_SWIPE_PREVIEW_VIEWPORTS = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_VIEWPORTS || 1.25);
     const NEXT_READ_SWIPE_START_PULL_PX = Number(window.NAV_NEXT_READ_SWIPE_START_PULL_PX || 12);
     const NEXT_READ_SWIPE_PREVIEW_SETTLE_PX = Number(window.NAV_NEXT_READ_SWIPE_PREVIEW_SETTLE_PX || 32);
@@ -595,6 +596,13 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link.secondary { opacity: 0.84; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { flex-shrink: 0; color: #830d16; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { padding-bottom: env(safe-area-inset-bottom, 0); }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-msg { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-byline { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-name { font-size: 13px; font-weight: 700; color: #111827; line-height: 1.2; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-title { font-size: 11px; font-weight: 400; color: #64748b; line-height: 1.2; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-body { font-size: 13px; line-height: 1.45; color: #334155; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-body a { color: #830d16; font-weight: 600; text-decoration: underline; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-text { font-size: 13px; color: #475569; margin: 0 0 8px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-row { display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; }
@@ -1334,8 +1342,10 @@ function initNavigationScript() {
     function getNextReadStackExpandedShellHeightPx() {
         const bar = getBottomTrendingBarElement();
         const links = bar ? bar.querySelector('.stack-links') : null;
+        const editorMsg = bar ? bar.querySelector('.stack-editor-msg') : null;
         const linksHeight = links ? Math.ceil(links.scrollHeight) : 0;
-        const contentHeight = Math.max(NEXT_READ_STACK_COLLAPSED_HEIGHT, linksHeight + NEXT_READ_STACK_NEWSLETTER_ESTIMATED_HEIGHT);
+        const editorMsgHeight = editorMsg ? Math.ceil(editorMsg.scrollHeight) : 0;
+        const contentHeight = Math.max(NEXT_READ_STACK_COLLAPSED_HEIGHT, editorMsgHeight + linksHeight + NEXT_READ_STACK_NEWSLETTER_ESTIMATED_HEIGHT);
         const maxViewportHeight = Math.max(160, window.innerHeight - NEXT_READ_STACK_AD_UNIT_HEIGHT - 56);
         return Math.min(contentHeight, maxViewportHeight);
     }
@@ -1897,6 +1907,36 @@ function initNavigationScript() {
             newsletter.appendChild(newsletterText);
             newsletter.appendChild(newsletterRow);
 
+            if (NEXT_READ_STACK_EDITOR_MSG) {
+                const editorMsg = document.createElement('div');
+                editorMsg.className = 'stack-editor-msg';
+                const byline = document.createElement('div');
+                byline.className = 'stack-editor-byline';
+                if (NEXT_READ_STACK_EDITOR_MSG.image) {
+                    const avatar = document.createElement('img');
+                    avatar.className = 'stack-editor-avatar';
+                    avatar.src = NEXT_READ_STACK_EDITOR_MSG.image;
+                    avatar.alt = NEXT_READ_STACK_EDITOR_MSG.name || '';
+                    avatar.loading = 'lazy';
+                    byline.appendChild(avatar);
+                }
+                const nameBlock = document.createElement('div');
+                const nameEl = document.createElement('div');
+                nameEl.className = 'stack-editor-name';
+                nameEl.textContent = NEXT_READ_STACK_EDITOR_MSG.name || '';
+                const titleEl = document.createElement('div');
+                titleEl.className = 'stack-editor-title';
+                titleEl.textContent = NEXT_READ_STACK_EDITOR_MSG.title || '';
+                nameBlock.appendChild(nameEl);
+                nameBlock.appendChild(titleEl);
+                byline.appendChild(nameBlock);
+                editorMsg.appendChild(byline);
+                const body = document.createElement('div');
+                body.className = 'stack-editor-body';
+                body.innerHTML = NEXT_READ_STACK_EDITOR_MSG.html || '';
+                editorMsg.appendChild(body);
+                previewShell.appendChild(editorMsg);
+            }
             previewShell.appendChild(links);
             previewShell.appendChild(fade);
             previewShell.appendChild(newsletter);
