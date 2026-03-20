@@ -2,32 +2,40 @@
 <link rel="dns-prefetch" href="https://sasktoday.github.io">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@25f7d25/new_nav.js?v=25f7d25" as="script" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@0295a4b/new_nav.js?v=0295a4b" as="script" crossorigin="anonymous" integrity="sha384-zQlPEFDSaIY4W+1eFnTWbyqYe32GOvJVPaPcaGcwe1I5cEWSsilx5N1tcAHrOhfK">
 
 <script>
-(function() {
-    const COMMIT_HASH = '25f7d25';
-    const SRI_HASH = '';
+(() => {
+    const COMMIT_HASH = '0295a4b';
+    const PRIMARY_URL = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js?v=' + COMMIT_HASH;
+    const FALLBACK_URL = 'https://sasktoday.github.io/newnav/new_nav.js?v=' + COMMIT_HASH;
+    const PRIMARY_SRI = 'sha384-zQlPEFDSaIY4W+1eFnTWbyqYe32GOvJVPaPcaGcwe1I5cEWSsilx5N1tcAHrOhfK';
 
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js?v=' + COMMIT_HASH;
-    script.crossOrigin = 'anonymous';
-    if (SRI_HASH) {
-        script.integrity = SRI_HASH;
+    function appendScript(src, integrity, onerror) {
+        const script = document.createElement('script');
+        script.src = src;
+        if (integrity) script.integrity = integrity;
+        script.crossOrigin = 'anonymous';
+        script.defer = true;
+        if (onerror) script.onerror = onerror;
+        document.head.appendChild(script);
     }
-    script.defer = true;
 
-    script.onerror = function() {
-        const fallbackScript = document.createElement('script');
-        fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js?v=' + COMMIT_HASH;
-        fallbackScript.crossOrigin = 'anonymous';
-        if (SRI_HASH) {
-            fallbackScript.integrity = SRI_HASH;
+    function trackFallbackUsed() {
+        if (window.posthog && typeof window.posthog.capture === 'function') {
+            window.posthog.capture('nav_loader_fallback_used', {
+                primary_url: PRIMARY_URL,
+                fallback_url: FALLBACK_URL,
+                commit_hash: COMMIT_HASH,
+                primary_provider: 'jsdelivr',
+                fallback_provider: 'github_pages'
+            });
         }
-        fallbackScript.defer = true;
-        document.head.appendChild(fallbackScript);
-    };
+    }
 
-    document.head.appendChild(script);
+    appendScript(PRIMARY_URL, PRIMARY_SRI, () => {
+        trackFallbackUsed();
+        appendScript(FALLBACK_URL, '');
+    });
 })();
 </script>

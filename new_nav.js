@@ -578,30 +578,22 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-experiment .skip-link:hover { text-decoration: underline; }
             #bottom-trending-story-bar.next-read-experiment.is-bottom-ready .hint { color: #1d4ed8; }
             #bottom-trending-story-bar.next-read-experiment .close-btn { position: absolute; top: 8px; right: 8px; margin-left: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment { display: block; left: 0; right: 0; width: 100%; padding: 10px 12px 0 12px; bottom: 0; border: 1px solid rgba(0,0,0,0.08); border-radius: 28px 28px 0 0; background: #fff; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.24s ease; pointer-events: none; touch-action: none; box-sizing: border-box; }
-            #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(var(--next-read-stack-collapsed-offset, 0px)); pointer-events: auto; }
-            #bottom-trending-story-bar.next-read-stack-experiment.visible.expanded { transform: translateY(0); }
-            #bottom-trending-story-bar.next-read-stack-experiment.is-dragging { transition: none; }
-            #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-shell,
-            #bottom-trending-story-bar.next-read-stack-experiment.is-dragging .stack-preview-fade { transition: none; }
+            #bottom-trending-story-bar.next-read-stack-experiment { display: block; left: 0; right: 0; width: 100%; padding: 10px 12px 0 12px; bottom: 0; border: 1px solid rgba(0,0,0,0.08); border-radius: 28px 28px 0 0; background: #fff; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 10px 28px rgba(15,23,42,0.16); overflow: hidden; opacity: 1; transform: translateY(calc(100% + 24px)); transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; touch-action: none; box-sizing: border-box; will-change: transform; }
+            #bottom-trending-story-bar.next-read-stack-experiment.visible { transform: translateY(var(--stack-translate-y)); pointer-events: auto; }
+            #bottom-trending-story-bar.next-read-stack-experiment.is-dragging { transition: none !important; }
             #bottom-trending-story-bar.next-read-stack-experiment > * + * { margin-left: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .pull-handle { position: relative; width: 40px; height: 3px; border-radius: 999px; background: #cbd5e1; margin: 0 auto 16px auto; cursor: pointer; }
             #bottom-trending-story-bar.next-read-stack-experiment .pull-handle::before { content: ""; position: absolute; top: -24px; bottom: -24px; left: 50%; width: 100vw; margin-left: -50vw; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header { position: relative; display: block; cursor: pointer; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header::before { content: ""; position: absolute; top: -20px; bottom: -20px; left: 0; right: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 13px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; max-height: 83px; min-height: 83px; overflow: hidden; transition: max-height 0.2s ease, min-height 0.2s ease; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; opacity: 1; transition: opacity 0.18s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; overflow: hidden; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; top: 39px; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; will-change: opacity; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: flex; align-items: flex-start; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link.secondary { opacity: 0.84; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link-index { flex-shrink: 0; color: #830d16; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 6px; }
-            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { max-height: var(--next-read-stack-expanded-height, 220px); min-height: var(--next-read-stack-expanded-height, 220px); }
-            #bottom-trending-story-bar.next-read-stack-experiment.peek .stack-preview-shell { max-height: 0; min-height: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment.peek .stack-preview-fade { opacity: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-fade { opacity: 0; }
-            #bottom-trending-story-bar.next-read-stack-experiment.expanded { padding-bottom: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { padding-bottom: env(safe-area-inset-bottom, 0); }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-newsletter-text { font-size: 13px; color: #475569; margin: 0 0 8px 0; }
@@ -1301,52 +1293,41 @@ function initNavigationScript() {
     const NAV_STACK_DEBUG = typeof window !== 'undefined' && window.NAV_STACK_DEBUG === true;
     function setNextReadStackState({ expanded = false, peeked = false } = {}) {
         if (NAV_STACK_DEBUG) {
-            console.log('[NAV STACK DBG] setNextReadStackState', { expanded: !!expanded, peeked: !!peeked, stack: new Error().stack });
+            console.log('[NAV STACK DBG] setNextReadStackState', { expanded: !!expanded, peeked: !!peeked });
         }
         nextReadStackExpanded = !!expanded;
         nextReadStackPeeked = !!peeked;
         if (nextReadStackExpanded) nextReadStackPeeked = false;
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
-        const shell = bar.querySelector('.stack-preview-shell');
         const expandedHeight = getNextReadStackExpandedShellHeightPx();
-        bar.style.setProperty('--next-read-stack-expanded-height', `${expandedHeight}px`);
+        const stateKey = nextReadStackExpanded ? 'expanded' : (nextReadStackPeeked ? 'peek' : 'collapsed');
+        const targetTY = getNextReadStackTranslateY(stateKey, expandedHeight);
         bar.classList.remove('is-dragging');
-        bar.style.removeProperty('transform');
-        const fade = bar.querySelector('.stack-preview-fade');
-        if (fade) fade.style.removeProperty('opacity');
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.classList.toggle('peek', nextReadStackPeeked);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
-        if (shell) {
-            const currentHeight = Math.max(NEXT_READ_STACK_COLLAPSED_HEIGHT, Math.round(shell.getBoundingClientRect().height || NEXT_READ_STACK_COLLAPSED_HEIGHT));
-            const targetHeight = nextReadStackExpanded ? expandedHeight : (nextReadStackPeeked ? 0 : NEXT_READ_STACK_COLLAPSED_HEIGHT);
-            shell.style.maxHeight = `${currentHeight}px`;
-            shell.style.minHeight = `${currentHeight}px`;
-            void shell.offsetHeight;
-            shell.style.maxHeight = `${targetHeight}px`;
-            shell.style.minHeight = `${targetHeight}px`;
-            const cleanup = () => {
-                shell.style.removeProperty('max-height');
-                shell.style.removeProperty('min-height');
-            };
-            shell.addEventListener('transitionend', cleanup, { once: true });
-            window.setTimeout(cleanup, 240);
+        const shell = bar.querySelector('.stack-preview-shell');
+        if (shell) shell.style.height = `${expandedHeight}px`;
+        bar.style.setProperty('--stack-translate-y', `${targetTY}px`);
+        const fade = bar.querySelector('.stack-preview-fade');
+        if (fade) {
+            fade.style.opacity = nextReadStackExpanded ? '0' : (nextReadStackPeeked ? '0' : '1');
         }
     }
 
     function syncNextReadStackExperimentCard() {
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
-        const hadExpanded = bar.classList.contains('expanded');
-        const hadPeek = bar.classList.contains('peek');
-        bar.style.setProperty('--next-read-stack-collapsed-offset', '0px');
+        const expandedHeight = getNextReadStackExpandedShellHeightPx();
+        const stateKey = nextReadStackExpanded ? 'expanded' : (nextReadStackPeeked ? 'peek' : 'collapsed');
+        const targetTY = getNextReadStackTranslateY(stateKey, expandedHeight);
         bar.classList.toggle('expanded', nextReadStackExpanded);
         bar.classList.toggle('peek', nextReadStackPeeked);
         bar.setAttribute('aria-expanded', nextReadStackExpanded ? 'true' : 'false');
-        if (NAV_STACK_DEBUG && (hadExpanded !== nextReadStackExpanded || hadPeek !== nextReadStackPeeked)) {
-            console.log('[NAV STACK DBG] syncNextReadStackExperimentCard changed classes', { hadExpanded, hadPeek, nowExpanded: nextReadStackExpanded, nowPeeked: nextReadStackPeeked });
-        }
+        const shell = bar.querySelector('.stack-preview-shell');
+        if (shell) shell.style.height = `${expandedHeight}px`;
+        bar.style.setProperty('--stack-translate-y', `${targetTY}px`);
     }
 
     const NEXT_READ_STACK_NEWSLETTER_ESTIMATED_HEIGHT = 140;
@@ -1359,32 +1340,44 @@ function initNavigationScript() {
         return Math.min(contentHeight, maxViewportHeight);
     }
 
-    function getNextReadStackCollapsedOffsetPx() {
-        return Math.max(0, BOTTOM_TRENDING_STACK_MOBILE_BOTTOM_OFFSET);
+    function getNextReadStackOverheadHeight() {
+        const bar = getBottomTrendingBarElement();
+        if (!bar) return 50;
+        const shell = bar.querySelector('.stack-preview-shell');
+        if (!shell) return 50;
+        return Math.round(shell.offsetTop);
+    }
+
+    function getNextReadStackTranslateY(state, expandedShellHeight) {
+        const eh = expandedShellHeight != null ? expandedShellHeight : getNextReadStackExpandedShellHeightPx();
+        if (state === 'expanded') return 0;
+        if (state === 'peek') return eh;
+        return Math.max(0, eh - NEXT_READ_STACK_COLLAPSED_HEIGHT);
+    }
+
+    function getNextReadStackCurrentTranslateY() {
+        const bar = getBottomTrendingBarElement();
+        if (!bar) return 0;
+        const st = bar.style.getPropertyValue('--stack-translate-y');
+        if (st) return parseFloat(st) || 0;
+        return 0;
     }
 
     function applyNextReadStackDragVisual(deltaY) {
         if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] applyNextReadStackDragVisual', { deltaY });
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
-        const shell = bar.querySelector('.stack-preview-shell');
         const fade = bar.querySelector('.stack-preview-fade');
         const expandedHeight = nextReadStackCachedExpandedHeightPx >= NEXT_READ_STACK_COLLAPSED_HEIGHT ? nextReadStackCachedExpandedHeightPx : getNextReadStackExpandedShellHeightPx();
-        const dragStartHeight = nextReadStackDragStartHeight;
-        const shellHeight = Math.round(Math.max(0, Math.min(expandedHeight, dragStartHeight - deltaY)));
-        const totalRange = Math.max(1, expandedHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT);
-        const progress = Math.max(0, Math.min(1, (shellHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT) / totalRange));
-        const peekProgress = Math.max(0, Math.min(1, shellHeight / NEXT_READ_STACK_COLLAPSED_HEIGHT));
+        const peekTY = getNextReadStackTranslateY('peek', expandedHeight);
+        const newTY = Math.max(0, Math.min(peekTY, nextReadStackDragStartTranslateY + deltaY));
         bar.classList.add('is-dragging');
-        bar.classList.remove('peek');
-        bar.style.transform = 'translateY(0px)';
-        if (shell) {
-            shell.style.maxHeight = `${shellHeight}px`;
-            shell.style.minHeight = `${shellHeight}px`;
-        }
+        bar.style.setProperty('--stack-translate-y', `${newTY}px`);
         if (fade) {
-            const fadeOpacity = shellHeight <= NEXT_READ_STACK_COLLAPSED_HEIGHT ? peekProgress : Math.max(0, Math.min(1, 1 - progress));
-            fade.style.opacity = `${fadeOpacity}`;
+            const collapsedTY = getNextReadStackTranslateY('collapsed', expandedHeight);
+            const range = Math.max(1, collapsedTY);
+            const progress = 1 - Math.min(1, Math.max(0, newTY / range));
+            fade.style.opacity = `${Math.max(0, Math.min(1, 1 - progress))}`;
         }
     }
 
@@ -1679,9 +1672,7 @@ function initNavigationScript() {
             nextReadStackDragStartPeeked = nextReadStackPeeked;
             nextReadStackTouchFromGrabRegion = !!(event.target && event.target.closest && event.target.closest('.pull-handle, .stack-header'));
             nextReadStackTouchFromHandle = nextReadStackTouchFromGrabRegion;
-            const shell = bar.querySelector('.stack-preview-shell');
-            const currentHeight = shell ? Math.round(shell.getBoundingClientRect().height || 0) : (nextReadStackExpanded ? getNextReadStackExpandedShellHeightPx() : (nextReadStackPeeked ? 0 : NEXT_READ_STACK_COLLAPSED_HEIGHT));
-            nextReadStackDragStartHeight = Math.max(0, currentHeight);
+            nextReadStackDragStartTranslateY = getNextReadStackCurrentTranslateY();
             nextReadStackDragDeltaY = 0;
             nextReadStackDragArmed = false;
         }, { passive: true });
@@ -1693,7 +1684,7 @@ function initNavigationScript() {
             nextReadStackDragStartPeeked = false;
             nextReadStackTouchFromGrabRegion = false;
             nextReadStackTouchFromHandle = false;
-            nextReadStackDragStartHeight = NEXT_READ_STACK_COLLAPSED_HEIGHT;
+            nextReadStackDragStartTranslateY = 0;
             nextReadStackDragDeltaY = 0;
             nextReadStackDragArmed = false;
             nextReadStackCachedExpandedHeightPx = -1;
@@ -1749,17 +1740,19 @@ function initNavigationScript() {
             const startedPeeked = nextReadStackDragStartPeeked;
             const deltaY = nextReadStackDragDeltaY;
             const expandedHeight = getNextReadStackExpandedShellHeightPx();
-            const finalHeight = Math.max(0, Math.min(expandedHeight, nextReadStackDragStartHeight - deltaY));
-            const peekMid = 44;
-            const range = expandedHeight - NEXT_READ_STACK_COLLAPSED_HEIGHT;
-            const expandThreshold = NEXT_READ_STACK_COLLAPSED_HEIGHT + range * NEXT_READ_STACK_EXPAND_SNAP_RATIO;
-            const collapseThreshold = NEXT_READ_STACK_COLLAPSED_HEIGHT + range * NEXT_READ_STACK_COLLAPSE_SNAP_RATIO;
+            const peekTY = getNextReadStackTranslateY('peek', expandedHeight);
+            const collapsedTY = getNextReadStackTranslateY('collapsed', expandedHeight);
+            const finalTY = Math.max(0, Math.min(peekTY, nextReadStackDragStartTranslateY + deltaY));
+            const peekThresholdTY = peekTY - 44;
+            const range = collapsedTY;
+            const expandSnap = range * (1 - NEXT_READ_STACK_EXPAND_SNAP_RATIO);
+            const collapseSnap = range * (1 - NEXT_READ_STACK_COLLAPSE_SNAP_RATIO);
             let nextState = { expanded: false, peeked: false };
-            if (finalHeight <= peekMid) {
+            if (finalTY >= peekThresholdTY) {
                 nextState = { expanded: false, peeked: true };
-            } else if (finalHeight > collapseThreshold) {
+            } else if (finalTY <= collapseSnap) {
                 nextState = { expanded: true, peeked: false };
-            } else if (finalHeight < expandThreshold) {
+            } else if (finalTY >= expandSnap) {
                 nextState = { expanded: false, peeked: false };
             } else {
                 nextState = deltaY < 0 ? { expanded: true, peeked: false } : { expanded: false, peeked: false };
@@ -1767,7 +1760,7 @@ function initNavigationScript() {
             if (Math.abs(deltaY) < 10) {
                 nextState = { expanded: startedExpanded, peeked: startedPeeked };
             }
-            if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] finalizeGesture result', { nextState, deltaY, finalHeight });
+            if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] finalizeGesture result', { nextState, deltaY, finalTY });
             setNextReadStackState(nextState);
             finishGesture();
         };
@@ -1806,7 +1799,7 @@ function initNavigationScript() {
         nextReadStackDragStartPeeked = false;
         nextReadStackTouchFromGrabRegion = false;
         nextReadStackTouchFromHandle = false;
-        nextReadStackDragStartHeight = NEXT_READ_STACK_COLLAPSED_HEIGHT;
+        nextReadStackDragStartTranslateY = 0;
         nextReadStackDragDeltaY = 0;
         nextReadStackDragArmed = false;
         nextReadStackCachedExpandedHeightPx = -1;
@@ -1843,10 +1836,9 @@ function initNavigationScript() {
         if (isNextReadStackExperimentActive()) {
             if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] renderBottomTrendingStoryBar (stack path)');
             const stackItems = nextReadRecommendationItems.slice(0, NEXT_READ_STACK_MAX_ITEMS);
-            bar.className = bottomTrendingVisibleState ? 'next-read-stack-experiment visible' : 'next-read-stack-experiment';
+            bar.className = 'next-read-stack-experiment';
             bar.innerHTML = '';
             bar.style.bottom = `${getBottomTrendingBottomOffset()}px`;
-            bar.style.setProperty('--next-read-stack-expanded-height', `${getNextReadStackExpandedShellHeightPx()}px`);
             bar.setAttribute('aria-label', getNextReadStackTitle());
 
             const handle = document.createElement('div');
@@ -1915,6 +1907,7 @@ function initNavigationScript() {
             ensureNextReadStackAdSlot();
             if (!existing) document.body.appendChild(bar);
             setNextReadStackState({ expanded: nextReadStackExpanded, peeked: nextReadStackPeeked });
+            if (bottomTrendingVisibleState) bar.classList.add('visible');
             syncNextReadStackExperimentCard();
             bindNextReadStackGestureHandlers();
             return;
@@ -2045,7 +2038,7 @@ function initNavigationScript() {
         if (existing && existing.classList.contains('next-read-stack-experiment')) {
             ensureNextReadStackAdSlot();
             existing.style.bottom = `${getBottomTrendingBottomOffset()}px`;
-            existing.style.setProperty('--next-read-stack-expanded-height', `${getNextReadStackExpandedShellHeightPx()}px`);
+            syncNextReadStackExperimentCard();
             scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
             return;
         }
@@ -2100,7 +2093,7 @@ function initNavigationScript() {
     let nextReadStackTouchFromGrabRegion = false;
     let nextReadStackTouchFromHandle = false;
     let nextReadStackHandledTapAt = 0;
-    let nextReadStackDragStartHeight = NEXT_READ_STACK_COLLAPSED_HEIGHT;
+    let nextReadStackDragStartTranslateY = 0;
     let nextReadStackDragDeltaY = 0;
     let nextReadStackDragArmed = false;
     let nextReadStackCachedExpandedHeightPx = -1;
@@ -2198,13 +2191,13 @@ function initNavigationScript() {
     function applyBottomTrendingBarLayout() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) return;
+        const isStack = bar.classList.contains('next-read-stack-experiment');
 
         if (window.innerWidth <= 767) {
-            // Let CSS handle mobile sizing.
             if (bottomTrendingLayoutMode !== 'mobile') {
                 bar.style.left = '';
                 bar.style.right = '';
-                bar.style.transform = '';
+                if (!isStack) bar.style.transform = '';
                 bar.style.width = '';
                 bottomTrendingLayoutMode = 'mobile';
                 bottomTrendingLayoutLeft = '';
@@ -2212,6 +2205,8 @@ function initNavigationScript() {
             }
             return;
         }
+
+        if (isStack) return;
 
         const anchorRect = getNextReadDesktopAnchorRect();
         if (!anchorRect) return;
@@ -2221,7 +2216,6 @@ function initNavigationScript() {
         const widthPx = `${Math.round(width)}px`;
         const leftPx = `${Math.round(left)}px`;
 
-        // Match desktop bar width/position to the story content column.
         if (bottomTrendingLayoutMode !== 'desktop' || bottomTrendingLayoutLeft !== leftPx || bottomTrendingLayoutWidth !== widthPx) {
             bar.style.left = leftPx;
             bar.style.right = 'auto';
