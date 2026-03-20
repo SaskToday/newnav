@@ -589,7 +589,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header::before { content: ""; position: absolute; top: -20px; bottom: -20px; left: 0; right: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 13px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; overflow: hidden; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; top: 39px; height: 44px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; will-change: opacity; transition: opacity 0.18s ease; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; top: 44px; height: 40px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; will-change: opacity; transition: opacity 0.18s ease; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: flex; align-items: flex-start; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
@@ -598,7 +598,9 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment.expanded .stack-preview-shell { padding-bottom: env(safe-area-inset-bottom, 0); }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-msg { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-byline { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-avatar-wrap { position: relative; flex-shrink: 0; width: 44px; height: 44px; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: block; }
+            #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; background: #dc2626; border: 2px solid #fff; box-sizing: content-box; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-name { font-size: 13px; font-weight: 700; color: #111827; line-height: 1.2; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-title { font-size: 11px; font-weight: 400; color: #64748b; line-height: 1.2; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-editor-body { font-size: 13px; line-height: 1.45; color: #334155; }
@@ -1913,12 +1915,19 @@ function initNavigationScript() {
                 const byline = document.createElement('div');
                 byline.className = 'stack-editor-byline';
                 if (NEXT_READ_STACK_EDITOR_MSG.image) {
+                    const avatarWrap = document.createElement('div');
+                    avatarWrap.className = 'stack-editor-avatar-wrap';
                     const avatar = document.createElement('img');
                     avatar.className = 'stack-editor-avatar';
                     avatar.src = NEXT_READ_STACK_EDITOR_MSG.image;
                     avatar.alt = NEXT_READ_STACK_EDITOR_MSG.name || '';
                     avatar.loading = 'lazy';
-                    byline.appendChild(avatar);
+                    avatarWrap.appendChild(avatar);
+                    const dot = document.createElement('span');
+                    dot.className = 'stack-editor-dot';
+                    dot.setAttribute('aria-hidden', 'true');
+                    avatarWrap.appendChild(dot);
+                    byline.appendChild(avatarWrap);
                 }
                 const nameBlock = document.createElement('div');
                 const nameEl = document.createElement('div');
@@ -1937,10 +1946,10 @@ function initNavigationScript() {
                 editorMsg.appendChild(body);
                 previewShell.appendChild(editorMsg);
             }
+            previewShell.appendChild(title);
             previewShell.appendChild(links);
             previewShell.appendChild(fade);
             previewShell.appendChild(newsletter);
-            header.appendChild(title);
             bar.appendChild(handle);
             bar.appendChild(header);
             bar.appendChild(previewShell);
