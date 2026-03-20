@@ -589,7 +589,7 @@ function initNavigationScript() {
             #bottom-trending-story-bar.next-read-stack-experiment .stack-header::before { content: ""; position: absolute; top: -20px; bottom: -20px; left: 0; right: 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-title { display: block; font-size: 13px; font-weight: 700; line-height: 1.35; color: #830d16; margin: 0 0 10px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-shell { position: relative; overflow: hidden; }
-            #bottom-trending-story-bar.next-read-stack-experiment .stack-preview-fade { position: absolute; left: 0; right: 0; top: 44px; height: 40px; background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 50%, #fff 100%); pointer-events: none; will-change: opacity; transition: opacity 0.18s ease; }
+
             #bottom-trending-story-bar.next-read-stack-experiment .stack-links { display: flex; flex-direction: column; gap: 8px; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link { display: flex; align-items: flex-start; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700; line-height: 1.35; padding: 2px 0; }
             #bottom-trending-story-bar.next-read-stack-experiment .stack-link:hover { color: #016a1a; }
@@ -1320,10 +1320,6 @@ function initNavigationScript() {
         const shell = bar.querySelector('.stack-preview-shell');
         if (shell) shell.style.height = `${expandedHeight}px`;
         bar.style.setProperty('--stack-translate-y', `${targetTY}px`);
-        const fade = bar.querySelector('.stack-preview-fade');
-        if (fade) {
-            fade.style.opacity = nextReadStackExpanded ? '0' : (nextReadStackPeeked ? '0' : '1');
-        }
     }
 
     function syncNextReadStackExperimentCard() {
@@ -1379,18 +1375,11 @@ function initNavigationScript() {
         if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] applyNextReadStackDragVisual', { deltaY });
         const bar = getBottomTrendingBarElement();
         if (!bar || !bar.classList.contains('next-read-stack-experiment')) return;
-        const fade = bar.querySelector('.stack-preview-fade');
         const expandedHeight = nextReadStackCachedExpandedHeightPx >= NEXT_READ_STACK_COLLAPSED_HEIGHT ? nextReadStackCachedExpandedHeightPx : getNextReadStackExpandedShellHeightPx();
         const peekTY = getNextReadStackTranslateY('peek', expandedHeight);
         const newTY = Math.max(0, Math.min(peekTY, nextReadStackDragStartTranslateY + deltaY));
         bar.classList.add('is-dragging');
         bar.style.setProperty('--stack-translate-y', `${newTY}px`);
-        if (fade) {
-            const collapsedTY = getNextReadStackTranslateY('collapsed', expandedHeight);
-            const range = Math.max(1, collapsedTY);
-            const progress = 1 - Math.min(1, Math.max(0, newTY / range));
-            fade.style.opacity = `${Math.max(0, Math.min(1, 1 - progress))}`;
-        }
     }
 
     function clearNextReadSwipeState({ hidePreview = true } = {}) {
@@ -1884,10 +1873,6 @@ function initNavigationScript() {
                 links.appendChild(link);
             });
 
-            const fade = document.createElement('div');
-            fade.className = 'stack-preview-fade';
-            fade.setAttribute('aria-hidden', 'true');
-
             const newsletter = document.createElement('div');
             newsletter.className = 'stack-newsletter';
             const newsletterText = document.createElement('p');
@@ -1948,7 +1933,6 @@ function initNavigationScript() {
             }
             previewShell.appendChild(title);
             previewShell.appendChild(links);
-            previewShell.appendChild(fade);
             previewShell.appendChild(newsletter);
             bar.appendChild(handle);
             bar.appendChild(header);
