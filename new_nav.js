@@ -2252,6 +2252,8 @@ function initNavigationScript() {
     let bottomTrendingHideThresholdCache = null;
     let bottomTrendingThresholdViewportWidth = null;
     let bottomTrendingLastViewportWidth = window.innerWidth;
+    let bottomTrendingLastObservedScrollTop = 0;
+    let bottomTrendingScrollPollTimer = null;
     let nextReadRecommendationPath = '';
     let nextReadRecommendationItem = null;
     let nextReadRecommendationItems = [];
@@ -2566,6 +2568,19 @@ function initNavigationScript() {
             bottomTrendingLastViewportWidth = window.innerWidth;
             scheduleBottomTrendingFrameUpdate({ invalidateCaches: widthChanged, updateLayout: widthChanged });
         }, { passive: true });
+
+        // Fallback for environments where desktop scroll events are intermittently missed.
+        // Keep this lightweight: only trigger a frame update when scrollTop actually changes.
+        bottomTrendingLastObservedScrollTop = getCurrentScrollTop();
+        if (!bottomTrendingScrollPollTimer) {
+            bottomTrendingScrollPollTimer = window.setInterval(() => {
+                const current = getCurrentScrollTop();
+                if (Math.abs(current - bottomTrendingLastObservedScrollTop) > 0.5) {
+                    bottomTrendingLastObservedScrollTop = current;
+                    scheduleBottomTrendingFrameUpdate();
+                }
+            }, 120);
+        }
     }
 
     function handleScrollLogic() {
