@@ -849,8 +849,10 @@ function initNavigationScript() {
 
         if (ENABLE_NEXT_READ) {
             try {
-                initBottomTrendingStoryBar();
-                console.log('[NAV DEBUG] initBottomTrendingStoryBar() completed');
+                initBottomTrendingStoryBar().catch(function(err) {
+                    console.error('[NAV TRACE] initBottomTrendingStoryBar REJECTED:', err);
+                });
+                console.log('[NAV DEBUG] initBottomTrendingStoryBar() dispatched');
             } catch (e) {
                 console.error('[NAV DEBUG] Error in initBottomTrendingStoryBar():', e);
             }
@@ -1340,10 +1342,23 @@ function initNavigationScript() {
 
             await waitForNextReadRelatedSection();
             const domBundle = getNextReadRelatedArticlesFromDom();
+            console.log('[NAV TRACE] getNextReadRec domBundle', {
+                hasBundle: !!domBundle,
+                itemCount: domBundle && domBundle.items ? domBundle.items.length : 0,
+                categoryName: domBundle ? domBundle.categoryName : '',
+                normalizedPath: normalizedPath,
+                visitedPaths: Array.from(visitedSet),
+                stackMode: stackMode
+            });
             if (domBundle && domBundle.items && domBundle.items.length) {
                 if (domBundle.categoryName) recommendationCategoryName = domBundle.categoryName;
                 appendNextReadItems(recommendationItems, domBundle.items, normalizedPath, visitedSet, false, NEXT_READ_STACK_MAX_ITEMS);
                 nextItem = pickNextReadItem(domBundle.items, normalizedPath, visitedSet, false);
+                console.log('[NAV TRACE] getNextReadRec after DOM', {
+                    nextItem: nextItem ? nextItem.title : null,
+                    recommendationItemsCount: recommendationItems.length,
+                    domPaths: domBundle.items.map(function(i) { return i.path; })
+                });
             }
 
             if (stackMode) {
@@ -2199,16 +2214,18 @@ function initNavigationScript() {
     }
 
     async function initBottomTrendingStoryBar() {
-        if (NAV_STACK_DEBUG) console.log('[NAV STACK DBG] initBottomTrendingStoryBar called');
         const existing = getBottomTrendingBarElement();
         const currentPath = normalizePath(window.location.pathname);
         const isArticle = isArticlePath(currentPath);
+        console.log('[NAV TRACE] initBTSB start', { existing: !!existing, currentPath, isArticle, ENABLE_NEXT_READ });
 
         if (!ENABLE_NEXT_READ || !isArticle) {
+            console.log('[NAV TRACE] initBTSB exit: feature disabled or not article');
             removeBottomTrendingStoryBar();
             return;
         }
         if (sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) {
+            console.log('[NAV TRACE] initBTSB exit: dismissed');
             removeBottomTrendingStoryBar();
             return;
         }
@@ -2219,10 +2236,12 @@ function initNavigationScript() {
             addNextReadVisitedPath(currentPath);
         }
 
+        console.log('[NAV TRACE] initBTSB awaiting recommendation...');
         const nextItem = await getNextReadRecommendation(currentPath);
+        console.log('[NAV TRACE] initBTSB recommendation resolved', { hasItem: !!nextItem, title: nextItem && nextItem.title });
         if (!nextItem) {
             removeBottomTrendingStoryBar();
-            console.warn('[NAV DEBUG] NEXT READ: no eligible article found', nextReadRecommendationFailedFeeds);
+            console.warn('[NAV TRACE] initBTSB exit: no eligible article', nextReadRecommendationFailedFeeds);
             return;
         }
 
@@ -2235,8 +2254,10 @@ function initNavigationScript() {
         }
 
         renderBottomTrendingStoryBar(nextItem);
+        console.log('[NAV TRACE] initBTSB bar rendered, barInDom:', !!document.getElementById('bottom-trending-story-bar'));
         scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
         bindBottomTrendingBarVisibilityHandlers();
+        console.log('[NAV TRACE] initBTSB complete, handlers bound');
     }
 
     let bottomTrendingVisibilityHandlersBound = false;
@@ -2471,9 +2492,11 @@ function initNavigationScript() {
         return { showPx, hidePx };
     }
 
+    let _visTraceCount = 0;
     function updateBottomTrendingBarVisibility() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) {
+            if (_visTraceCount < 3) { _visTraceCount++; console.log('[NAV TRACE] updateVis: no bar in DOM'); }
             bottomTrendingVisibleState = false;
             return;
         }
@@ -2497,8 +2520,8 @@ function initNavigationScript() {
                 bottomTrendingVisibleState = false;
             }
         }
-        if (NAV_STACK_DEBUG && prevVisible !== bottomTrendingVisibleState) {
-            console.log('[NAV STACK DBG] updateBottomTrendingBarVisibility visible changed', { prevVisible, now: bottomTrendingVisibleState, currentY, showPx, hidePx });
+        if (prevVisible !== bottomTrendingVisibleState) {
+            console.log('[NAV TRACE] updateVis changed', { from: prevVisible, to: bottomTrendingVisibleState, currentY, showPx, hidePx, isMobileViewport });
         }
         bar.classList.toggle('visible', bottomTrendingVisibleState);
     }
