@@ -2290,14 +2290,19 @@ function initNavigationScript() {
         return scrollingEl ? (scrollingEl.scrollTop || 0) : 0;
     }
 
+    function getBottomTrendingScrollSources() {
+        return {
+            windowY: getWindowScrollTop(),
+            documentY: getDocumentScrollTop(),
+            bodyContainerY: getBodyContainerScrollTop(),
+            bodyY: getBodyElementScrollTop()
+        };
+    }
+
     function getCurrentScrollTop() {
         // Use whichever scroll context is actively moving.
-        return Math.max(
-            getWindowScrollTop(),
-            getDocumentScrollTop(),
-            getBodyContainerScrollTop(),
-            getBodyElementScrollTop()
-        );
+        const s = getBottomTrendingScrollSources();
+        return Math.max(s.windowY, s.documentY, s.bodyContainerY, s.bodyY);
     }
 
     function getMaxScrollableDistance() {
@@ -2459,6 +2464,19 @@ function initNavigationScript() {
         if (NAV_STACK_DEBUG && prevVisible !== bottomTrendingVisibleState) {
             console.log('[NAV STACK DBG] updateBottomTrendingBarVisibility visible changed', { prevVisible, now: bottomTrendingVisibleState, currentY, showPx, hidePx });
         }
+        if (NAV_STACK_DEBUG) {
+            const s = getBottomTrendingScrollSources();
+            console.log('[NAV STACK DBG] visibility tick', {
+                currentY,
+                showPx,
+                hidePx,
+                isMobileViewport,
+                maxScrollable: getMaxScrollableDistance(),
+                sources: s,
+                barVisibleClass: bar.classList.contains('visible'),
+                barClassName: bar.className
+            });
+        }
         bar.classList.toggle('visible', bottomTrendingVisibleState);
     }
 
@@ -2510,15 +2528,32 @@ function initNavigationScript() {
         if (bottomTrendingVisibilityHandlersBound) return;
         bottomTrendingVisibilityHandlersBound = true;
 
+        const logScrollEvent = (label, event) => {
+            if (!NAV_STACK_DEBUG) return;
+            const target = event && event.target;
+            const targetId = target && target.id ? target.id : '';
+            const targetClass = target && typeof target.className === 'string' ? target.className : '';
+            console.log('[NAV STACK DBG] scroll event', {
+                label,
+                targetTag: target && target.tagName ? String(target.tagName).toLowerCase() : '',
+                targetId,
+                targetClass,
+                sources: getBottomTrendingScrollSources()
+            });
+        };
+
         window.addEventListener('scroll', () => {
+            logScrollEvent('window', { target: window });
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true });
-        document.addEventListener('scroll', () => {
+        document.addEventListener('scroll', (event) => {
+            logScrollEvent('document-capture', event);
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true, capture: true });
         const bodyContainer = document.getElementById('body-container');
         if (bodyContainer) {
-            bodyContainer.addEventListener('scroll', () => {
+            bodyContainer.addEventListener('scroll', (event) => {
+                logScrollEvent('body-container', event);
                 scheduleBottomTrendingFrameUpdate();
             }, { passive: true });
         }
