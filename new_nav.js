@@ -2280,19 +2280,41 @@ function initNavigationScript() {
         return bodyContainer ? (bodyContainer.scrollTop || 0) : 0;
     }
 
+    function getBodyElementScrollTop() {
+        const bodyEl = document.getElementById('body');
+        return bodyEl ? (bodyEl.scrollTop || 0) : 0;
+    }
+
+    function getDocumentScrollTop() {
+        const scrollingEl = document.scrollingElement;
+        return scrollingEl ? (scrollingEl.scrollTop || 0) : 0;
+    }
+
     function getCurrentScrollTop() {
         // Use whichever scroll context is actively moving.
-        return Math.max(getWindowScrollTop(), getBodyContainerScrollTop());
+        return Math.max(
+            getWindowScrollTop(),
+            getDocumentScrollTop(),
+            getBodyContainerScrollTop(),
+            getBodyElementScrollTop()
+        );
     }
 
     function getMaxScrollableDistance() {
         const windowScrollable = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
         const bodyContainer = document.getElementById('body-container');
+        const bodyEl = document.getElementById('body');
+        const documentScrollable = document.scrollingElement
+            ? Math.max(0, document.scrollingElement.scrollHeight - window.innerHeight)
+            : 0;
         const containerScrollable = bodyContainer
             ? Math.max(0, bodyContainer.scrollHeight - bodyContainer.clientHeight)
             : 0;
+        const bodyScrollable = bodyEl
+            ? Math.max(0, bodyEl.scrollHeight - bodyEl.clientHeight)
+            : 0;
         // Prefer the larger scrollable context so thresholds remain reachable.
-        return Math.max(windowScrollable, containerScrollable);
+        return Math.max(windowScrollable, documentScrollable, containerScrollable, bodyScrollable);
     }
 
     function getFirstContentParagraph() {
@@ -2401,9 +2423,7 @@ function initNavigationScript() {
         const showPx = Math.min(maxScrollable, NEXT_READ_MIN_SHOW_SCROLL_PX);
         const defaultHideProgress = 0.22;
         const clampedHideProgress = Math.min(0.95, Math.max(0, NEXT_READ_HIDE_PROGRESS >= 0 ? NEXT_READ_HIDE_PROGRESS : defaultHideProgress));
-        const rawHidePx = Math.min(showPx, Math.max(0, maxScrollable * clampedHideProgress));
-        /* Desktop hides when currentY <= hidePx. If hidePx === showPx, the bar turns on at Y >= showPx then immediately off at Y <= hidePx on the next update (same Y). Cap hide strictly below show so the bar can stay visible after scrolling past the show threshold. Mobile uses NEXT_READ_MOBILE_HIDE_TOP_PX for hide instead. */
-        const hidePx = showPx > 0 ? Math.min(rawHidePx, showPx - 1) : 0;
+        const hidePx = Math.min(showPx, Math.max(0, maxScrollable * clampedHideProgress));
         bottomTrendingShowThresholdCache = showPx;
         bottomTrendingHideThresholdCache = hidePx;
         bottomTrendingThresholdViewportWidth = viewportWidth;
@@ -2493,6 +2513,9 @@ function initNavigationScript() {
         window.addEventListener('scroll', () => {
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true });
+        document.addEventListener('scroll', () => {
+            scheduleBottomTrendingFrameUpdate();
+        }, { passive: true, capture: true });
         const bodyContainer = document.getElementById('body-container');
         if (bodyContainer) {
             bodyContainer.addEventListener('scroll', () => {
