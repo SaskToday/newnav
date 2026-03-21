@@ -43,6 +43,7 @@ function initNavigationScript() {
     const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
     const NEXT_READ_FEED_CACHE_TTL_MS = Number(window.NAV_NEXT_READ_FEED_CACHE_TTL_MS || 300000);
     const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
+    const NEXT_READ_RELATED_WAIT_TIMEOUT_MS = Number(window.NAV_NEXT_READ_RELATED_WAIT_TIMEOUT_MS || 2000);
     const NEXT_READ_FEED_CACHE_PREFIX = 'nav_next_read_feed_cache_v1:';
     const ENABLE_NEXT_READ_SWIPE = ENABLE_NEXT_READ && window.NAV_NEXT_READ_SWIPE_ENABLED !== false;
     const NEXT_READ_EXPERIMENT_VARIANT = String(window.NAV_NEXT_READ_EXPERIMENT_VARIANT || 'stack').toLowerCase();
@@ -1254,6 +1255,38 @@ function initNavigationScript() {
         return { items, categoryName };
     }
 
+    let nextReadRelatedReadyPromise = null;
+    function waitForNextReadRelatedSection() {
+        if (document.querySelector('.details-related')) return Promise.resolve(true);
+        if (nextReadRelatedReadyPromise) return nextReadRelatedReadyPromise;
+        if (!document.body) return Promise.resolve(false);
+
+        nextReadRelatedReadyPromise = new Promise((resolve) => {
+            let resolved = false;
+            let observer = null;
+            let timeoutId = null;
+
+            const finish = (found) => {
+                if (resolved) return;
+                resolved = true;
+                if (observer) observer.disconnect();
+                if (timeoutId) clearTimeout(timeoutId);
+                nextReadRelatedReadyPromise = null;
+                resolve(!!found);
+            };
+
+            observer = new MutationObserver(() => {
+                if (document.querySelector('.details-related')) {
+                    finish(true);
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+            timeoutId = setTimeout(() => finish(false), NEXT_READ_RELATED_WAIT_TIMEOUT_MS);
+        });
+
+        return nextReadRelatedReadyPromise;
+    }
+
     async function getNextReadRecommendation(currentPath) {
         const normalizedPath = normalizePath(currentPath || window.location.pathname);
         if (!ENABLE_NEXT_READ || !isArticlePath(normalizedPath)) {
@@ -1305,6 +1338,7 @@ function initNavigationScript() {
                 }
             };
 
+            await waitForNextReadRelatedSection();
             const domBundle = getNextReadRelatedArticlesFromDom();
             if (domBundle && domBundle.items && domBundle.items.length) {
                 if (domBundle.categoryName) recommendationCategoryName = domBundle.categoryName;
@@ -2464,19 +2498,6 @@ function initNavigationScript() {
         if (NAV_STACK_DEBUG && prevVisible !== bottomTrendingVisibleState) {
             console.log('[NAV STACK DBG] updateBottomTrendingBarVisibility visible changed', { prevVisible, now: bottomTrendingVisibleState, currentY, showPx, hidePx });
         }
-        if (NAV_STACK_DEBUG) {
-            const s = getBottomTrendingScrollSources();
-            console.log('[NAV STACK DBG] visibility tick', {
-                currentY,
-                showPx,
-                hidePx,
-                isMobileViewport,
-                maxScrollable: getMaxScrollableDistance(),
-                sources: s,
-                barVisibleClass: bar.classList.contains('visible'),
-                barClassName: bar.className
-            });
-        }
         bar.classList.toggle('visible', bottomTrendingVisibleState);
     }
 
@@ -2528,32 +2549,15 @@ function initNavigationScript() {
         if (bottomTrendingVisibilityHandlersBound) return;
         bottomTrendingVisibilityHandlersBound = true;
 
-        const logScrollEvent = (label, event) => {
-            if (!NAV_STACK_DEBUG) return;
-            const target = event && event.target;
-            const targetId = target && target.id ? target.id : '';
-            const targetClass = target && typeof target.className === 'string' ? target.className : '';
-            console.log('[NAV STACK DBG] scroll event', {
-                label,
-                targetTag: target && target.tagName ? String(target.tagName).toLowerCase() : '',
-                targetId,
-                targetClass,
-                sources: getBottomTrendingScrollSources()
-            });
-        };
-
         window.addEventListener('scroll', () => {
-            logScrollEvent('window', { target: window });
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true });
-        document.addEventListener('scroll', (event) => {
-            logScrollEvent('document-capture', event);
+        document.addEventListener('scroll', () => {
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true, capture: true });
         const bodyContainer = document.getElementById('body-container');
         if (bodyContainer) {
-            bodyContainer.addEventListener('scroll', (event) => {
-                logScrollEvent('body-container', event);
+            bodyContainer.addEventListener('scroll', () => {
                 scheduleBottomTrendingFrameUpdate();
             }, { passive: true });
         }
