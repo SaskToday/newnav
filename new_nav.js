@@ -1282,6 +1282,7 @@ function initNavigationScript() {
             let nextItem = null;
             let recommendationItems = [];
             let recommendationCategoryName = '';
+            const stackMode = isNextReadStackExperimentActive();
             const collectFromFeed = async (rssUrl, includeVisited) => {
                 if (!rssUrl) return null;
                 try {
@@ -1311,34 +1312,47 @@ function initNavigationScript() {
                 nextItem = pickNextReadItem(domBundle.items, normalizedPath, visitedSet, false);
             }
 
-            if (!nextItem) {
-                for (const rssUrl of parentRssUrls) {
-                    nextItem = await collectFromFeed(rssUrl, false);
-                    if (nextItem) break;
+            if (stackMode) {
+                /* Stack: unvisited only — DOM → category RSS → trending. No "visited" top-up pass. */
+                if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
+                    for (const rssUrl of parentRssUrls) {
+                        await collectFromFeed(rssUrl, false);
+                        if (recommendationItems.length >= NEXT_READ_STACK_MAX_ITEMS) break;
+                    }
                 }
-            }
-            if (!nextItem) nextItem = await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
-
-            if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
-                for (const rssUrl of parentRssUrls) {
-                    await collectFromFeed(rssUrl, false);
-                    if (recommendationItems.length >= NEXT_READ_STACK_MAX_ITEMS) break;
+                if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
+                    await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
                 }
-            }
-            if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
-                for (const rssUrl of parentRssUrls) {
-                    await collectFromFeed(rssUrl, true);
-                    if (recommendationItems.length >= NEXT_READ_STACK_MAX_ITEMS) break;
+                nextItem = recommendationItems[0] || null;
+            } else {
+                if (!nextItem) {
+                    for (const rssUrl of parentRssUrls) {
+                        nextItem = await collectFromFeed(rssUrl, false);
+                        if (nextItem) break;
+                    }
                 }
-            }
-            if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
-                await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
-            }
-            if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
-                await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, true);
-            }
-            if (!nextItem && recommendationItems.length > 0) {
-                nextItem = recommendationItems[0];
+                if (!nextItem) nextItem = await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
+                if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
+                    for (const rssUrl of parentRssUrls) {
+                        await collectFromFeed(rssUrl, false);
+                        if (recommendationItems.length >= NEXT_READ_STACK_MAX_ITEMS) break;
+                    }
+                }
+                if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
+                    for (const rssUrl of parentRssUrls) {
+                        await collectFromFeed(rssUrl, true);
+                        if (recommendationItems.length >= NEXT_READ_STACK_MAX_ITEMS) break;
+                    }
+                }
+                if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
+                    await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
+                }
+                if (recommendationItems.length < NEXT_READ_STACK_MAX_ITEMS) {
+                    await collectFromFeed(NEXT_READ_FALLBACK_RSS_URL, true);
+                }
+                if (!nextItem && recommendationItems.length > 0) {
+                    nextItem = recommendationItems[0];
+                }
             }
 
             nextReadRecommendationPath = normalizedPath;
