@@ -63,6 +63,61 @@ function initNavigationScript() {
     const NEXT_READ_SWIPE_COMMIT_ENABLED = window.NAV_NEXT_READ_SWIPE_COMMIT_ENABLED !== false;
     const nextReadFeedMemoryCache = new Map();
 
+    // Bottom trending / next-read mutable state (hoisted to avoid TDZ when async init runs)
+    let bottomTrendingVisibilityHandlersBound = false;
+    let bottomTrendingParagraphCache = null;
+    let bottomTrendingLayoutRaf = null;
+    let bottomTrendingRafNeedsLayout = false;
+    let bottomTrendingRafNeedsInvalidate = false;
+    let bottomTrendingLayoutMode = '';
+    let bottomTrendingLayoutLeft = '';
+    let bottomTrendingLayoutWidth = '';
+    let bottomTrendingVisibleState = false;
+    let bottomTrendingShowThresholdCache = null;
+    let bottomTrendingHideThresholdCache = null;
+    let bottomTrendingThresholdViewportWidth = null;
+    let bottomTrendingLastViewportWidth = window.innerWidth;
+    let bottomTrendingLastObservedScrollTop = 0;
+    let bottomTrendingScrollPollTimer = null;
+    let nextReadRelatedReadyPromise = null;
+    let nextReadRecommendationPath = '';
+    let nextReadRecommendationItem = null;
+    let nextReadRecommendationItems = [];
+    let nextReadRecommendationCategoryName = '';
+    let nextReadRecommendationFailedFeeds = [];
+    let nextReadRecommendationPromise = null;
+    let nextReadRecommendationResolved = false;
+    let nextReadSwipePreviewEl = null;
+    let nextReadSwipeGestureHandlersBound = false;
+    let nextReadSwipeState = 'idle';
+    let nextReadSwipeTouchId = null;
+    let nextReadSwipeStartY = 0;
+    let nextReadSwipePullPx = 0;
+    let nextReadSwipePreviewPinned = false;
+    let nextReadSwipePreviewShown = false;
+    let nextReadSwipePullStartedTracked = false;
+    let nextReadSwipeArmedTracked = false;
+    let nextReadSwipeSuppressClickUntil = 0;
+    let nextReadExperimentHandlersBound = false;
+    let nextReadExperimentTouchId = null;
+    let nextReadExperimentStartY = 0;
+    let nextReadExperimentScrollStarted = 0;
+    let nextReadStackGestureHandlersBound = false;
+    let nextReadStackExpanded = false;
+    let nextReadStackPeeked = false;
+    let nextReadStackTouchId = null;
+    let nextReadStackStartY = 0;
+    let nextReadStackDragStartExpanded = false;
+    let nextReadStackDragStartPeeked = false;
+    let nextReadStackTouchFromGrabRegion = false;
+    let nextReadStackTouchFromHandle = false;
+    let nextReadStackHandledTapAt = 0;
+    let nextReadStackDragStartTranslateY = 0;
+    let nextReadStackDragDeltaY = 0;
+    let nextReadStackDragArmed = false;
+    let nextReadStackCachedExpandedHeightPx = -1;
+    let _visTraceCount = 0;
+
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when 'nav_activity' is captured (fired once per tab session)
     const NAV_ACTIVITY_SENT_KEY = 'vm.nav.posthog.nav_activity.sent';
@@ -1257,7 +1312,6 @@ function initNavigationScript() {
         return { items, categoryName };
     }
 
-    let nextReadRelatedReadyPromise = null;
     function waitForNextReadRelatedSection() {
         if (document.querySelector('.details-related')) return Promise.resolve(true);
         if (nextReadRelatedReadyPromise) return nextReadRelatedReadyPromise;
@@ -2260,58 +2314,6 @@ function initNavigationScript() {
         console.log('[NAV TRACE] initBTSB complete, handlers bound');
     }
 
-    let bottomTrendingVisibilityHandlersBound = false;
-    let bottomTrendingParagraphCache = null;
-    let bottomTrendingLayoutRaf = null;
-    let bottomTrendingRafNeedsLayout = false;
-    let bottomTrendingRafNeedsInvalidate = false;
-    let bottomTrendingLayoutMode = '';
-    let bottomTrendingLayoutLeft = '';
-    let bottomTrendingLayoutWidth = '';
-    let bottomTrendingVisibleState = false;
-    let bottomTrendingShowThresholdCache = null;
-    let bottomTrendingHideThresholdCache = null;
-    let bottomTrendingThresholdViewportWidth = null;
-    let bottomTrendingLastViewportWidth = window.innerWidth;
-    let bottomTrendingLastObservedScrollTop = 0;
-    let bottomTrendingScrollPollTimer = null;
-    let nextReadRecommendationPath = '';
-    let nextReadRecommendationItem = null;
-    let nextReadRecommendationItems = [];
-    let nextReadRecommendationCategoryName = '';
-    let nextReadRecommendationFailedFeeds = [];
-    let nextReadRecommendationPromise = null;
-    let nextReadRecommendationResolved = false;
-    let nextReadSwipePreviewEl = null;
-    let nextReadSwipeGestureHandlersBound = false;
-    let nextReadSwipeState = 'idle';
-    let nextReadSwipeTouchId = null;
-    let nextReadSwipeStartY = 0;
-    let nextReadSwipePullPx = 0;
-    let nextReadSwipePreviewPinned = false;
-    let nextReadSwipePreviewShown = false;
-    let nextReadSwipePullStartedTracked = false;
-    let nextReadSwipeArmedTracked = false;
-    let nextReadSwipeSuppressClickUntil = 0;
-    let nextReadExperimentHandlersBound = false;
-    let nextReadExperimentTouchId = null;
-    let nextReadExperimentStartY = 0;
-    let nextReadExperimentScrollStarted = 0;
-    let nextReadStackGestureHandlersBound = false;
-    let nextReadStackExpanded = false;
-    let nextReadStackPeeked = false;
-    let nextReadStackTouchId = null;
-    let nextReadStackStartY = 0;
-    let nextReadStackDragStartExpanded = false;
-    let nextReadStackDragStartPeeked = false;
-    let nextReadStackTouchFromGrabRegion = false;
-    let nextReadStackTouchFromHandle = false;
-    let nextReadStackHandledTapAt = 0;
-    let nextReadStackDragStartTranslateY = 0;
-    let nextReadStackDragDeltaY = 0;
-    let nextReadStackDragArmed = false;
-    let nextReadStackCachedExpandedHeightPx = -1;
-
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
         bottomTrendingShowThresholdCache = null;
@@ -2492,7 +2494,6 @@ function initNavigationScript() {
         return { showPx, hidePx };
     }
 
-    let _visTraceCount = 0;
     function updateBottomTrendingBarVisibility() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) {
