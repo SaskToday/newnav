@@ -77,8 +77,6 @@ function initNavigationScript() {
     let bottomTrendingHideThresholdCache = null;
     let bottomTrendingThresholdViewportWidth = null;
     let bottomTrendingLastViewportWidth = window.innerWidth;
-    let bottomTrendingLastObservedScrollTop = 0;
-    let bottomTrendingScrollPollTimer = null;
     let nextReadRelatedReadyPromise = null;
     let nextReadRecommendationPath = '';
     let nextReadRecommendationItem = null;
@@ -116,7 +114,6 @@ function initNavigationScript() {
     let nextReadStackDragDeltaY = 0;
     let nextReadStackDragArmed = false;
     let nextReadStackCachedExpandedHeightPx = -1;
-    let _visTraceCount = 0;
 
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when 'nav_activity' is captured (fired once per tab session)
@@ -903,14 +900,9 @@ function initNavigationScript() {
         }
 
         if (ENABLE_NEXT_READ) {
-            try {
-                initBottomTrendingStoryBar().catch(function(err) {
-                    console.error('[NAV TRACE] initBottomTrendingStoryBar REJECTED:', err);
-                });
-                console.log('[NAV DEBUG] initBottomTrendingStoryBar() dispatched');
-            } catch (e) {
-                console.error('[NAV DEBUG] Error in initBottomTrendingStoryBar():', e);
-            }
+            initBottomTrendingStoryBar().catch(function(err) {
+                console.error('[NAV] initBottomTrendingStoryBar error:', err);
+            });
 
             // Keep NEXT READ bar/ad synced to viewport mode.
             let bottomTrendingResizeTimeout = null;
@@ -1396,23 +1388,10 @@ function initNavigationScript() {
 
             await waitForNextReadRelatedSection();
             const domBundle = getNextReadRelatedArticlesFromDom();
-            console.log('[NAV TRACE] getNextReadRec domBundle', {
-                hasBundle: !!domBundle,
-                itemCount: domBundle && domBundle.items ? domBundle.items.length : 0,
-                categoryName: domBundle ? domBundle.categoryName : '',
-                normalizedPath: normalizedPath,
-                visitedPaths: Array.from(visitedSet),
-                stackMode: stackMode
-            });
             if (domBundle && domBundle.items && domBundle.items.length) {
                 if (domBundle.categoryName) recommendationCategoryName = domBundle.categoryName;
                 appendNextReadItems(recommendationItems, domBundle.items, normalizedPath, visitedSet, false, NEXT_READ_STACK_MAX_ITEMS);
                 nextItem = pickNextReadItem(domBundle.items, normalizedPath, visitedSet, false);
-                console.log('[NAV TRACE] getNextReadRec after DOM', {
-                    nextItem: nextItem ? nextItem.title : null,
-                    recommendationItemsCount: recommendationItems.length,
-                    domPaths: domBundle.items.map(function(i) { return i.path; })
-                });
             }
 
             if (stackMode) {
@@ -2271,15 +2250,12 @@ function initNavigationScript() {
         const existing = getBottomTrendingBarElement();
         const currentPath = normalizePath(window.location.pathname);
         const isArticle = isArticlePath(currentPath);
-        console.log('[NAV TRACE] initBTSB start', { existing: !!existing, currentPath, isArticle, ENABLE_NEXT_READ });
 
         if (!ENABLE_NEXT_READ || !isArticle) {
-            console.log('[NAV TRACE] initBTSB exit: feature disabled or not article');
             removeBottomTrendingStoryBar();
             return;
         }
         if (sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) {
-            console.log('[NAV TRACE] initBTSB exit: dismissed');
             removeBottomTrendingStoryBar();
             return;
         }
@@ -2290,12 +2266,9 @@ function initNavigationScript() {
             addNextReadVisitedPath(currentPath);
         }
 
-        console.log('[NAV TRACE] initBTSB awaiting recommendation...');
         const nextItem = await getNextReadRecommendation(currentPath);
-        console.log('[NAV TRACE] initBTSB recommendation resolved', { hasItem: !!nextItem, title: nextItem && nextItem.title });
         if (!nextItem) {
             removeBottomTrendingStoryBar();
-            console.warn('[NAV TRACE] initBTSB exit: no eligible article', nextReadRecommendationFailedFeeds);
             return;
         }
 
@@ -2308,10 +2281,8 @@ function initNavigationScript() {
         }
 
         renderBottomTrendingStoryBar(nextItem);
-        console.log('[NAV TRACE] initBTSB bar rendered, barInDom:', !!document.getElementById('bottom-trending-story-bar'));
         scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
         bindBottomTrendingBarVisibilityHandlers();
-        console.log('[NAV TRACE] initBTSB complete, handlers bound');
     }
 
     function invalidateBottomTrendingCaches() {
@@ -2330,55 +2301,12 @@ function initNavigationScript() {
         return BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET;
     }
 
-    function getWindowScrollTop() {
+    function getCurrentScrollTop() {
         return window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
     }
 
-    function getBodyContainerScrollTop() {
-        const bodyContainer = document.getElementById('body-container');
-        return bodyContainer ? (bodyContainer.scrollTop || 0) : 0;
-    }
-
-    function getBodyElementScrollTop() {
-        const bodyEl = document.getElementById('body');
-        return bodyEl ? (bodyEl.scrollTop || 0) : 0;
-    }
-
-    function getDocumentScrollTop() {
-        const scrollingEl = document.scrollingElement;
-        return scrollingEl ? (scrollingEl.scrollTop || 0) : 0;
-    }
-
-    function getBottomTrendingScrollSources() {
-        return {
-            windowY: getWindowScrollTop(),
-            documentY: getDocumentScrollTop(),
-            bodyContainerY: getBodyContainerScrollTop(),
-            bodyY: getBodyElementScrollTop()
-        };
-    }
-
-    function getCurrentScrollTop() {
-        // Use whichever scroll context is actively moving.
-        const s = getBottomTrendingScrollSources();
-        return Math.max(s.windowY, s.documentY, s.bodyContainerY, s.bodyY);
-    }
-
     function getMaxScrollableDistance() {
-        const windowScrollable = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-        const bodyContainer = document.getElementById('body-container');
-        const bodyEl = document.getElementById('body');
-        const documentScrollable = document.scrollingElement
-            ? Math.max(0, document.scrollingElement.scrollHeight - window.innerHeight)
-            : 0;
-        const containerScrollable = bodyContainer
-            ? Math.max(0, bodyContainer.scrollHeight - bodyContainer.clientHeight)
-            : 0;
-        const bodyScrollable = bodyEl
-            ? Math.max(0, bodyEl.scrollHeight - bodyEl.clientHeight)
-            : 0;
-        // Prefer the larger scrollable context so thresholds remain reachable.
-        return Math.max(windowScrollable, documentScrollable, containerScrollable, bodyScrollable);
+        return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
     }
 
     function getFirstContentParagraph() {
@@ -2497,7 +2425,6 @@ function initNavigationScript() {
     function updateBottomTrendingBarVisibility() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) {
-            if (_visTraceCount < 3) { _visTraceCount++; console.log('[NAV TRACE] updateVis: no bar in DOM'); }
             bottomTrendingVisibleState = false;
             return;
         }
@@ -2520,9 +2447,6 @@ function initNavigationScript() {
             } else if (bottomTrendingVisibleState && currentY <= hidePx) {
                 bottomTrendingVisibleState = false;
             }
-        }
-        if (prevVisible !== bottomTrendingVisibleState) {
-            console.log('[NAV TRACE] updateVis changed', { from: prevVisible, to: bottomTrendingVisibleState, currentY, showPx, hidePx, isMobileViewport });
         }
         bar.classList.toggle('visible', bottomTrendingVisibleState);
     }
@@ -2578,33 +2502,11 @@ function initNavigationScript() {
         window.addEventListener('scroll', () => {
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true });
-        document.addEventListener('scroll', () => {
-            scheduleBottomTrendingFrameUpdate();
-        }, { passive: true, capture: true });
-        const bodyContainer = document.getElementById('body-container');
-        if (bodyContainer) {
-            bodyContainer.addEventListener('scroll', () => {
-                scheduleBottomTrendingFrameUpdate();
-            }, { passive: true });
-        }
         window.addEventListener('resize', () => {
             const widthChanged = Math.abs(window.innerWidth - bottomTrendingLastViewportWidth) > 1;
             bottomTrendingLastViewportWidth = window.innerWidth;
             scheduleBottomTrendingFrameUpdate({ invalidateCaches: widthChanged, updateLayout: widthChanged });
         }, { passive: true });
-
-        // Fallback for environments where desktop scroll events are intermittently missed.
-        // Keep this lightweight: only trigger a frame update when scrollTop actually changes.
-        bottomTrendingLastObservedScrollTop = getCurrentScrollTop();
-        if (!bottomTrendingScrollPollTimer) {
-            bottomTrendingScrollPollTimer = window.setInterval(() => {
-                const current = getCurrentScrollTop();
-                if (Math.abs(current - bottomTrendingLastObservedScrollTop) > 0.5) {
-                    bottomTrendingLastObservedScrollTop = current;
-                    scheduleBottomTrendingFrameUpdate();
-                }
-            }, 120);
-        }
     }
 
     function handleScrollLogic() {
