@@ -3,9 +3,14 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
 
+<!-- Do not add <link rel="preload" ... integrity="..."> for new_nav.js from production unless the URL commit matches COMMIT_HASH below and the hash was generated for that exact file. Mismatched integrity + URL blocks the script. -->
+
 <script>
 try {
-    const COMMIT_HASH = '7974782';
+    const COMMIT_HASH = '682c002';
+
+    /* Next read: set before new_nav.js loads. false = classic bar (no stack/swipe experiments). */
+    window.NAV_NEXT_READ_SWIPE_ENABLED = false;
 
     window.NAV_NEXT_READ_STACK_THEME = 'yellow';
     window.NAV_NEXT_READ_STACK_FROSTED = true;
