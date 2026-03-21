@@ -2280,9 +2280,22 @@ function initNavigationScript() {
         return bodyContainer ? (bodyContainer.scrollTop || 0) : 0;
     }
 
+    function getNestedScrollRegionScrollTop() {
+        let max = getBodyContainerScrollTop();
+        const bodyById = document.getElementById('body');
+        if (bodyById && bodyById.scrollHeight > bodyById.clientHeight) {
+            max = Math.max(max, bodyById.scrollTop || 0);
+        }
+        const mainEl = document.querySelector('main');
+        if (mainEl && mainEl.scrollHeight > mainEl.clientHeight) {
+            max = Math.max(max, mainEl.scrollTop || 0);
+        }
+        return max;
+    }
+
     function getCurrentScrollTop() {
-        // Use whichever scroll context is actively moving.
-        return Math.max(getWindowScrollTop(), getBodyContainerScrollTop());
+        /* Prefer the largest scroll offset — desktop often scrolls #body-container while window stays 0. */
+        return Math.max(getWindowScrollTop(), getNestedScrollRegionScrollTop());
     }
 
     function getMaxScrollableDistance() {
@@ -2417,22 +2430,17 @@ function initNavigationScript() {
 
         const { showPx, hidePx } = getNextReadScrollThresholds();
         const currentY = getCurrentScrollTop();
-        const isMobileViewport = window.innerWidth <= 767;
 
         const prevVisible = bottomTrendingVisibleState;
-        if (isMobileViewport) {
-            // Mobile latch to avoid slow-scroll threshold chattering/jitter.
-            if (!bottomTrendingVisibleState && currentY >= showPx) {
-                bottomTrendingVisibleState = true;
-            } else if (bottomTrendingVisibleState && currentY <= NEXT_READ_MOBILE_HIDE_TOP_PX) {
-                bottomTrendingVisibleState = false;
-            }
-        } else {
-            if (!bottomTrendingVisibleState && currentY >= showPx) {
-                bottomTrendingVisibleState = true;
-            } else if (bottomTrendingVisibleState && currentY <= hidePx) {
-                bottomTrendingVisibleState = false;
-            }
+        /*
+         * Show after scrolling down past showPx; hide when user scrolls back near the top of the page.
+         * Desktop previously used hidePx (~22% of max scroll), which often equals showPx on long articles,
+         * so the bar toggled off immediately at the same threshold and never appeared reliably.
+         */
+        if (!bottomTrendingVisibleState && currentY >= showPx) {
+            bottomTrendingVisibleState = true;
+        } else if (bottomTrendingVisibleState && currentY <= NEXT_READ_MOBILE_HIDE_TOP_PX) {
+            bottomTrendingVisibleState = false;
         }
         if (NAV_STACK_DEBUG && prevVisible !== bottomTrendingVisibleState) {
             console.log('[NAV STACK DBG] updateBottomTrendingBarVisibility visible changed', { prevVisible, now: bottomTrendingVisibleState, currentY, showPx, hidePx });
