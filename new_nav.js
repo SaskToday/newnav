@@ -6,7 +6,25 @@ console.log('[NAV DEBUG] Current URL:', window.location.href);
 // Function to initialize navigation (can be called from DOMContentLoaded or immediately)
 function initNavigationScript() {
     'use strict';
-    
+
+    // Skip rendering inside embedded contexts (e.g. video player iframes).
+    // Covers both: (a) iframe contexts, and (b) standalone embed pages that
+    // include the loader and use the AMS embed body id.
+    let isEmbeddedContext = false;
+    try {
+        if (window.self !== window.top) isEmbeddedContext = true;
+    } catch (_) {
+        // Cross-origin frame access throws; treat as embedded.
+        isEmbeddedContext = true;
+    }
+    if (!isEmbeddedContext && document.body && document.body.id === 'ams-embed') {
+        isEmbeddedContext = true;
+    }
+    if (isEmbeddedContext) {
+        console.log('[NAV DEBUG] Embedded context detected; skipping nav render');
+        return;
+    }
+
     console.log('[NAV DEBUG] initNavigationScript() called');
     console.log('[NAV DEBUG] Document ready state:', document.readyState);
     console.log('[NAV DEBUG] Header exists:', !!document.querySelector('header'));
