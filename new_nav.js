@@ -215,10 +215,7 @@ function initNavigationScript() {
             more: [
                 { text: "Business & Energy", url: base + "/business" },
                 { text: "Provincial News", url: base + "/provincial-news" },
-                { text: "National News", url: base + "/national-news" },
-                { text: "Opinion", url: base + "/opinion" },
                 { text: "Gas Prices", url: base + "/gas-prices" },
-                { text: "Politics", url: base + "/politics" },
                 { text: "Local Arts", url: base + "/local-arts" },
                 { text: "Everybody Has a Story", url: base + "/everybody-has-a-story" },
                 { text: "Videos", url: base + "/video" },
@@ -229,9 +226,8 @@ function initNavigationScript() {
                 { text: "Digital Editions", url: base + "/other/digital-edition-links" },
                 { text: "Sask on Wheels", url: base + "/sask-on-wheels" },
                 { text: "Wildfire News", url: base + "/weather-news/wildfires" },
-                { text: "Tariffs and Trade", url: base + "/tariffs-and-trade" },
                 { text: "Local Business Directory", url: base + "/directory" },
-                { text: "Advertise With Us", url: base + "/other/advertising" }
+                { text: "Advertise With Us", url: base + "/advertise-with-us" }
             ]
         },
         // Single source for communities - drives: mobile dropdown, desktop Communities mega menu, search mega menu
@@ -240,7 +236,7 @@ function initNavigationScript() {
                 { key: "all", text: "All Communities", url: base + "/" },
                 { key: "regina", text: "Regina", url: base + "/regina-today" },
                 { key: "saskatoon", text: "Saskatoon", url: base + "/saskatoon-today" },
-                { key: "swiftcurrent", text: "Swift Current", url: base + "/swift-current-today", isNew: true },
+                { key: "swiftcurrent", text: "Swift Current", url: base + "/swift-current-today" },
                 { key: "estevan", text: "Estevan", url: base + "/southeast/estevanmercury" },
                 { key: "yorkton", text: "Yorkton", url: base + "/central/yorktonthisweek" },
                 { key: "kamsack", text: "Kamsack", url: base + "/central/kamsacktimes" },
@@ -566,7 +562,9 @@ function initNavigationScript() {
                                 const isLast = i === routes.communityLinks.communities.length - 1;
                                 const style = 'padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;' + (isLast ? '' : ' border-bottom: 1px solid #eee;');
                                 const newPill = link.isNew ? ' <span class="nav-new-pill">new</span>' : '';
-                                return `<div class="dropdown-option" style="${style}" data-community="${link.key}">${link.text}${newPill}</div>`;
+                                const externalAttrs = link.external ? ` data-external-url="${link.url}"` : '';
+                                const externalSuffix = link.external ? ` ${extIcon}` : '';
+                                return `<div class="dropdown-option" style="${style}" data-community="${link.key}"${externalAttrs}>${link.text}${newPill}${externalSuffix}</div>`;
                             }).join('\n                    ')}
                         </div>
                     </div>
@@ -1759,71 +1757,12 @@ function initNavigationScript() {
     }
 
     function ensureCommunityOverlay() {
-        if (communityOverlayEl) return communityOverlayEl;
-        communityOverlayEl = document.createElement('div');
-        communityOverlayEl.className = 'community-tip-overlay';
-        communityOverlayEl.innerHTML = '<span>Find updates from your community</span><button type="button" class="community-tip-overlay-close" aria-label="Dismiss community tip">×</button>';
-        communityOverlayEl.addEventListener('click', () => {
-            dismissCommunityOverlay();
-        });
-        const overlaySpan = communityOverlayEl.querySelector('span');
-        if (overlaySpan) {
-            overlaySpan.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeCommunityOverlayForPage();
-                triggerPostHogRecording('nav_community_overlay_click');
-                const commContainer = document.getElementById('comm-container');
-                if (commContainer) commContainer.click();
-            });
-        }
-        const closeBtn = communityOverlayEl.querySelector('.community-tip-overlay-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                dismissCommunityOverlay();
-            });
-        }
-        document.body.appendChild(communityOverlayEl);
-        return communityOverlayEl;
+        // "Find your community" overlay disabled.
+        return null;
     }
 
     function updateCommunityOverlayVisibility() {
-        const hasActiveParent = !!document.querySelector('.category-pill.active, #comm-container.active');
-        const communitiesDropdown = document.getElementById('village-nav-dropdown-mobile');
-        const isCommunitiesDropdownOpen = !!(communitiesDropdown && communitiesDropdown.style.display === 'block');
-        const isDesktopMegaVisible = !!document.querySelector('.desktop-mega-menu.visible');
-        const dismissed = isCommunityOverlayDismissed();
-        const seenInSession = isCommunityOverlaySeenInSession();
-        const delaySatisfied = communityOverlayAllowedAt > 0 && Date.now() >= communityOverlayAllowedAt;
-        const shouldShow = !communityOverlayClosedThisPage && !hasActiveParent && !isCommunitiesDropdownOpen && !isDesktopMegaVisible && !dismissed && delaySatisfied && (!seenInSession || communityOverlayShownThisPage);
-
-        if (!shouldShow) {
-            if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
-            return;
-        }
-
-        const commContainer = document.getElementById('comm-container');
-        if (!commContainer) {
-            if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
-            return;
-        }
-
-        const overlay = ensureCommunityOverlay();
-        const rect = commContainer.getBoundingClientRect();
-        const isCommPillVisible = rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= window.innerWidth;
-        if (!isCommPillVisible) {
-            overlay.classList.remove('visible');
-            return;
-        }
-        const overlayGap = window.innerWidth <= 990 ? 18 : 10;
-        overlay.style.top = `${rect.bottom + overlayGap}px`;
-        overlay.style.left = `${rect.left}px`;
-        overlay.classList.add('visible');
-        if (!communityOverlayShownThisPage) {
-            communityOverlayShownThisPage = true;
-            markCommunityOverlaySeenInSession();
-            triggerPostHogRecording('nav_community_overlay_seen');
-        }
+        // "Find your community" overlay disabled; nothing to render or update.
     }
 
     // Function to update icon colors for active pills on mobile (optimized)
@@ -2023,7 +1962,12 @@ function initNavigationScript() {
                 if (window.innerWidth <= 990) {
                     triggerPostHogRecording('nav_parent_item_click', { community: opt.dataset.community || undefined });
                 }
-                window.location.href = routes.communities[opt.dataset.community];
+                const externalUrl = opt.dataset.externalUrl;
+                if (externalUrl) {
+                    window.open(externalUrl, '_blank', 'noopener');
+                } else {
+                    window.location.href = routes.communities[opt.dataset.community];
+                }
             });
         });
 
