@@ -6,7 +6,25 @@ console.log('[NAV DEBUG] Current URL:', window.location.href);
 // Function to initialize navigation (can be called from DOMContentLoaded or immediately)
 function initNavigationScript() {
     'use strict';
-    
+
+    // Skip rendering inside embedded contexts (e.g. video player iframes).
+    // Covers both: (a) iframe contexts, and (b) standalone embed pages that
+    // include the loader and use the AMS embed body id.
+    let isEmbeddedContext = false;
+    try {
+        if (window.self !== window.top) isEmbeddedContext = true;
+    } catch (_) {
+        // Cross-origin frame access throws; treat as embedded.
+        isEmbeddedContext = true;
+    }
+    if (!isEmbeddedContext && document.body && document.body.id === 'ams-embed') {
+        isEmbeddedContext = true;
+    }
+    if (isEmbeddedContext) {
+        console.log('[NAV DEBUG] Embedded context detected; skipping nav render');
+        return;
+    }
+
     console.log('[NAV DEBUG] initNavigationScript() called');
     console.log('[NAV DEBUG] Document ready state:', document.readyState);
     console.log('[NAV DEBUG] Header exists:', !!document.querySelector('header'));
@@ -191,14 +209,14 @@ function initNavigationScript() {
     ];
     // Hyphenated "News" paths: activate parent community and show "[Community Name] News" in child row
     const COMMUNITY_NEWS_PATH_OVERRIDES = [
-        { path: '/central/yorkton-this-week', communityKey: 'yorkton' },
-        { path: '/central/kamsack-times', communityKey: 'kamsack' },
-        { path: '/north/battlefords-news-optimist', communityKey: 'thebattlefords' },
+        { path: '/yorkton-today/yorkton-news', communityKey: 'yorkton' },
+        { path: '/kamsack-today/kamsack-news', communityKey: 'kamsack' },
+        { path: '/battlefords-today/battlefords-news', communityKey: 'thebattlefords' },
         { path: '/central/canora-courier', communityKey: 'canora' },
         { path: '/central/preeceville-progress', communityKey: 'preeceville' },
         { path: '/southeast/carlyle-observer', communityKey: 'carlyle' },
         { path: '/north/humboldt-journal', communityKey: 'humboldt' },
-        { path: '/southwest/assiniboia-times', communityKey: 'assiniboia' },
+        { path: '/assiniboia-today/assiniboia-news', communityKey: 'assiniboia' },
         { path: '/north/the-outlook', communityKey: 'outlook' },
         { path: '/north/unity-wilkie-press-herald', communityKey: 'unitywilkie' },
         { path: '/southeast/estevan-mercury', communityKey: 'estevan' },
@@ -219,15 +237,15 @@ function initNavigationScript() {
             saskatoon: base + "/saskatoon-today",
             swiftcurrent: base + "/swift-current-today",
             estevan: base + "/southeast/estevanmercury",
-            yorkton: base + "/central/yorktonthisweek",
-            kamsack: base + "/central/kamsacktimes",
-            thebattlefords: base + "/north/battlefordsnewsoptimist",
+            yorkton: base + "/yorkton-today",
+            kamsack: base + "/kamsack-today",
+            thebattlefords: base + "/battlefords-today",
             canora: base + "/central/canoracourier",
             preeceville: base + "/central/preecevilleprogress",
             carlyle: base + "/southeast/carlyleobserver",
             humboldt: base + "/north/humboldtjournal",
             moosejaw: base + "/southwest/moosejaw",
-            assiniboia: base + "/southwest/assiniboiatimes",
+            assiniboia: base + "/assiniboia-today",
             outlook: base + "/north/theoutlook",
             princealbert: base + "/north/prince-albert",
             unitywilkie: base + "/north/unitywilkiepressherald",
@@ -253,7 +271,9 @@ function initNavigationScript() {
             agriculture: [
                 { text: "All Agriculture", url: base + "/agriculture" },
                 { text: "North Sask Agriculture", url: base + "/north/agriculture" },
-                { text: "Central Sask Agriculture", url: base + "/central/agriculture" }
+                { text: "Central Sask Agriculture", url: base + "/central/agriculture" },
+                { text: "Southwest Agriculture", url: base + "/southwest/agriculture-news" },
+                { text: "Southeast Agriculture", url: base + "/southeast/agriculture-news" }
             ],
             obituaries: [
                 { text: "All Obituaries", url: base + "/obituaries" },
@@ -277,19 +297,16 @@ function initNavigationScript() {
                 { text: "Pet Obituaries", url: base + "/obituaries/pet-obituaries" }
             ],
             opinions: [
-                { text: "All Opinion", url: base + "/opinion" },
-                { text: "North Opinion", url: base + "/north/opinion" },
-                { text: "Central Opinion", url: base + "/central/opinion" },
-                { text: "South Opinion", url: base + "/south/opinion" }
+                { text: "All Opinion", url: base + "/opinion" }
             ],
-            crime: [{ text: "All Crime", url: base + "/crime-cops-court" }],
+            crime: [
+                { text: "All Crime", url: base + "/crime-cops-court" },
+                { text: "Missing Persons", url: base + "/crime-cops-court/missing-persons" }
+            ],
             more: [
                 { text: "Business & Energy", url: base + "/business" },
                 { text: "Provincial News", url: base + "/provincial-news" },
-                { text: "National News", url: base + "/national-news" },
-                { text: "Opinion", url: base + "/opinion" },
                 { text: "Gas Prices", url: base + "/gas-prices" },
-                { text: "Politics", url: base + "/politics" },
                 { text: "Local Arts", url: base + "/local-arts" },
                 { text: "Everybody Has a Story", url: base + "/everybody-has-a-story" },
                 { text: "Videos", url: base + "/video" },
@@ -300,9 +317,8 @@ function initNavigationScript() {
                 { text: "Digital Editions", url: base + "/other/digital-edition-links" },
                 { text: "Sask on Wheels", url: base + "/sask-on-wheels" },
                 { text: "Wildfire News", url: base + "/weather-news/wildfires" },
-                { text: "Tariffs and Trade", url: base + "/tariffs-and-trade" },
                 { text: "Local Business Directory", url: base + "/directory" },
-                { text: "Advertise With Us", url: base + "/other/advertising" }
+                { text: "Advertise With Us", url: base + "/advertise-with-us" }
             ]
         },
         // Single source for communities - drives: mobile dropdown, desktop Communities mega menu, search mega menu
@@ -311,17 +327,17 @@ function initNavigationScript() {
                 { key: "all", text: "All Communities", url: base + "/" },
                 { key: "regina", text: "Regina", url: base + "/regina-today" },
                 { key: "saskatoon", text: "Saskatoon", url: base + "/saskatoon-today" },
-                { key: "swiftcurrent", text: "Swift Current", url: base + "/swift-current-today", isNew: true },
+                { key: "swiftcurrent", text: "Swift Current", url: base + "/swift-current-today" },
                 { key: "estevan", text: "Estevan", url: base + "/southeast/estevanmercury" },
-                { key: "yorkton", text: "Yorkton", url: base + "/central/yorktonthisweek" },
-                { key: "kamsack", text: "Kamsack", url: base + "/central/kamsacktimes" },
-                { key: "thebattlefords", text: "The Battlefords", url: base + "/north/battlefordsnewsoptimist" },
+                { key: "yorkton", text: "Yorkton", url: base + "/yorkton-today" },
+                { key: "kamsack", text: "Kamsack", url: base + "/kamsack-today" },
+                { key: "thebattlefords", text: "The Battlefords", url: base + "/battlefords-today" },
                 { key: "canora", text: "Canora", url: base + "/central/canoracourier" },
                 { key: "preeceville", text: "Preeceville", url: base + "/central/preecevilleprogress" },
                 { key: "carlyle", text: "Carlyle", url: base + "/southeast/carlyleobserver" },
                 { key: "humboldt", text: "Humboldt", url: base + "/north/humboldtjournal" },
                 { key: "moosejaw", text: "Moose Jaw", url: "https://moosejawtoday.com", external: true },
-                { key: "assiniboia", text: "Assiniboia", url: base + "/southwest/assiniboiatimes" },
+                { key: "assiniboia", text: "Assiniboia", url: base + "/assiniboia-today" },
                 { key: "outlook", text: "Outlook", url: base + "/north/theoutlook" },
                 { key: "princealbert", text: "Prince Albert", url: base + "/north/prince-albert" },
                 { key: "unitywilkie", text: "Unity-Wilkie", url: base + "/north/unitywilkiepressherald" },
@@ -737,7 +753,9 @@ function initNavigationScript() {
                                 const isLast = i === routes.communityLinks.communities.length - 1;
                                 const style = 'padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;' + (isLast ? '' : ' border-bottom: 1px solid #eee;');
                                 const newPill = link.isNew ? ' <span class="nav-new-pill">new</span>' : '';
-                                return `<div class="dropdown-option" style="${style}" data-community="${link.key}">${link.text}${newPill}</div>`;
+                                const externalAttrs = link.external ? ` data-external-url="${link.url}"` : '';
+                                const externalSuffix = link.external ? ` ${extIcon}` : '';
+                                return `<div class="dropdown-option" style="${style}" data-community="${link.key}"${externalAttrs}>${link.text}${newPill}${externalSuffix}</div>`;
                             }).join('\n                    ')}
                         </div>
                     </div>
@@ -770,25 +788,25 @@ function initNavigationScript() {
             <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
             <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon" class="text-link">Saskatoon Classifieds</a></div></div>
             <div class="bottom-row" id="community-swiftcurrent"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/swift-current-today" class="text-link">All Swift Current</a><a href="${base}/swift-current-today/swift-current-news" class="text-link">Swift Current News</a></div></div>
-            <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/central/yorkton-this-week" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
+            <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/yorkton-today" class="text-link">All Yorkton</a><a href="${base}/yorkton-today/yorkton-news" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
             <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/southeast/estevan-mercury" class="text-link">Estevan News</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
             <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/north/humboldt-journal" class="text-link">Humboldt News</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
-            <div class="bottom-row" id="community-kamsack"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/kamsacktimes" class="text-link">All Kamsack</a><a href="${base}/central/kamsack-times" class="text-link">Kamsack News</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a></div></div>
-            <div class="bottom-row" id="community-thebattlefords"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/battlefordsnewsoptimist" class="text-link">All The Battlefords</a><a href="${base}/north/battlefords-news-optimist" class="text-link">The Battlefords News</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a></div></div>
+            <div class="bottom-row" id="community-kamsack"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/kamsack-today" class="text-link">All Kamsack</a><a href="${base}/kamsack-today/kamsack-news" class="text-link">Kamsack News</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a></div></div>
+            <div class="bottom-row" id="community-thebattlefords"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/battlefords-today" class="text-link">All The Battlefords</a><a href="${base}/battlefords-today/battlefords-news" class="text-link">Battlefords News</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a></div></div>
             <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/canoracourier" class="text-link">All Canora</a><a href="${base}/central/canora-courier" class="text-link">Canora News</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
             <div class="bottom-row" id="community-carlyle"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/carlyleobserver" class="text-link">All Carlyle</a><a href="${base}/southeast/carlyle-observer" class="text-link">Carlyle News</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a></div></div>
             <div class="bottom-row" id="community-unitywilkie"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/unitywilkiepressherald" class="text-link">All Unity-Wilkie</a><a href="${base}/north/unity-wilkie-press-herald" class="text-link">Unity-Wilkie News</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a></div></div>
             <div class="bottom-row" id="community-moosejaw"><div class="bottom-row-inner hide-scrollbar"><a href="https://moosejawtoday.com" target="_blank" rel="noopener" class="text-link">Go to Moose Jaw Today ${extIcon}</a><a href="https://moosejawtoday.com/obituaries" target="_blank" rel="noopener" class="text-link">Moose Jaw Obituaries ${extIcon}</a></div></div>
-            <div class="bottom-row" id="community-assiniboia"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southwest/assiniboiatimes" class="text-link">All Assiniboia</a><a href="${base}/southwest/assiniboia-times" class="text-link">Assiniboia News</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a></div></div>
+            <div class="bottom-row" id="community-assiniboia"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/assiniboia-today" class="text-link">All Assiniboia</a><a href="${base}/assiniboia-today/assiniboia-news" class="text-link">Assiniboia News</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a></div></div>
             <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/theoutlook" class="text-link">All Outlook</a><a href="${base}/north/the-outlook" class="text-link">Outlook News</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
             <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/preecevilleprogress" class="text-link">All Preeceville</a><a href="${base}/central/preeceville-progress" class="text-link">Preeceville News</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
             <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/prince-albert" class="text-link">All Prince Albert</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
             <div class="bottom-row" id="community-weyburn"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/weyburnreview" class="text-link">All Weyburn</a><a href="${base}/southeast/weyburn-review" class="text-link">Weyburn News</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a></div></div>
             <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="${base}/sports" class="text-link">All Sports</a><a href="${base}/north/local-sports" class="text-link">North Sask Sports</a><a href="${base}/central/local-sports" class="text-link">Central Sask Sports</a><a href="${base}/southwest/local-sports" class="text-link">Southwest Sask Sports</a><a href="${base}/southeast/local-sports" class="text-link">Southeast Sask Sports</a></div></div>
-            <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="${base}/agriculture" class="text-link">All Agriculture</a><a href="${base}/north/agriculture" class="text-link">North Sask Agriculture</a><a href="${base}/central/agriculture" class="text-link">Central Sask Agriculture</a></div></div>
+            <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="${base}/agriculture" class="text-link">All Agriculture</a><a href="${base}/north/agriculture" class="text-link">North Sask Agriculture</a><a href="${base}/central/agriculture" class="text-link">Central Sask Agriculture</a><a href="${base}/southwest/agriculture-news" class="text-link">Southwest Agriculture</a><a href="${base}/southeast/agriculture-news" class="text-link">Southeast Agriculture</a></div></div>
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/obituaries" class="text-link">All Obituaries</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="https://moosejawtoday.com/obituaries" target="_blank" rel="noopener" class="text-link">Moose Jaw Obituaries ${extIcon}</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a><a href="${base}/obituaries/in-memoriam" class="text-link">In Memoriam</a><a href="${base}/obituaries/pet-obituaries" class="text-link">Pet Obituaries</a></div></div>
-            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/opinion" class="text-link">All Opinion</a><a href="${base}/north/opinion" class="text-link">North Opinion</a><a href="${base}/central/opinion" class="text-link">Central Opinion</a><a href="${base}/south/opinion" class="text-link">South Opinion</a></div></div>
-            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/crime-cops-court" class="text-link">All Crime</a></div></div>
+            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/opinion" class="text-link">All Opinion</a></div></div>
+            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/crime-cops-court" class="text-link">All Crime</a><a href="${base}/crime-cops-court/missing-persons" class="text-link">Missing Persons</a></div></div>
             <div class="bottom-row" id="category-default"><div class="bottom-row-inner hide-scrollbar">${routes.communityLinks.communities.filter(link => link.text !== 'All Communities').map(link => { const newPill = link.isNew ? ' <span class="nav-new-pill">new</span>' : ''; return link.external ? `<a href="${link.url}" target="_blank" rel="noopener" class="text-link">${link.text}${newPill} ${extIcon}</a>` : `<a href="${link.url}" class="text-link">${link.text}${newPill}</a>`; }).join('')}</div></div>
         </div>
     </div>`;
@@ -2875,71 +2893,12 @@ function initNavigationScript() {
     }
 
     function ensureCommunityOverlay() {
-        if (communityOverlayEl) return communityOverlayEl;
-        communityOverlayEl = document.createElement('div');
-        communityOverlayEl.className = 'community-tip-overlay';
-        communityOverlayEl.innerHTML = '<span>Find updates from your community</span><button type="button" class="community-tip-overlay-close" aria-label="Dismiss community tip">×</button>';
-        communityOverlayEl.addEventListener('click', () => {
-            dismissCommunityOverlay();
-        });
-        const overlaySpan = communityOverlayEl.querySelector('span');
-        if (overlaySpan) {
-            overlaySpan.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeCommunityOverlayForPage();
-                triggerPostHogRecording('nav_community_overlay_click');
-                const commContainer = document.getElementById('comm-container');
-                if (commContainer) commContainer.click();
-            });
-        }
-        const closeBtn = communityOverlayEl.querySelector('.community-tip-overlay-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                dismissCommunityOverlay();
-            });
-        }
-        document.body.appendChild(communityOverlayEl);
-        return communityOverlayEl;
+        // "Find your community" overlay disabled.
+        return null;
     }
 
     function updateCommunityOverlayVisibility() {
-        const hasActiveParent = !!document.querySelector('.category-pill.active, #comm-container.active');
-        const communitiesDropdown = document.getElementById('village-nav-dropdown-mobile');
-        const isCommunitiesDropdownOpen = !!(communitiesDropdown && communitiesDropdown.style.display === 'block');
-        const isDesktopMegaVisible = !!document.querySelector('.desktop-mega-menu.visible');
-        const dismissed = isCommunityOverlayDismissed();
-        const seenInSession = isCommunityOverlaySeenInSession();
-        const delaySatisfied = communityOverlayAllowedAt > 0 && Date.now() >= communityOverlayAllowedAt;
-        const shouldShow = !communityOverlayClosedThisPage && !hasActiveParent && !isCommunitiesDropdownOpen && !isDesktopMegaVisible && !dismissed && delaySatisfied && (!seenInSession || communityOverlayShownThisPage);
-
-        if (!shouldShow) {
-            if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
-            return;
-        }
-
-        const commContainer = document.getElementById('comm-container');
-        if (!commContainer) {
-            if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
-            return;
-        }
-
-        const overlay = ensureCommunityOverlay();
-        const rect = commContainer.getBoundingClientRect();
-        const isCommPillVisible = rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= window.innerWidth;
-        if (!isCommPillVisible) {
-            overlay.classList.remove('visible');
-            return;
-        }
-        const overlayGap = window.innerWidth <= 990 ? 18 : 10;
-        overlay.style.top = `${rect.bottom + overlayGap}px`;
-        overlay.style.left = `${rect.left}px`;
-        overlay.classList.add('visible');
-        if (!communityOverlayShownThisPage) {
-            communityOverlayShownThisPage = true;
-            markCommunityOverlaySeenInSession();
-            triggerPostHogRecording('nav_community_overlay_seen');
-        }
+        // "Find your community" overlay disabled; nothing to render or update.
     }
 
     // Function to update icon colors for active pills on mobile (optimized)
@@ -3139,7 +3098,12 @@ function initNavigationScript() {
                 if (window.innerWidth <= 990) {
                     triggerPostHogRecording('nav_parent_item_click', { community: opt.dataset.community || undefined });
                 }
-                window.location.href = routes.communities[opt.dataset.community];
+                const externalUrl = opt.dataset.externalUrl;
+                if (externalUrl) {
+                    window.open(externalUrl, '_blank', 'noopener');
+                } else {
+                    window.location.href = routes.communities[opt.dataset.community];
+                }
             });
         });
 
