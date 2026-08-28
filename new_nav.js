@@ -200,7 +200,9 @@ function initNavigationScript() {
             agriculture: [
                 { text: "All Agriculture", url: base + "/agriculture" },
                 { text: "North Sask Agriculture", url: base + "/north/agriculture" },
-                { text: "Central Sask Agriculture", url: base + "/central/agriculture" }
+                { text: "Central Sask Agriculture", url: base + "/central/agriculture" },
+                { text: "Southwest Agriculture", url: base + "/southwest/agriculture-news" },
+                { text: "Southeast Agriculture", url: base + "/southeast/agriculture-news" }
             ],
             obituaries: [
                 { text: "All Obituaries", url: base + "/obituaries" },
@@ -224,12 +226,12 @@ function initNavigationScript() {
                 { text: "Pet Obituaries", url: base + "/obituaries/pet-obituaries" }
             ],
             opinions: [
-                { text: "All Opinion", url: base + "/opinion" },
-                { text: "North Opinion", url: base + "/north/opinion" },
-                { text: "Central Opinion", url: base + "/central/opinion" },
-                { text: "South Opinion", url: base + "/south/opinion" }
+                { text: "All Opinion", url: base + "/opinion" }
             ],
-            crime: [{ text: "All Crime", url: base + "/crime-cops-court" }],
+            crime: [
+                { text: "All Crime", url: base + "/crime-cops-court" },
+                { text: "Missing Persons", url: base + "/crime-cops-court/missing-persons" }
+            ],
             more: [
                 { text: "Business & Energy", url: base + "/business" },
                 { text: "Provincial News", url: base + "/provincial-news" },
@@ -630,10 +632,10 @@ function initNavigationScript() {
             <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/prince-albert" class="text-link">All Prince Albert</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
             <div class="bottom-row" id="community-weyburn"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/weyburnreview" class="text-link">All Weyburn</a><a href="${base}/southeast/weyburn-review" class="text-link">Weyburn News</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a></div></div>
             <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="${base}/sports" class="text-link">All Sports</a><a href="${base}/north/local-sports" class="text-link">North Sask Sports</a><a href="${base}/central/local-sports" class="text-link">Central Sask Sports</a><a href="${base}/southwest/local-sports" class="text-link">Southwest Sask Sports</a><a href="${base}/southeast/local-sports" class="text-link">Southeast Sask Sports</a></div></div>
-            <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="${base}/agriculture" class="text-link">All Agriculture</a><a href="${base}/north/agriculture" class="text-link">North Sask Agriculture</a><a href="${base}/central/agriculture" class="text-link">Central Sask Agriculture</a></div></div>
+            <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="${base}/agriculture" class="text-link">All Agriculture</a><a href="${base}/north/agriculture" class="text-link">North Sask Agriculture</a><a href="${base}/central/agriculture" class="text-link">Central Sask Agriculture</a><a href="${base}/southwest/agriculture-news" class="text-link">Southwest Agriculture</a><a href="${base}/southeast/agriculture-news" class="text-link">Southeast Agriculture</a></div></div>
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/obituaries" class="text-link">All Obituaries</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="https://moosejawtoday.com/obituaries" target="_blank" rel="noopener" class="text-link">Moose Jaw Obituaries ${extIcon}</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a><a href="${base}/obituaries/in-memoriam" class="text-link">In Memoriam</a><a href="${base}/obituaries/pet-obituaries" class="text-link">Pet Obituaries</a></div></div>
-            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/opinion" class="text-link">All Opinion</a><a href="${base}/north/opinion" class="text-link">North Opinion</a><a href="${base}/central/opinion" class="text-link">Central Opinion</a><a href="${base}/south/opinion" class="text-link">South Opinion</a></div></div>
-            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/crime-cops-court" class="text-link">All Crime</a></div></div>
+            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/opinion" class="text-link">All Opinion</a></div></div>
+            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/crime-cops-court" class="text-link">All Crime</a><a href="${base}/crime-cops-court/missing-persons" class="text-link">Missing Persons</a></div></div>
             <div class="bottom-row" id="category-default"><div class="bottom-row-inner hide-scrollbar">${routes.communityLinks.communities.filter(link => link.text !== 'All Communities').map(link => { const newPill = link.isNew ? ' <span class="nav-new-pill">new</span>' : ''; return link.external ? `<a href="${link.url}" target="_blank" rel="noopener" class="text-link">${link.text}${newPill} ${extIcon}</a>` : `<a href="${link.url}" class="text-link">${link.text}${newPill}</a>`; }).join('')}</div></div>
         </div>
     </div>`;
