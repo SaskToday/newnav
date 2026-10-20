@@ -500,6 +500,8 @@ function initNavigationScript() {
             }
 
             .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 8; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
+            /* Obituary templates center h3. These titles are full width, so that inherited alignment centers "Sections" and the other headings. */
+            #village-nav-container .desktop-mega-menu h3 { text-align: left; }
             .desktop-mega-menu.visible { max-height: 400px; }
             .desktop-mega-menu.search-menu { z-index: 8; }
             #village-nav-container:has(.desktop-mega-menu.search-menu.visible) .bottom-row.active { display: none !important; }
