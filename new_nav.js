@@ -141,15 +141,16 @@ function initNavigationScript() {
         { path: '/yorkton-today/yorkton-news', communityKey: 'yorkton' },
         { path: '/kamsack-today/kamsack-news', communityKey: 'kamsack' },
         { path: '/battlefords-today/battlefords-news', communityKey: 'thebattlefords' },
-        { path: '/central/canora-courier', communityKey: 'canora' },
-        { path: '/central/preeceville-progress', communityKey: 'preeceville' },
-        { path: '/southeast/carlyle-observer', communityKey: 'carlyle' },
-        { path: '/north/humboldt-journal', communityKey: 'humboldt' },
+        { path: '/canora-today/canora-news', communityKey: 'canora' },
+        { path: '/preeceville-today/preeceville-news', communityKey: 'preeceville' },
+        { path: '/carlyle-today/carlyle-news', communityKey: 'carlyle' },
+        { path: '/humboldt-today/humboldt-news', communityKey: 'humboldt' },
         { path: '/assiniboia-today/assiniboia-news', communityKey: 'assiniboia' },
-        { path: '/north/the-outlook', communityKey: 'outlook' },
-        { path: '/north/unity-wilkie-press-herald', communityKey: 'unitywilkie' },
+        { path: '/outlook-today/outlook-news', communityKey: 'outlook' },
+        { path: '/unity-wilkie-today/unity-wilkie-news', communityKey: 'unitywilkie' },
+        { path: '/prince-albert-today/prince-albert-news', communityKey: 'princealbert' },
         { path: '/southeast/estevan-mercury', communityKey: 'estevan' },
-        { path: '/southeast/weyburn-review', communityKey: 'weyburn' }
+        { path: '/weyburn-today/weyburn-news', communityKey: 'weyburn' }
     ];
     let communityOverlayEl = null;
     let communityOverlayShownThisPage = false;
@@ -169,16 +170,16 @@ function initNavigationScript() {
             yorkton: base + "/yorkton-today",
             kamsack: base + "/kamsack-today",
             thebattlefords: base + "/battlefords-today",
-            canora: base + "/central/canoracourier",
-            preeceville: base + "/central/preecevilleprogress",
-            carlyle: base + "/southeast/carlyleobserver",
-            humboldt: base + "/north/humboldtjournal",
+            canora: base + "/canora-today",
+            preeceville: base + "/preeceville-today",
+            carlyle: base + "/carlyle-today",
+            humboldt: base + "/humboldt-today",
             moosejaw: base + "/southwest/moosejaw",
             assiniboia: base + "/assiniboia-today",
-            outlook: base + "/north/theoutlook",
-            princealbert: base + "/north/prince-albert",
-            unitywilkie: base + "/north/unitywilkiepressherald",
-            weyburn: base + "/southeast/weyburnreview",
+            outlook: base + "/outlook-today",
+            princealbert: base + "/prince-albert-today",
+            unitywilkie: base + "/unity-wilkie-today",
+            weyburn: base + "/weyburn-today",
             all: base + "/"
         },
         categories: {
@@ -261,16 +262,16 @@ function initNavigationScript() {
                 { key: "yorkton", text: "Yorkton", url: base + "/yorkton-today" },
                 { key: "kamsack", text: "Kamsack", url: base + "/kamsack-today" },
                 { key: "thebattlefords", text: "The Battlefords", url: base + "/battlefords-today" },
-                { key: "canora", text: "Canora", url: base + "/central/canoracourier" },
-                { key: "preeceville", text: "Preeceville", url: base + "/central/preecevilleprogress" },
-                { key: "carlyle", text: "Carlyle", url: base + "/southeast/carlyleobserver" },
-                { key: "humboldt", text: "Humboldt", url: base + "/north/humboldtjournal" },
+                { key: "canora", text: "Canora", url: base + "/canora-today" },
+                { key: "preeceville", text: "Preeceville", url: base + "/preeceville-today" },
+                { key: "carlyle", text: "Carlyle", url: base + "/carlyle-today" },
+                { key: "humboldt", text: "Humboldt", url: base + "/humboldt-today" },
                 { key: "moosejaw", text: "Moose Jaw", url: "https://moosejawtoday.com", external: true },
                 { key: "assiniboia", text: "Assiniboia", url: base + "/assiniboia-today" },
-                { key: "outlook", text: "Outlook", url: base + "/north/theoutlook" },
-                { key: "princealbert", text: "Prince Albert", url: base + "/north/prince-albert" },
-                { key: "unitywilkie", text: "Unity-Wilkie", url: base + "/north/unitywilkiepressherald" },
-                { key: "weyburn", text: "Weyburn", url: base + "/southeast/weyburnreview" }
+                { key: "outlook", text: "Outlook", url: base + "/outlook-today" },
+                { key: "princealbert", text: "Prince Albert", url: base + "/prince-albert-today" },
+                { key: "unitywilkie", text: "Unity-Wilkie", url: base + "/unity-wilkie-today" },
+                { key: "weyburn", text: "Weyburn", url: base + "/weyburn-today" }
             ]
         }
     };
@@ -619,18 +620,18 @@ function initNavigationScript() {
             <div class="bottom-row" id="community-swiftcurrent"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/swift-current-today" class="text-link">All Swift Current</a><a href="${base}/swift-current-today/swift-current-news" class="text-link">Swift Current News</a></div></div>
             <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/yorkton-today" class="text-link">All Yorkton</a><a href="${base}/yorkton-today/yorkton-news" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
             <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/southeast/estevan-mercury" class="text-link">Estevan News</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
-            <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/north/humboldt-journal" class="text-link">Humboldt News</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
+            <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/humboldt-today" class="text-link">All Humboldt</a><a href="${base}/humboldt-today/humboldt-news" class="text-link">Humboldt News</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
             <div class="bottom-row" id="community-kamsack"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/kamsack-today" class="text-link">All Kamsack</a><a href="${base}/kamsack-today/kamsack-news" class="text-link">Kamsack News</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a></div></div>
             <div class="bottom-row" id="community-thebattlefords"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/battlefords-today" class="text-link">All The Battlefords</a><a href="${base}/battlefords-today/battlefords-news" class="text-link">Battlefords News</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a></div></div>
-            <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/canoracourier" class="text-link">All Canora</a><a href="${base}/central/canora-courier" class="text-link">Canora News</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
-            <div class="bottom-row" id="community-carlyle"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/carlyleobserver" class="text-link">All Carlyle</a><a href="${base}/southeast/carlyle-observer" class="text-link">Carlyle News</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a></div></div>
-            <div class="bottom-row" id="community-unitywilkie"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/unitywilkiepressherald" class="text-link">All Unity-Wilkie</a><a href="${base}/north/unity-wilkie-press-herald" class="text-link">Unity-Wilkie News</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a></div></div>
+            <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/canora-today" class="text-link">All Canora</a><a href="${base}/canora-today/canora-news" class="text-link">Canora News</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
+            <div class="bottom-row" id="community-carlyle"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/carlyle-today" class="text-link">All Carlyle</a><a href="${base}/carlyle-today/carlyle-news" class="text-link">Carlyle News</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a></div></div>
+            <div class="bottom-row" id="community-unitywilkie"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/unity-wilkie-today" class="text-link">All Unity-Wilkie</a><a href="${base}/unity-wilkie-today/unity-wilkie-news" class="text-link">Unity-Wilkie News</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a></div></div>
             <div class="bottom-row" id="community-moosejaw"><div class="bottom-row-inner hide-scrollbar"><a href="https://moosejawtoday.com" target="_blank" rel="noopener" class="text-link">Go to Moose Jaw Today ${extIcon}</a><a href="https://moosejawtoday.com/obituaries" target="_blank" rel="noopener" class="text-link">Moose Jaw Obituaries ${extIcon}</a></div></div>
             <div class="bottom-row" id="community-assiniboia"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/assiniboia-today" class="text-link">All Assiniboia</a><a href="${base}/assiniboia-today/assiniboia-news" class="text-link">Assiniboia News</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a></div></div>
-            <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/theoutlook" class="text-link">All Outlook</a><a href="${base}/north/the-outlook" class="text-link">Outlook News</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
-            <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/preecevilleprogress" class="text-link">All Preeceville</a><a href="${base}/central/preeceville-progress" class="text-link">Preeceville News</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
-            <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/prince-albert" class="text-link">All Prince Albert</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
-            <div class="bottom-row" id="community-weyburn"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/weyburnreview" class="text-link">All Weyburn</a><a href="${base}/southeast/weyburn-review" class="text-link">Weyburn News</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a></div></div>
+            <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/outlook-today" class="text-link">All Outlook</a><a href="${base}/outlook-today/outlook-news" class="text-link">Outlook News</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
+            <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/preeceville-today" class="text-link">All Preeceville</a><a href="${base}/preeceville-today/preeceville-news" class="text-link">Preeceville News</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
+            <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/prince-albert-today" class="text-link">All Prince Albert</a><a href="${base}/prince-albert-today/prince-albert-news" class="text-link">Prince Albert News</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
+            <div class="bottom-row" id="community-weyburn"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/weyburn-today" class="text-link">All Weyburn</a><a href="${base}/weyburn-today/weyburn-news" class="text-link">Weyburn News</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a></div></div>
             <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="${base}/sports" class="text-link">All Sports</a><a href="${base}/north/local-sports" class="text-link">North Sask Sports</a><a href="${base}/central/local-sports" class="text-link">Central Sask Sports</a><a href="${base}/southwest/local-sports" class="text-link">Southwest Sask Sports</a><a href="${base}/southeast/local-sports" class="text-link">Southeast Sask Sports</a></div></div>
             <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="${base}/agriculture" class="text-link">All Agriculture</a><a href="${base}/north/agriculture" class="text-link">North Sask Agriculture</a><a href="${base}/central/agriculture" class="text-link">Central Sask Agriculture</a><a href="${base}/southwest/agriculture-news" class="text-link">Southwest Agriculture</a><a href="${base}/southeast/agriculture-news" class="text-link">Southeast Agriculture</a></div></div>
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/obituaries" class="text-link">All Obituaries</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="https://moosejawtoday.com/obituaries" target="_blank" rel="noopener" class="text-link">Moose Jaw Obituaries ${extIcon}</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a><a href="${base}/obituaries/in-memoriam" class="text-link">In Memoriam</a><a href="${base}/obituaries/pet-obituaries" class="text-link">Pet Obituaries</a></div></div>
