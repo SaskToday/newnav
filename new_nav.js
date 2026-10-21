@@ -2299,7 +2299,7 @@ function initNavigationScript() {
                             const query = searchInput.value.trim();
                             if (query) {
                                 triggerPostHogRecording('nav_search_submit', { query: query, query_length: query.length });
-                                window.location.href = base + '/search?q=' + encodeURIComponent(query);
+                                window.location.href = base + '/search?q=' + encodeURIComponent(query) + '&Order=date';
                             }
                         }
                     });
